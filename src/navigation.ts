@@ -2,7 +2,7 @@ export interface Bereich {
   pfad: string
   titel: string
   beschreibung: string
-  etappe: string
+  etappe?: string // gesetzt = noch Platzhalter
 }
 
 // Reihenfolge = Reihenfolge in der Navigation
@@ -11,7 +11,6 @@ export const BEREICHE: Bereich[] = [
     pfad: '/patienten',
     titel: 'Pat.-Liste',
     beschreibung: 'Kürzel anlegen und suchen, Stammdaten erfassen.',
-    etappe: 'Etappe 2',
   },
   {
     pfad: '/testung',

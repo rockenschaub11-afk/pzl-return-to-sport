@@ -7,7 +7,7 @@ Sie ist eine **Dokumentations- und Rechenhilfe – sie ersetzt keine ärztliche 
 - Dieses Repository enthält nur den Programmcode, nie Pat.-Daten.
 - Fachliche Grundlage: [`docs/ENTSCHEIDUNGEN.md`](docs/ENTSCHEIDUNGEN.md), Bauplan: [`docs/ETAPPENPLAN.md`](docs/ETAPPENPLAN.md).
 
-Aktueller Stand: **Etappe 1 – Grundgerüst** (Logo, Navigation, Platzhalterseiten, Hinweis).
+Aktueller Stand: **Etappe 2 – Pat.-Liste & Stammdaten** (Kürzel anlegen, suchen, bearbeiten, löschen; Dubletten-Erkennung).
 
 ## App am eigenen Laptop starten
 

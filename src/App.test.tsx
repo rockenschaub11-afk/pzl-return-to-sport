@@ -1,7 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import App from './App'
+import { db } from './db'
 import { BEREICHE, HINWEIS } from './navigation'
 
 function zeige(pfad: string) {
@@ -11,6 +13,10 @@ function zeige(pfad: string) {
     </MemoryRouter>,
   )
 }
+
+beforeEach(async () => {
+  await db.patienten.clear()
+})
 
 describe('App-Rahmen', () => {
   it('zeigt Titel, Logo und den Hinweis „Rechenhilfe“', () => {
@@ -33,8 +39,38 @@ describe('App-Rahmen', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Berichte' })).toBeInTheDocument()
   })
 
-  it('leitet die Startseite auf die Pat.-Liste um', () => {
+  it('leitet die Startseite auf die Pat.-Liste um', async () => {
     zeige('/')
-    expect(screen.getByRole('heading', { level: 2, name: 'Pat.-Liste' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 2, name: 'Pat.-Liste' })).toBeInTheDocument()
+  })
+})
+
+describe('Pat.-Liste', () => {
+  it('legt ein Kürzel an und erkennt danach die Dublette', async () => {
+    const user = userEvent.setup()
+    zeige('/patienten/neu')
+
+    await user.type(await screen.findByPlaceholderText('MH-1998'), 'mh-1998')
+    await user.click(screen.getByRole('button', { name: 'Links' }))
+    await user.click(screen.getByRole('button', { name: 'Wettkampf' }))
+    fireEvent.change(screen.getByLabelText('OP-Datum'), { target: { value: '2025-12-01' } })
+    await user.click(screen.getByRole('button', { name: 'Speichern' }))
+
+    expect(await screen.findByText('1 Kürzel auf diesem Laptop')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /MH-1998/ })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('link', { name: '+ Neues Kürzel' }))
+    await user.type(await screen.findByPlaceholderText('MH-1998'), 'MH-1998')
+    expect(await screen.findByRole('alert')).toHaveTextContent('ist schon angelegt')
+    await user.click(screen.getByRole('button', { name: 'MH-1998-2 verwenden' }))
+    expect(screen.getByPlaceholderText('MH-1998')).toHaveValue('MH-1998-2')
+  })
+
+  it('speichert nicht ohne Pflichtfelder', async () => {
+    const user = userEvent.setup()
+    zeige('/patienten/neu')
+    await user.click(await screen.findByRole('button', { name: 'Speichern' }))
+    expect(screen.getByText('Bitte die rot markierten Felder prüfen.')).toBeInTheDocument()
+    expect(await db.patienten.count()).toBe(0)
   })
 })

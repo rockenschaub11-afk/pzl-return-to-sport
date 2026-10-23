@@ -1,17 +1,29 @@
-/* Farben aus dem Praxis-Logo (public/logo-pzl.svg) */
+/* Design: Farben aus dem Praxis-Logo (public/logo-pzl.svg), sportlich mit Schrägen und Tempo-Streifen */
 :root {
   --pzl-blau: #1d71b8;
   --pzl-blau-dunkel: #155a94;
   --pzl-tuerkis: #00b5cb;
-  --pzl-tuerkis-hell: #e6f7fa;
-  --pzl-grau: #9a999d;
-  --text: #1f2933;
-  --text-leise: #52606d;
-  --hintergrund: #f5f8fb;
+  --pzl-tuerkis-hell: #e3f8fb;
+  --pzl-tuerkis-leucht: #4fe0f0;
+  --nacht: #0a1f3c;
+  --nacht-2: #123b6d;
+  --text: #13233a;
+  --text-leise: #52627a;
+  --hintergrund: #eef3f8;
   --flaeche: #ffffff;
-  --rand: #d9e2ec;
+  --rand: #d3dde8;
+  --warnung: #b26a00;
+  --warnung-hell: #fff4e0;
+  --fehler: #c62828;
+  --fehler-hell: #fdecec;
+  --schatten: 0 1px 2px rgb(10 31 60 / 0.06), 0 4px 14px rgb(10 31 60 / 0.08);
+  --schatten-hoch: 0 2px 4px rgb(10 31 60 / 0.08), 0 12px 28px rgb(10 31 60 / 0.16);
+  --schraeg: -12deg;
 
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --schrift: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --schrift-sport: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+
+  font-family: var(--schrift);
   line-height: 1.5;
   color: var(--text);
   background: var(--hintergrund);
@@ -23,7 +35,22 @@
 
 body {
   margin: 0;
-  background: var(--hintergrund);
+  background:
+    repeating-linear-gradient(115deg, transparent 0 46px, rgb(29 113 184 / 0.025) 46px 48px),
+    var(--hintergrund);
+}
+
+a {
+  color: var(--pzl-blau);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .app {
@@ -32,135 +59,762 @@ body {
   flex-direction: column;
 }
 
+/* ---------- Kopf ---------- */
+
 .kopf {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 1.75rem;
+  min-height: 104px;
+  overflow: hidden;
+  background: linear-gradient(115deg, var(--nacht) 0%, var(--nacht-2) 55%, var(--pzl-blau) 100%);
+  color: #fff;
+}
+
+.kopf-logo-platte {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--flaeche);
-  border-bottom: 4px solid var(--pzl-tuerkis);
+  padding: 0.75rem 3.25rem 0.75rem 1.5rem;
+  background: #fff;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 2.25rem) 100%, 0 100%);
+  box-shadow: 6px 0 0 var(--pzl-tuerkis);
+}
+
+/* türkiser Schrägstrich hinter der Logo-Platte */
+.kopf-logo-platte::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 0.6rem;
+  background: var(--pzl-tuerkis);
+  transform: skewX(-20deg);
+  transform-origin: top;
 }
 
 .kopf-logo {
-  height: 56px;
+  display: block;
+  height: 72px;
   width: auto;
+}
+
+.kopf-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.5rem 0;
 }
 
 .kopf-titel {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--pzl-blau);
+  font-family: var(--schrift-sport);
+  font-weight: 800;
+  font-style: italic;
+  font-size: 2.6rem;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 0.25);
 }
 
+.kopf-titel-pzl {
+  color: var(--pzl-tuerkis-leucht);
+}
+
+.kopf-unterzeile {
+  margin: 0.35rem 0 0;
+  font-family: var(--schrift-sport);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.72);
+}
+
+/* Tempo-Streifen rechts */
+.kopf-streifen {
+  position: absolute;
+  inset: 0 0 0 45%;
+  background: repeating-linear-gradient(
+    115deg,
+    transparent 0 22px,
+    rgb(0 181 203 / 0.35) 22px 30px,
+    transparent 30px 40px,
+    rgb(255 255 255 / 0.08) 40px 44px
+  );
+  mask-image: linear-gradient(90deg, transparent, #000 60%);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 60%);
+}
+
+/* ---------- Navigation ---------- */
+
 .navigation {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
-  padding: 0 1.5rem;
-  background: var(--pzl-blau);
+  gap: 0.25rem 0.5rem;
+  padding: 0.5rem 1.5rem;
+  background: var(--nacht);
+  border-bottom: 3px solid var(--pzl-tuerkis);
 }
 
 .nav-link {
-  padding: 0.75rem 1rem;
-  color: #fff;
+  position: relative;
+  padding: 0.45rem 1.1rem;
+  color: rgb(255 255 255 / 0.85);
   text-decoration: none;
-  font-weight: 500;
-  border-bottom: 3px solid transparent;
+  font-family: var(--schrift-sport);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.nav-link:hover {
-  background: var(--pzl-blau-dunkel);
+.nav-link span {
+  position: relative;
+  z-index: 1;
+}
+
+.nav-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: skewX(var(--schraeg)) scaleX(0.6);
+  opacity: 0;
+  background: rgb(255 255 255 / 0.12);
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease,
+    background 0.18s ease;
+}
+
+.nav-link:hover::before {
+  opacity: 1;
+  transform: skewX(var(--schraeg)) scaleX(1);
 }
 
 .nav-link.active {
-  border-bottom-color: var(--pzl-tuerkis);
-  background: var(--pzl-blau-dunkel);
+  color: var(--nacht);
+}
+
+.nav-link.active::before {
+  opacity: 1;
+  transform: skewX(var(--schraeg)) scaleX(1);
+  background: linear-gradient(90deg, var(--pzl-tuerkis-leucht), var(--pzl-tuerkis));
+  box-shadow: 0 0 18px rgb(0 181 203 / 0.45);
 }
 
 .nav-link:focus-visible {
-  outline: 2px solid var(--pzl-tuerkis);
-  outline-offset: -2px;
+  outline: 2px solid var(--pzl-tuerkis-leucht);
+  outline-offset: 2px;
 }
+
+/* ---------- Inhalt ---------- */
 
 .inhalt {
   flex: 1;
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1.75rem 1.5rem 2.5rem;
+}
+
+.seitenkopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.seitentitel {
+  position: relative;
+  margin: 0;
+  padding-bottom: 0.4rem;
+  font-family: var(--schrift-sport);
+  font-weight: 800;
+  font-style: italic;
+  font-size: 2.2rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+  color: var(--nacht);
+}
+
+.seitentitel::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 4.5rem;
+  height: 6px;
+  background: linear-gradient(90deg, var(--pzl-tuerkis), var(--pzl-blau));
+  transform: skewX(-24deg);
+  transform-origin: left;
+}
+
+.seitenzusatz {
+  margin: 0.4rem 0 0;
+  color: var(--text-leise);
+  font-weight: 500;
+}
+
+.seitenzusatz a {
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .karte {
   background: var(--flaeche);
   border: 1px solid var(--rand);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 1.25rem 1.5rem;
-}
-
-.karte h2 {
-  margin-top: 0;
-  color: var(--pzl-blau);
+  box-shadow: var(--schatten);
 }
 
 .platzhalter-etappe {
   display: inline-block;
   margin-bottom: 0;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
+  padding: 0.25rem 0.9rem;
   background: var(--pzl-tuerkis-hell);
-  color: var(--text-leise);
+  color: var(--pzl-blau-dunkel);
+  font-weight: 600;
   font-size: 0.9rem;
+  transform: skewX(var(--schraeg));
 }
 
-/* Hinweis bleibt immer sichtbar am unteren Rand */
+.hinweis-leise {
+  margin-top: 0;
+  color: var(--text-leise);
+}
+
+/* ---------- Knöpfe (schräg, Text gerade) ---------- */
+
+.knopf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.6rem;
+  padding: 0.45rem 1.4rem;
+  border: 2px solid var(--pzl-blau);
+  background: var(--flaeche);
+  color: var(--pzl-blau);
+  font: inherit;
+  font-family: var(--schrift-sport);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transform: skewX(var(--schraeg));
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.knopf > span {
+  display: inline-block;
+  transform: skewX(calc(var(--schraeg) * -1));
+}
+
+.knopf:hover {
+  box-shadow: var(--schatten-hoch);
+  transform: skewX(var(--schraeg)) translateY(-1px);
+}
+
+.knopf:focus-visible {
+  outline: 3px solid var(--pzl-tuerkis);
+  outline-offset: 2px;
+}
+
+.knopf-haupt {
+  border-color: transparent;
+  background: linear-gradient(100deg, var(--pzl-tuerkis) 0%, var(--pzl-blau) 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgb(0 181 203 / 0.35);
+}
+
+.knopf-gefahr {
+  border-color: var(--fehler);
+  color: var(--fehler);
+}
+
+.knopf-gefahr:hover {
+  background: var(--fehler-hell);
+}
+
+.text-knopf {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--pzl-blau);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- Pat.-Liste ---------- */
+
+.suche input {
+  width: 100%;
+  max-width: 28rem;
+  margin-bottom: 1.25rem;
+  padding: 0.7rem 1rem 0.7rem 2.6rem;
+  border: 2px solid var(--rand);
+  border-radius: 6px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%2352627a' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m12.5 12.5 4 4'/%3E%3C/svg%3E")
+      0.85rem center no-repeat,
+    var(--flaeche);
+  font: inherit;
+}
+
+.suche input:focus {
+  outline: none;
+  border-color: var(--pzl-tuerkis);
+  box-shadow: 0 0 0 3px rgb(0 181 203 / 0.2);
+}
+
+.pat-raster {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pat-karte {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.2rem 0.75rem;
+  height: 100%;
+  padding: 1rem 1.1rem 1.1rem 1.4rem;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--flaeche);
+  border: 1px solid var(--rand);
+  box-shadow: var(--schatten);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+/* schräger Farbbalken links */
+.pat-karte::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: linear-gradient(180deg, var(--pzl-tuerkis), var(--pzl-blau));
+}
+
+.pat-karte:hover,
+.pat-karte:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: var(--schatten-hoch);
+  outline: none;
+}
+
+.pat-karte:focus-visible {
+  border-color: var(--pzl-tuerkis);
+}
+
+.pat-kuerzel {
+  grid-column: 1;
+  grid-row: 1;
+  font-family: var(--schrift-sport);
+  font-weight: 800;
+  font-style: italic;
+  font-size: 1.75rem;
+  line-height: 1.1;
+  color: var(--nacht);
+}
+
+.seiten-marke {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  color: #fff;
+  font-family: var(--schrift-sport);
+  font-weight: 800;
+  font-style: italic;
+  font-size: 1.35rem;
+  transform: skewX(var(--schraeg));
+}
+
+.seite-links {
+  background: var(--pzl-blau);
+}
+
+.seite-rechts {
+  background: var(--pzl-tuerkis);
+}
+
+.pat-info {
+  grid-column: 1;
+  color: var(--text-leise);
+  font-size: 0.95rem;
+}
+
+.pat-info strong {
+  color: var(--pzl-blau);
+}
+
+.pat-chips {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.chip {
+  padding: 0.1rem 0.55rem;
+  border-radius: 3px;
+  background: #edf1f6;
+  color: var(--text-leise);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.chip-wettkampf {
+  background: var(--nacht);
+  color: #fff;
+}
+
+.chip-freizeit {
+  background: var(--pzl-tuerkis-hell);
+  color: var(--pzl-blau-dunkel);
+}
+
+.leer {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+}
+
+.leer-titel {
+  margin-top: 0;
+  font-family: var(--schrift-sport);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  color: var(--nacht);
+}
+
+/* ---------- Formular ---------- */
+
+.block {
+  margin: 0 0 1.25rem;
+  min-width: 0;
+}
+
+.block-titel {
+  float: left;
+  width: 100%;
+  margin: 0 0 1rem;
+  padding: 0;
+  font-family: var(--schrift-sport);
+  font-weight: 700;
+  font-style: italic;
+  font-size: 1.35rem;
+  text-transform: uppercase;
+  color: var(--nacht);
+}
+
+.block-titel + * {
+  clear: both;
+}
+
+.block-marke {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0 0.6rem;
+  background: var(--pzl-blau);
+  color: #fff;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  vertical-align: middle;
+  transform: skewX(var(--schraeg));
+}
+
+.block-marke-leise {
+  background: #dfe6ee;
+  color: var(--text-leise);
+}
+
+.feld-reihe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
+}
+
+.feld-reihe > .feld {
+  flex: 1 1 14rem;
+}
+
+.feld {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1.1rem;
+  min-width: 0;
+}
+
+.feld-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.feld-hilfe {
+  color: var(--text-leise);
+  font-size: 0.85rem;
+}
+
+.feld-meldung {
+  color: var(--fehler);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.feld input:not([type='checkbox']) {
+  width: 100%;
+  max-width: 24rem;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid var(--rand);
+  border-radius: 6px;
+  background: var(--flaeche);
+  font: inherit;
+  color: inherit;
+}
+
+.feld input:focus {
+  outline: none;
+  border-color: var(--pzl-tuerkis);
+  box-shadow: 0 0 0 3px rgb(0 181 203 / 0.2);
+}
+
+.feld-fehler input:not([type='checkbox']) {
+  border-color: var(--fehler);
+}
+
+.eingabe-kuerzel {
+  font-family: var(--schrift-sport) !important;
+  font-weight: 700;
+  font-size: 1.5rem !important;
+  letter-spacing: 0.06em;
+  max-width: 16rem !important;
+}
+
+.auswahl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.auswahl-knopf {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--rand);
+  border-radius: 6px;
+  background: var(--flaeche);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.auswahl-knopf:hover {
+  border-color: var(--pzl-tuerkis);
+}
+
+.auswahl-knopf[aria-pressed='true'] {
+  border-color: var(--nacht);
+  background: var(--nacht);
+  color: #fff;
+  box-shadow: inset 4px 0 0 var(--pzl-tuerkis);
+}
+
+.auswahl-knopf:focus-visible {
+  outline: 3px solid var(--pzl-tuerkis);
+  outline-offset: 1px;
+}
+
+.feld-fehler .auswahl-knopf {
+  border-color: var(--fehler);
+}
+
+.feld-haken {
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.haken {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.haken input {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--pzl-blau);
+}
+
+.meldung {
+  margin: -0.4rem 0 1.1rem;
+  padding: 0.6rem 0.9rem;
+  border-left: 5px solid;
+  border-radius: 0 6px 6px 0;
+}
+
+.meldung-info {
+  border-color: var(--pzl-tuerkis);
+  background: var(--pzl-tuerkis-hell);
+}
+
+.meldung-warnung {
+  border-color: var(--warnung);
+  background: var(--warnung-hell);
+}
+
+.meldung-fehler {
+  margin-top: 0;
+  border-color: var(--fehler);
+  background: var(--fehler-hell);
+}
+
+.aktionen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding-left: 0.4rem;
+}
+
+.aktionen-rechts {
+  margin-left: auto;
+}
+
+.loeschen-frage {
+  margin-top: 1.25rem;
+}
+
+.loeschen-frage p {
+  margin-top: 0;
+}
+
+/* ---------- Hinweis unten ---------- */
+
 .hinweis {
   position: sticky;
   bottom: 0;
-  padding: 0.6rem 1.5rem;
-  background: var(--pzl-tuerkis-hell);
-  border-top: 2px solid var(--pzl-tuerkis);
-  color: var(--pzl-blau-dunkel);
+  z-index: 10;
+  padding: 0.55rem 1.5rem;
+  background: var(--nacht);
+  border-top: 3px solid var(--pzl-tuerkis);
+  color: #fff;
   font-weight: 500;
+  font-size: 0.95rem;
   text-align: center;
 }
 
-/* Schmale Fenster: kleineres Logo, Navigation untereinander statt nebeneinander */
-@media (max-width: 640px) {
+.hinweis::before {
+  content: '';
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.9rem;
+  margin-right: 0.6rem;
+  background: var(--pzl-tuerkis);
+  transform: skewX(var(--schraeg));
+  vertical-align: -0.1rem;
+}
+
+/* ---------- Schmale Fenster ---------- */
+
+@media (max-width: 720px) {
   .kopf {
-    gap: 0.75rem;
-    padding: 0.5rem 1rem;
+    gap: 1rem;
+    min-height: 0;
+  }
+
+  .kopf-logo-platte {
+    padding: 0.5rem 2rem 0.5rem 0.9rem;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 1.4rem) 100%, 0 100%);
   }
 
   .kopf-logo {
-    height: 40px;
+    height: 44px;
+  }
+
+  .kopf-text {
+    padding-right: 0.75rem;
   }
 
   .kopf-titel {
-    font-size: 1.15rem;
+    font-size: 1.55rem;
+  }
+
+  .kopf-unterzeile {
+    display: none;
   }
 
   .navigation {
-    flex-direction: column;
-    padding: 0;
-    gap: 0;
+    padding: 0.4rem 0.75rem;
   }
 
   .nav-link {
-    border-bottom: 0;
-    border-left: 4px solid transparent;
-  }
-
-  .nav-link.active {
-    border-left-color: var(--pzl-tuerkis);
+    padding: 0.35rem 0.75rem;
+    font-size: 1rem;
   }
 
   .inhalt {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .seitentitel {
+    font-size: 1.8rem;
+  }
+
+  .karte {
     padding: 1rem;
   }
 
+  .aktionen-rechts {
+    margin-left: 0;
+  }
+
   .hinweis {
-    font-size: 0.9rem;
     padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
   }
 }
