@@ -1,0 +1,10 @@
+{
+  "_info": "Phasen nach Read (Practitioner's Guide S. 59). Monate seit OP; bisMonat = null heißt offen nach oben.",
+  "phasen": [
+    { "id": "frueh", "name": "Früh", "lang": "Früh (0–3 Monate)", "vonMonat": 0, "bisMonat": 3 },
+    { "id": "mitte", "name": "Mitte", "lang": "Mitte (3–5 Monate)", "vonMonat": 3, "bisMonat": 5 },
+    { "id": "spaet", "name": "Spät", "lang": "Spät (5–8 Monate)", "vonMonat": 5, "bisMonat": 8 },
+    { "id": "rtt", "name": "8–9 Mo", "lang": "Return to Training (8–9 Monate)", "vonMonat": 8, "bisMonat": 9 },
+    { "id": "rtc", "name": "> 9 Mo", "lang": "Return to Competition (> 9 Monate)", "vonMonat": 9, "bisMonat": null }
+  ]
+}

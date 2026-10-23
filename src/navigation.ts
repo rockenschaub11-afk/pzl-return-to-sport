@@ -38,8 +38,7 @@ export const BEREICHE: Bereich[] = [
   {
     pfad: '/info',
     titel: 'Einstellungen/Info',
-    beschreibung: 'Einstellungen, Quellen und Hinweise zur App.',
-    etappe: 'spätere Etappen',
+    beschreibung: 'Einstellungen, Testkatalog mit Schwellen und Quellen.',
   },
 ]
 

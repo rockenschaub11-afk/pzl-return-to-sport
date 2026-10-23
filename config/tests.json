@@ -1,0 +1,671 @@
+{
+  "_info": [
+    "Testkatalog mit Schwellen und Quellen (docs/ENTSCHEIDUNGEN.md Abschnitte 4, 6, 7). Änderungen nur per Update durch Philipp (F33).",
+    "werte: Schwelle je Phase (frueh, mitte, spaet, rtt, rtc) oder 'alle'. Leere Phase übernimmt den Wert der Phase davor; vor dem ersten Wert gilt das Kriterium nicht.",
+    "bereiche: Read-Bereich (95-%-KI) als Info; als Schwelle dient die untere Grenze (bei 'weniger ist besser' die obere).",
+    "status: pflicht | wuenschenswert | warnung | info. Nur pflicht und wuenschenswert bestimmen die Ampel; warnung erzeugt einen Hinweis.",
+    "frauenWuenschenswert: Read-Absolutwert ist bei Frauen nur wünschenswert (F26)."
+  ],
+  "tests": [
+    {
+      "id": "erguss",
+      "name": "Erguss (Stroke-Test)",
+      "block": "klinik",
+      "messgeraet": "klinisch",
+      "seitenvergleich": false,
+      "inEndtestung": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "kriterien": [
+        {
+          "id": "grad",
+          "bezeichnung": "Stroke-Test",
+          "art": "auswahl",
+          "optionen": ["0", "Spur", "1+", "2+", "3+"],
+          "erlaubt": ["0", "Spur"],
+          "werte": {},
+          "status": "pflicht",
+          "quelle": "Aspetar S. 12; Read S. 59 (keine/minimale Schwellung)"
+        }
+      ]
+    },
+    {
+      "id": "rom_extension",
+      "name": "Extension (ROM)",
+      "block": "klinik",
+      "messgeraet": "klinisch",
+      "seitenvergleich": false,
+      "inEndtestung": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "kriterien": [
+        {
+          "id": "defizit",
+          "bezeichnung": "Extensionsdefizit",
+          "art": "absolut",
+          "vergleich": "<=",
+          "einheit": "°",
+          "nachkomma": 0,
+          "werte": { "alle": 0 },
+          "status": "pflicht",
+          "quelle": "Aspetar S. 12; Read S. 59",
+          "hinweis": "Eingabe als Defizit in Grad: 0 = volle Streckung, Überstreckung als negativer Wert."
+        }
+      ]
+    },
+    {
+      "id": "rom_flexion",
+      "name": "Flexion (ROM)",
+      "block": "klinik",
+      "messgeraet": "klinisch",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "kriterien": [
+        {
+          "id": "grad",
+          "bezeichnung": "Flexion",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "°",
+          "nachkomma": 0,
+          "werte": { "frueh": 130 },
+          "status": "pflicht",
+          "quelle": "Read S. 59"
+        },
+        {
+          "id": "lsi",
+          "bezeichnung": "Flexion zur Gegenseite",
+          "art": "lsi",
+          "vergleich": ">=",
+          "einheit": "%",
+          "ampel": "zweistufig",
+          "werte": { "alle": 95 },
+          "status": "pflicht",
+          "quelle": "Read S. 13; Handbook S. 22"
+        }
+      ]
+    },
+    {
+      "id": "slr",
+      "name": "SLR (Extensionslag)",
+      "block": "klinik",
+      "messgeraet": "klinisch",
+      "seitenvergleich": false,
+      "inEndtestung": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "kriterien": [
+        {
+          "id": "ohne_lag",
+          "bezeichnung": "kein Extensionslag",
+          "art": "janein",
+          "werte": {},
+          "status": "pflicht",
+          "quelle": "Read S. 59"
+        }
+      ]
+    },
+    {
+      "id": "hhd_knie_ext",
+      "name": "Knie-Extension (HHD)",
+      "block": "hhd",
+      "messgeraet": "dynamo",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "knie_ext",
+      "hinweise": ["Erst ab ca. 8 Wochen post-OP (Read S. 24)."],
+      "kriterien": [
+        {
+          "id": "relativ",
+          "bezeichnung": "Kraft relativ",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "N/kg",
+          "nachkomma": 1,
+          "werte": { "frueh": 5.5, "mitte": 7.0, "spaet": 7.5 },
+          "status": "pflicht",
+          "frauenWuenschenswert": true,
+          "quelle": "Read S. 59"
+        },
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "pflicht", "quelle": "Read S. 59" }
+      ]
+    },
+    {
+      "id": "hhd_knie_flex",
+      "name": "Knie-Flexion (HHD)",
+      "block": "hhd",
+      "messgeraet": "dynamo",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "knie_flex",
+      "hinweise": ["Erst ab ca. 8 Wochen post-OP (Read S. 24)."],
+      "kriterien": [
+        {
+          "id": "relativ",
+          "bezeichnung": "Kraft relativ",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "N/kg",
+          "nachkomma": 1,
+          "werte": { "frueh": 2.0, "mitte": 2.5, "spaet": 2.8 },
+          "status": "pflicht",
+          "frauenWuenschenswert": true,
+          "quelle": "Read S. 59"
+        },
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "pflicht", "quelle": "Read S. 59" }
+      ]
+    },
+    {
+      "id": "hhd_hueft_abd",
+      "name": "Hüft-Abduktion (HHD)",
+      "block": "hhd",
+      "messgeraet": "dynamo",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "hueft_abd",
+      "kriterien": [
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "wuenschenswert", "quelle": "Aspetar S. 39" }
+      ]
+    },
+    {
+      "id": "plantarflexion",
+      "name": "Plantarflexion",
+      "block": "hhd",
+      "messgeraet": "meloq",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "optional": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "plantarflexion",
+      "kriterien": [
+        {
+          "id": "relativ",
+          "bezeichnung": "Kraft relativ",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "N/kg",
+          "nachkomma": 1,
+          "werte": { "frueh": 13, "mitte": 15.5, "spaet": 18 },
+          "status": "wuenschenswert",
+          "frauenWuenschenswert": true,
+          "quelle": "Read S. 59"
+        },
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "wuenschenswert", "quelle": "Read S. 59" }
+      ]
+    },
+    {
+      "id": "kniebeuge_asym",
+      "name": "Kniebeuge-Asymmetrie (Platte)",
+      "block": "platten",
+      "messgeraet": "meloq",
+      "seitenvergleich": true,
+      "inEndtestung": false,
+      "phasen": ["frueh"],
+      "hinweise": ["Read nutzt den exzentrischen Bremsimpuls – mit Meloq nicht messbar, ersatzweise die von Meloq angezeigte Asymmetrie."],
+      "kriterien": [
+        {
+          "id": "asymmetrie",
+          "bezeichnung": "Asymmetrie",
+          "art": "asymmetrie",
+          "vergleich": "<",
+          "einheit": "%",
+          "nachkomma": 1,
+          "werte": { "frueh": 10 },
+          "status": "wuenschenswert",
+          "quelle": "Read S. 59"
+        }
+      ]
+    },
+    {
+      "id": "sl_balance",
+      "name": "Einbeinstand (Platte)",
+      "block": "platten",
+      "messgeraet": "meloq",
+      "seitenvergleich": true,
+      "inEndtestung": false,
+      "phasen": ["frueh"],
+      "hinweise": ["Offen: Zeigt Meloq den Gesamt-Schwankweg in mm? Bis dahin nur Info (ENTSCHEIDUNGEN 6.3)."],
+      "kriterien": [
+        {
+          "id": "schwankweg",
+          "bezeichnung": "Schwankweg",
+          "art": "absolut",
+          "vergleich": "<",
+          "einheit": "mm",
+          "nachkomma": 0,
+          "werte": { "frueh": 550 },
+          "status": "info",
+          "quelle": "Read S. 59"
+        }
+      ]
+    },
+    {
+      "id": "cmj",
+      "name": "CMJ",
+      "block": "platten",
+      "messgeraet": "meloq",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "cmj",
+      "hinweise": [
+        "Exzentrischer Bremsimpuls wird von Meloq nicht angezeigt – die Read-Schwellen dazu entfallen.",
+        "Sprunghöhe: Meloq misst über die Flugzeit, die Read-Werte (VALD) über den Impuls – Abweichungen möglich.",
+        "Meloq-„RSI“ beim CMJ (Flugzeit/Kontraktionszeit) ist nicht mit Read-RSI-mod vergleichbar – keine Schwelle."
+      ],
+      "kriterien": [
+        {
+          "id": "impuls_asymmetrie",
+          "bezeichnung": "Net-Impulse-Asymmetrie",
+          "art": "asymmetrie",
+          "vergleich": "<",
+          "einheit": "%",
+          "nachkomma": 1,
+          "werte": { "mitte": 13.4, "rtc": 10 },
+          "bereiche": { "mitte": [9.2, 13.4] },
+          "status": "pflicht",
+          "quelle": "Read S. 59"
+        },
+        {
+          "id": "hoehe",
+          "bezeichnung": "Sprunghöhe",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "cm",
+          "nachkomma": 1,
+          "werte": { "mitte": 27.8, "spaet": 30.7, "rtt": 31.8, "rtc": 33.9 },
+          "bereiche": { "mitte": [27.8, 30.1], "spaet": [30.7, 33.4], "rtt": [31.8, 34.7], "rtc": [33.9, 35.0] },
+          "status": "wuenschenswert",
+          "frauenWuenschenswert": true,
+          "quelle": "Read S. 59"
+        },
+        {
+          "id": "net_impulse",
+          "bezeichnung": "Net Impulse relativ",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "Ns/kg",
+          "nachkomma": 2,
+          "werte": { "spaet": 2.25, "rtt": 2.4, "rtc": 2.6 },
+          "status": "wuenschenswert",
+          "frauenWuenschenswert": true,
+          "quelle": "Read S. 59"
+        }
+      ]
+    },
+    {
+      "id": "sl_cmj",
+      "name": "SL-CMJ",
+      "block": "platten",
+      "messgeraet": "meloq",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "cmj",
+      "hinweise": ["Exzentrischer Bremsimpuls wird von Meloq nicht angezeigt – die Read-Schwellen dazu entfallen."],
+      "kriterien": [
+        {
+          "id": "hoehe",
+          "bezeichnung": "Sprunghöhe",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "cm",
+          "nachkomma": 1,
+          "werte": { "mitte": 11, "spaet": 13.2, "rtt": 15, "rtc": 18 },
+          "status": "pflicht",
+          "frauenWuenschenswert": true,
+          "quelle": "Read S. 59"
+        },
+        { "id": "lsi", "bezeichnung": "LSI Sprunghöhe", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "pflicht", "quelle": "Read S. 59" },
+        {
+          "id": "impuls_asymmetrie",
+          "bezeichnung": "Net-Impulse-Asymmetrie",
+          "art": "asymmetrie",
+          "vergleich": "<",
+          "einheit": "%",
+          "nachkomma": 1,
+          "werte": { "mitte": 20 },
+          "status": "wuenschenswert",
+          "quelle": "Read S. 59",
+          "hinweis": "Read gibt die Asymmetrie nur für die Mitte-Phase an; danach gilt der Wert weiter."
+        },
+        {
+          "id": "net_impulse",
+          "bezeichnung": "Net Impulse relativ (betroffen)",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "Ns/kg",
+          "nachkomma": 2,
+          "werte": { "spaet": 1.5, "rtt": 1.58, "rtc": 1.8 },
+          "status": "wuenschenswert",
+          "frauenWuenschenswert": true,
+          "quelle": "Read S. 59"
+        }
+      ]
+    },
+    {
+      "id": "dj_bilateral",
+      "name": "Drop Jump beidbeinig",
+      "block": "platten",
+      "messgeraet": "meloq",
+      "seitenvergleich": true,
+      "inEndtestung": false,
+      "phasen": ["spaet"],
+      "kriterien": [
+        {
+          "id": "hoehe",
+          "bezeichnung": "Sprunghöhe",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "cm",
+          "nachkomma": 1,
+          "werte": { "spaet": 28 },
+          "status": "wuenschenswert",
+          "frauenWuenschenswert": true,
+          "quelle": "Read S. 59"
+        },
+        {
+          "id": "asymmetrie",
+          "bezeichnung": "Asymmetrie",
+          "art": "asymmetrie",
+          "vergleich": "<",
+          "einheit": "%",
+          "nachkomma": 1,
+          "werte": { "spaet": 10 },
+          "status": "wuenschenswert",
+          "quelle": "Read S. 59"
+        }
+      ]
+    },
+    {
+      "id": "sl_dj",
+      "name": "SL-Drop-Jump",
+      "block": "platten",
+      "messgeraet": "meloq",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["rtt", "rtc"],
+      "protokoll": "sl_dj",
+      "hinweise": ["Offen: RSI-Definition beim Drop Jump in der Meloq-App prüfen – bis dahin RSI nur Info (ENTSCHEIDUNGEN 6.3)."],
+      "kriterien": [
+        {
+          "id": "hoehe",
+          "bezeichnung": "Sprunghöhe",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "cm",
+          "nachkomma": 1,
+          "werte": { "rtt": 14, "rtc": 17 },
+          "status": "pflicht",
+          "frauenWuenschenswert": true,
+          "quelle": "Read S. 59"
+        },
+        { "id": "lsi", "bezeichnung": "LSI Sprunghöhe", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "pflicht", "quelle": "Read S. 59" },
+        {
+          "id": "rsi",
+          "bezeichnung": "RSI",
+          "art": "absolut",
+          "vergleich": ">",
+          "nachkomma": 2,
+          "werte": { "rtt": 0.38, "rtc": 0.57 },
+          "status": "info",
+          "quelle": "Read S. 59"
+        }
+      ]
+    },
+    {
+      "id": "imtp",
+      "name": "IMTP",
+      "block": "platten",
+      "messgeraet": "meloq",
+      "seitenvergleich": false,
+      "inEndtestung": true,
+      "phasen": ["spaet", "rtt", "rtc"],
+      "kriterien": [
+        {
+          "id": "relativ",
+          "bezeichnung": "Peak Force relativ",
+          "art": "absolut",
+          "vergleich": ">",
+          "einheit": "N/kg",
+          "nachkomma": 1,
+          "werte": { "spaet": 32, "rtt": 34, "rtc": 37 },
+          "status": "wuenschenswert",
+          "frauenWuenschenswert": true,
+          "quelle": "Read S. 59"
+        }
+      ]
+    },
+    {
+      "id": "hop_platte",
+      "name": "Hop auf der Platte",
+      "block": "platten",
+      "messgeraet": "meloq",
+      "seitenvergleich": true,
+      "inEndtestung": false,
+      "phasen": ["mitte"],
+      "kriterien": [
+        {
+          "id": "impuls_asymmetrie",
+          "bezeichnung": "Impuls-Asymmetrie",
+          "art": "asymmetrie",
+          "vergleich": "<",
+          "einheit": "%",
+          "nachkomma": 1,
+          "werte": { "mitte": 10 },
+          "status": "wuenschenswert",
+          "quelle": "Read S. 59"
+        }
+      ]
+    },
+    {
+      "id": "single_hop",
+      "name": "Single Hop",
+      "block": "hops",
+      "messgeraet": "massband",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "kriterien": [
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "pflicht", "quelle": "Aspetar S. 39; Handbook S. 21" }
+      ]
+    },
+    {
+      "id": "triple_hop",
+      "name": "Triple Hop",
+      "block": "hops",
+      "messgeraet": "massband",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "kriterien": [
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "pflicht", "quelle": "Aspetar S. 39; Handbook S. 21" }
+      ]
+    },
+    {
+      "id": "crossover_hop",
+      "name": "Crossover Hop",
+      "block": "hops",
+      "messgeraet": "massband",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "kriterien": [
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "pflicht", "quelle": "Aspetar S. 39; Handbook S. 21" }
+      ]
+    },
+    {
+      "id": "timed_hop",
+      "name": "6 m Hop auf Zeit",
+      "block": "hops",
+      "messgeraet": "stoppuhr",
+      "seitenvergleich": true,
+      "zeitTest": true,
+      "inEndtestung": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "hinweise": ["Zeittest: LSI = gesund / betroffen × 100 (kürzere Zeit ist besser)."],
+      "kriterien": [
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "pflicht", "quelle": "Aspetar S. 39; Handbook S. 21" }
+      ]
+    },
+    {
+      "id": "side_hop",
+      "name": "Side Hop 30 s",
+      "block": "hops",
+      "messgeraet": "stoppuhr",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "optional": true,
+      "phasen": ["spaet", "rtt", "rtc"],
+      "kriterien": [
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "wuenschenswert", "quelle": "Handbook S. 9" }
+      ]
+    },
+    {
+      "id": "bridge_beidbeinig",
+      "name": "Bridge beidbeinig",
+      "block": "kraftausdauer",
+      "messgeraet": "klinisch",
+      "seitenvergleich": false,
+      "inEndtestung": false,
+      "phasen": ["frueh"],
+      "protokoll": "kraftausdauer",
+      "kriterien": [
+        { "id": "wdh", "bezeichnung": "Wiederholungen", "art": "absolut", "vergleich": ">=", "einheit": "Wdh.", "nachkomma": 0, "werte": { "frueh": 10 }, "status": "wuenschenswert", "quelle": "Read S. 59" }
+      ]
+    },
+    {
+      "id": "calf_raise_beidbeinig",
+      "name": "Calf Raise beidbeinig",
+      "block": "kraftausdauer",
+      "messgeraet": "klinisch",
+      "seitenvergleich": false,
+      "inEndtestung": false,
+      "phasen": ["frueh"],
+      "protokoll": "kraftausdauer",
+      "kriterien": [
+        { "id": "wdh", "bezeichnung": "Wiederholungen", "art": "absolut", "vergleich": ">=", "einheit": "Wdh.", "nachkomma": 0, "werte": { "frueh": 10 }, "status": "wuenschenswert", "quelle": "Read S. 59" }
+      ]
+    },
+    {
+      "id": "sl_bridge",
+      "name": "SL Bridge",
+      "block": "kraftausdauer",
+      "messgeraet": "klinisch",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "kraftausdauer",
+      "kriterien": [
+        { "id": "wdh", "bezeichnung": "Wiederholungen (betroffen)", "art": "absolut", "vergleich": ">", "einheit": "Wdh.", "nachkomma": 0, "werte": { "mitte": 25 }, "status": "wuenschenswert", "quelle": "Read S. 59; Handbook S. 17" },
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "wuenschenswert", "quelle": "Read S. 59" }
+      ]
+    },
+    {
+      "id": "sl_calf_raise",
+      "name": "SL Calf Raise",
+      "block": "kraftausdauer",
+      "messgeraet": "klinisch",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "kraftausdauer",
+      "kriterien": [
+        { "id": "wdh", "bezeichnung": "Wiederholungen (betroffen)", "art": "absolut", "vergleich": ">", "einheit": "Wdh.", "nachkomma": 0, "werte": { "mitte": 25 }, "status": "wuenschenswert", "quelle": "Read S. 59; Handbook S. 17" },
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "wuenschenswert", "quelle": "Read S. 59" }
+      ]
+    },
+    {
+      "id": "sl_sit_to_stand",
+      "name": "SL Sit-to-Stand",
+      "block": "kraftausdauer",
+      "messgeraet": "klinisch",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "kraftausdauer",
+      "kriterien": [
+        {
+          "id": "wdh",
+          "bezeichnung": "Wiederholungen (betroffen)",
+          "art": "absolut",
+          "vergleich": ">=",
+          "einheit": "Wdh.",
+          "nachkomma": 0,
+          "werte": { "mitte": 15 },
+          "bereiche": { "mitte": [15, 25] },
+          "status": "wuenschenswert",
+          "quelle": "Read S. 59"
+        },
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "wuenschenswert", "quelle": "Read S. 59" }
+      ]
+    },
+    {
+      "id": "sl_squat",
+      "name": "SL-Squat-Tiefe",
+      "block": "kraftausdauer",
+      "messgeraet": "klinisch",
+      "seitenvergleich": true,
+      "inEndtestung": false,
+      "phasen": ["frueh", "mitte"],
+      "kriterien": [
+        { "id": "winkel", "bezeichnung": "Kniebeugewinkel (betroffen)", "art": "absolut", "vergleich": ">", "einheit": "°", "nachkomma": 0, "werte": { "frueh": 70, "mitte": 90 }, "status": "wuenschenswert", "quelle": "Read S. 59" },
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "wuenschenswert", "quelle": "PZL-Mix F18 (LSI für alles mit Seitenvergleich)" }
+      ]
+    },
+    {
+      "id": "acl_rsi",
+      "name": "ACL-RSI",
+      "block": "prom",
+      "messgeraet": "fragebogen",
+      "seitenvergleich": false,
+      "inEndtestung": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "hinweise": ["Keine validierte deutsche Version gefunden – Hinweis „deutsche Übersetzung, nicht validiert“."],
+      "kriterien": [
+        { "id": "score", "bezeichnung": "Score", "art": "absolut", "vergleich": ">=", "einheit": "Punkte", "nachkomma": 0, "werte": { "alle": 55 }, "status": "warnung", "quelle": "Handbook S. 20" }
+      ]
+    },
+    {
+      "id": "ikdc",
+      "name": "IKDC",
+      "block": "prom",
+      "messgeraet": "fragebogen",
+      "seitenvergleich": false,
+      "inEndtestung": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "hinweise": ["Keine Endschwelle – Info und Normwert (Normdaten in Etappe 7)."],
+      "kriterien": [
+        { "id": "score", "bezeichnung": "Score", "art": "absolut", "einheit": "Punkte", "nachkomma": 1, "werte": {}, "status": "info", "quelle": "Normdaten-Report (VALD)" }
+      ]
+    },
+    {
+      "id": "koos",
+      "name": "KOOS",
+      "block": "prom",
+      "messgeraet": "fragebogen",
+      "seitenvergleich": false,
+      "inEndtestung": true,
+      "optional": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "hinweise": ["5 Subskalen, kein Gesamtscore – keine Schwelle."],
+      "kriterien": [
+        { "id": "score", "bezeichnung": "Subskalen", "art": "absolut", "einheit": "Punkte", "nachkomma": 1, "werte": {}, "status": "info", "quelle": "–" }
+      ]
+    },
+    {
+      "id": "tampa",
+      "name": "Tampa (TSK-11)",
+      "block": "prom",
+      "messgeraet": "fragebogen",
+      "seitenvergleich": false,
+      "inEndtestung": true,
+      "optional": true,
+      "phasen": ["frueh", "mitte", "spaet", "rtt", "rtc"],
+      "kriterien": [
+        { "id": "score", "bezeichnung": "Summe", "art": "absolut", "einheit": "Punkte", "nachkomma": 0, "werte": {}, "status": "info", "quelle": "–" }
+      ]
+    }
+  ]
+}

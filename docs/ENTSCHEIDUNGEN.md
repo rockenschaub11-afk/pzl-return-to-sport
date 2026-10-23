@@ -54,6 +54,16 @@ Dieses Dokument ist die **verbindliche Grundlage** für den Bau. Änderungen nur
 - **Schwellen sind fix im Code** (Änderung nur per Update, zentral durch Philipp). Einzelfall: „klinisch anders beurteilt“ mit Pflichtbegründung (F33).
 - **Normdaten-Report** nur als graue Zusatzinfo „typisch nach VKB-OP“ bei Hops, SL-Drop-Jump, CMJ-Höhe, PROMs; ohne Einfluss auf die Ampel; fehlerhafte Tabellen weglassen (F24).
 
+### 3.0 Präzisierungen beim Bau (Nachtrag 23.10.2026, Etappe 3, von Philipp bestätigt)
+
+- **Leere Read-Felder** übernehmen die Schwelle der Phase davor (z. B. Knie-Extension > 7,5 N/kg gilt ab „Spät“ bis „> 9 Mo“). Vor dem ersten Wert gilt das Kriterium in dieser Phase nicht (nur LSI).
+- **Read-Bereiche (95-%-KI):** Schwelle ist die untere Grenze (z. B. CMJ-Höhe > 9 Mo: > 33,9 cm); bei „weniger ist besser“ die obere (CMJ-Impuls-Asymmetrie Mitte: < 13,4 %). Der Bereich wird als Info mitgeführt.
+- **Rundung:** LSI mit einer Nachkommastelle; Ampel nach der angezeigten Zahl (89,96 % → 90,0 % → grün). Gilt sinngemäß für alle Werte (Stellen je Kriterium in `config/tests.json`).
+- **Gesamt-Ampel eines Tests** = die schlechtere der zählenden Bewertungen (Absolutwert nur erfüllt/nicht erfüllt, LSI grün/gelb/rot). „Warnung“ und „Info“ zählen nicht.
+- **Frauen:** nicht erreichter Read-Absolutwert macht den Test nicht rot; Ampel kommt vom LSI, mit Hinweis.
+- **Asymmetrie** nach Meloq-Formel; **Variationskoeffizient** mit Stichproben-SD ab 2 Versuchen.
+- Schwellen, Tests und Protokolle liegen in `config/` (JSON) und werden beim Start geprüft; Übersicht zum Gegenlesen unter Einstellungen/Info.
+
 ### 3.1 RTS-Vorschlag (F25)
 „**Kriterien erfüllt**“ nur wenn:
 1. alle **Pflicht**-Tests grün, **und**

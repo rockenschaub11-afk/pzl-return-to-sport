@@ -1,0 +1,65 @@
+{
+  "_info": "Standard-Protokolle (docs/ENTSCHEIDUNGEN.md Abschnitt 5). Werte sind änderbar, der tatsächliche Wert wird bei der Testung gespeichert.",
+  "protokolle": [
+    {
+      "id": "allgemein",
+      "name": "Allgemein",
+      "ablauf": "Gesundes Bein zuerst, 1 Probeversuch, 3 Messversuche, 30–60 s Pause.",
+      "warum": "Das betroffene Bein wird nicht durch einen Lerneffekt benachteiligt; Read empfiehlt eine Familiarisierung.",
+      "quelle": "Read S. 32"
+    },
+    {
+      "id": "knie_ext",
+      "name": "Knie-Extension (HHD)",
+      "ablauf": "Sitzend, Dynamometer distal am Unterschenkel, mit Gurt, isometrisch 3–5 s.",
+      "winkelGrad": 60,
+      "warum": "Quadrizeps-Defizite nach VKB-OP sind bei 50–80° Knieflexion am größten; entspricht Aspetar. Der Gurt misst die Kraft der Pat., nicht die der Therapeut:in.",
+      "quelle": "Read S. 24, Aspetar S. 11"
+    },
+    {
+      "id": "knie_flex",
+      "name": "Knie-Flexion (HHD)",
+      "ablauf": "Bauchlage, Gurt, isometrisch.",
+      "winkelGrad": 90,
+      "warum": "Hamstring-Defizite zeigen sich v. a. bei > 75° Flexion, besonders nach Hamstring-Graft.",
+      "quelle": "Read S. 25"
+    },
+    {
+      "id": "hueft_abd",
+      "name": "Hüft-Abduktion (HHD)",
+      "ablauf": "Rückenlage, langer Hebel, Dynamometer knapp proximal des Malleolus lateralis, isometrisch.",
+      "warum": "Read-Referenzsetting, gut standardisierbar.",
+      "quelle": "Read S. 35"
+    },
+    {
+      "id": "plantarflexion",
+      "name": "Plantarflexion",
+      "ablauf": "Sitzend, Knie 90°, auf der Kraftmessplatte (Soleus).",
+      "winkelGrad": 90,
+      "warum": "Read-Setting für den Soleus.",
+      "quelle": "Read S. 36"
+    },
+    {
+      "id": "cmj",
+      "name": "CMJ / SL-CMJ",
+      "ablauf": "Hände an den Hüften.",
+      "warum": "Keine Armschwung-Effekte – vergleichbar mit den Read-Werten.",
+      "quelle": "Read S. 39"
+    },
+    {
+      "id": "sl_dj",
+      "name": "SL-Drop-Jump",
+      "ablauf": "Box 30 cm, einbeinige Landung und sofortiger Absprung.",
+      "boxhoeheCm": 30,
+      "warum": "Read-Konvention. Der Normdaten-Report nutzt 15 cm – darum wird die Boxhöhe immer mitgespeichert.",
+      "quelle": "Read S. 47"
+    },
+    {
+      "id": "kraftausdauer",
+      "name": "Kraftausdauer",
+      "ablauf": "Metronom 60 bpm, bis Ausbelastung oder Technikverlust.",
+      "warum": "Standardisiertes Tempo – vergleichbar über mehrere Testungen.",
+      "quelle": "PZL-Festlegung F27"
+    }
+  ]
+}

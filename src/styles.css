@@ -614,6 +614,188 @@ a {
   margin-top: 0;
 }
 
+/* ---------- Konfigurationsfehler (Prüfung beim Start) ---------- */
+
+.konfig-fehler {
+  margin: 1rem 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--fehler);
+  border-radius: var(--radius);
+  background: var(--fehler-hell);
+  color: var(--fehler);
+}
+
+.konfig-fehler ul {
+  margin: 0.4rem 0 0;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+/* ---------- Testkatalog (Info) ---------- */
+
+.kat-regeln h3,
+.kat-block h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--nacht);
+}
+
+.kat-regeln p {
+  margin-top: 0;
+}
+
+.kat-regeln ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.kat-regeln li + li {
+  margin-top: 0.35rem;
+}
+
+.kat-block {
+  margin-top: 1.25rem;
+}
+
+.kat-tabelle-huelle {
+  overflow-x: auto;
+}
+
+.kat-tabelle {
+  width: 100%;
+  min-width: 860px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.kat-tabelle th,
+.kat-tabelle td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--raster);
+  text-align: left;
+  vertical-align: top;
+}
+
+.kat-tabelle thead th {
+  border-bottom: 2px solid var(--rand-stark);
+  color: var(--text-leise);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.kat-spalte-test {
+  width: 24%;
+}
+
+.kat-spalte-phase {
+  width: 10%;
+}
+
+.kat-spalte-status {
+  width: 11%;
+}
+
+.kat-test th {
+  padding-top: 0.9rem;
+  background: var(--hintergrund);
+  color: var(--nacht);
+  font-weight: 600;
+}
+
+.kat-test .chip {
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.kat-hinweise {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.3rem;
+  color: var(--text-leise);
+  font-size: 0.82rem;
+  font-weight: 400;
+}
+
+.kat-kriterium {
+  padding-left: 1.2rem !important;
+}
+
+.kat-kriterium-hinweis {
+  display: block;
+  color: var(--text-leise);
+  font-size: 0.8rem;
+}
+
+.kat-leer {
+  color: var(--text-sehr-leise);
+}
+
+.kat-uebernommen {
+  color: var(--text-sehr-leise);
+  font-style: italic;
+}
+
+.kat-bereich {
+  color: var(--text-sehr-leise);
+  font-size: 0.8rem;
+}
+
+.kat-quelle {
+  color: var(--text-leise);
+  font-size: 0.82rem;
+}
+
+.kat-status {
+  padding: 0.05rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.kat-status-pflicht {
+  background: var(--pzl-blau);
+  color: #fff;
+}
+
+.kat-status-wuenschenswert {
+  background: #e8f1fa;
+  color: var(--pzl-blau-dunkel);
+}
+
+.kat-status-warnung {
+  background: var(--warnung-hell);
+  color: var(--warnung);
+}
+
+.kat-status-info {
+  background: var(--raster);
+  color: var(--text-leise);
+}
+
+.kat-protokolle {
+  margin: 0;
+}
+
+.kat-protokolle div + div {
+  margin-top: 0.75rem;
+}
+
+.kat-protokolle dt {
+  font-weight: 600;
+}
+
+.kat-protokolle dd {
+  margin: 0.15rem 0 0;
+  color: var(--text-leise);
+}
+
 /* ---------- Hinweis unten ---------- */
 
 .hinweis {

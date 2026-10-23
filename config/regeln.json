@@ -1,0 +1,15 @@
+{
+  "_info": "Allgemeine Rechenregeln (docs/ENTSCHEIDUNGEN.md Abschnitt 3). Änderungen nur per Update durch Philipp (F33).",
+  "lsi": {
+    "gruenAb": 90,
+    "gelbAb": 80,
+    "quelle": "PZL-Festlegung F22"
+  },
+  "variationskoeffizientWarnungUeber": 10,
+  "variationskoeffizientQuelle": "Read S. 32",
+  "versucheJeSeite": 3,
+  "erdbeschleunigung": 9.81,
+  "hhdAbWochen": 8,
+  "hhdAbWochenQuelle": "Read S. 24 (6–12 Wochen Wartezeit)",
+  "frauenHinweis": "Read-Benchmarks sind nicht geschlechtsspezifisch – bei Frauen ist der Absolutwert nur wünschenswert, der LSI bleibt Pflicht."
+}

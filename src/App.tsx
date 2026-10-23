@@ -1,5 +1,7 @@
 import { Link, Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
+import { KATALOG_FEHLER } from './katalog'
 import { BEREICHE, HINWEIS } from './navigation'
+import Info from './pages/Info'
 import PatientenListe from './pages/PatientenListe'
 import PatientFormular from './pages/PatientFormular'
 import Platzhalter from './pages/Platzhalter'
@@ -35,12 +37,25 @@ export default function App() {
         </nav>
       </header>
 
+      {/* Prüfung beim Start: fehlerhafte Konfiguration sofort sichtbar machen */}
+      {KATALOG_FEHLER.length > 0 && (
+        <div className="konfig-fehler" role="alert">
+          <strong>Achtung: Der Testkatalog (config/) ist fehlerhaft – Bewertungen sind nicht verlässlich.</strong> Bitte Philipp melden.
+          <ul>
+            {KATALOG_FEHLER.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <main className={`inhalt${startseite ? ' inhalt-voll' : ''}`}>
         <Routes>
           <Route path="/" element={<Start />} />
           <Route path="/patienten" element={<PatientenListe />} />
           <Route path="/patienten/neu" element={<PatientFormular key="neu" />} />
           <Route path="/patienten/:id" element={<PatientFormular />} />
+          <Route path="/info" element={<Info />} />
           {BEREICHE.filter((b) => b.etappe).map((b) => (
             <Route key={b.pfad} path={b.pfad} element={<Platzhalter bereich={b} />} />
           ))}
