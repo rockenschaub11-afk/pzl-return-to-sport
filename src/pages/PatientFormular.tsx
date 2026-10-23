@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { db, KuerzelVergebenFehler, loeschePatient, speicherePatient } from '../db'
 import {
+  BEGLEIT_OP_HILFE,
   BEGLEIT_OPS,
   freiesKuerzel,
   GESCHLECHTER,
@@ -14,6 +15,7 @@ import {
   normalisiereKuerzel,
   pruefe,
   SEITEN,
+  TEGNER_STUFEN,
   type BegleitOp,
   type Stammdaten,
 } from '../patienten/stammdaten'
@@ -198,7 +200,7 @@ export default function PatientFormular() {
             <Feld gruppe label="Graft">
               <Auswahl werte={GRAFTS} wert={daten.graft} onChange={(v) => setze('graft', v)} abwaehlbar />
             </Feld>
-            <Feld gruppe label="Begleit-OP">
+            <Feld gruppe label="Begleit-OP" hilfe={`LET = ${BEGLEIT_OP_HILFE.let}`}>
               <div className="auswahl">
                 {(Object.keys(BEGLEIT_OPS) as BegleitOp[]).map((op) => (
                   <button
@@ -207,6 +209,7 @@ export default function PatientFormular() {
                     className="auswahl-knopf"
                     aria-pressed={daten.begleitOps.includes(op)}
                     onClick={() => begleitOpUmschalten(op)}
+                    title={BEGLEIT_OP_HILFE[op]}
                   >
                     {BEGLEIT_OPS[op]}
                   </button>
@@ -228,16 +231,21 @@ export default function PatientFormular() {
           <Feld label="Sportart">
             <input value={daten.sportart} onChange={(e) => setze('sportart', e.target.value)} placeholder="z. B. Fußball" maxLength={40} />
           </Feld>
-          <Feld label="Tegner vor Verletzung" fehler={zeigeFehler('tegner')} hilfe="0 bis 10">
-            <input
-              inputMode="numeric"
-              value={daten.tegner}
-              onChange={(e) => setze('tegner', e.target.value.replace(/\D/g, '').slice(0, 2))}
-              placeholder="7"
-              aria-invalid={!!zeigeFehler('tegner')}
-            />
-          </Feld>
         </div>
+        <Feld
+          label="Tegner vor Verletzung"
+          fehler={zeigeFehler('tegner')}
+          hilfe="Aktivitätsniveau vor dem Kreuzbandriss (Tegner-Skala 0–10)."
+        >
+          <select className="auswahl-liste" value={daten.tegner} onChange={(e) => setze('tegner', e.target.value)}>
+            <option value="">– keine Angabe –</option>
+            {TEGNER_STUFEN.map((text, stufe) => (
+              <option key={stufe} value={String(stufe)}>
+                {stufe} – {text}
+              </option>
+            ))}
+          </select>
+        </Feld>
       </fieldset>
 
       {versucht && Object.keys(fehler).length > 0 && (

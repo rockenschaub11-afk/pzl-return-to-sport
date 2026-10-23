@@ -68,6 +68,25 @@ export const BEGLEIT_OPS: Record<BegleitOp, string> = {
   seitenband: 'Seitenband',
 }
 
+export const BEGLEIT_OP_HILFE: Partial<Record<BegleitOp, string>> = {
+  let: 'Laterale extraartikuläre Tenodese (z. B. nach Lemaire): zusätzliche Stabilisierung an der Knie-Außenseite gegen Rotations-Instabilität.',
+}
+
+// Tegner-Aktivitätsskala (Tegner & Lysholm 1985), Kurzbeschreibung in eigenen Worten
+export const TEGNER_STUFEN: readonly string[] = [
+  'Krankenstand/arbeitsunfähig wegen des Knies',
+  'sitzende Arbeit, Gehen auf ebenem Boden',
+  'leichte Arbeit, Gehen auf unebenem Boden (kein Wandern)',
+  'leichte Arbeit; Schwimmen, Wandern',
+  'mittelschwere Arbeit; Radfahren, Langlauf, Joggen auf ebenem Boden',
+  'schwere Arbeit; Wettkampf Rad/Langlauf, Joggen im Gelände',
+  'Freizeit: Tennis, Badminton, Ball-Mannschaftssport, Ski alpin',
+  'Wettkampf: Tennis, Laufen, Handball, Basketball; Freizeit: Fußball, Eishockey',
+  'Wettkampf: Squash, Badminton, Sprung-Disziplinen, Ski alpin',
+  'Wettkampf untere Ligen: Fußball, Eishockey, Ringen, Turnen',
+  'Wettkampf national/international: Fußball',
+]
+
 export const KUERZEL_MAX = 15
 
 /** Großbuchstaben, ohne Leerzeichen – so werden „mh-1998“ und „MH-1998 “ als gleich erkannt. */

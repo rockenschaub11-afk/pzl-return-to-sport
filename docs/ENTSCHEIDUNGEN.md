@@ -39,7 +39,7 @@ Dieses Dokument ist die **verbindliche Grundlage** für den Bau. Änderungen nur
 | Graft (BPTB / Hamstring / Quadrizeps) | optional | Interpretation |
 | Begleit-OP (Meniskus, Knorpel, LET, …) | optional | Interpretation |
 | Revision ja/nein, konservativ behandelt | optional | Interpretation |
-| Sportart, Tegner vor Verletzung | optional | Info, Normdaten |
+| Sportart, Tegner vor Verletzung (Auswahlliste, s. 10a) | optional | Info, Normdaten |
 
 ## 3. Bewertungslogik
 
@@ -218,6 +218,39 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 | Bildschirm | Alles Ausgewählte + Rohdaten der Versuche |
 | Arztbericht (PDF) | Kopf mit Logo/Praxis, Kürzel (+ Name nur temporär), Stammdaten, Kern-Satz + ausgewählte Metriken mit Wert, LSI, Ampel, Quelle; Vorschlag + Entscheidung mit Begründung; Verlauf; Unterschriftfeld; Hinweis „Ersetzt keine ärztliche Freigabe“ |
 | Pat./Trainer-Bericht | 1 Seite, nur Output-Werte + Ampeln, Spinnennetz L/R, „Was fehlt noch?“ in Alltagssprache |
+
+## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
+
+Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.
+
+| Thema | Entscheidung | Frage |
+|---|---|---|
+| Stil | Richtung B: schmale nachtblaue Kopfleiste mit Logo und Navigation, hellgrauer Grund, weiße Karten mit feinem Rand; Farben Blau/Türkis aus dem Logo; keine Schrägen, kein Leuchten | D1, B |
+| Schrift | Barlow (in der App eingebaut, offline), **aufrecht**, Überschriften halbfett; Großbuchstaben nur bei kleinen Beschriftungen | S8 |
+| Dunkler Modus | nein, nur hell | D3 |
+| Kopf | immer schmale Leiste (kein Schrumpfen nötig); Startseite ohne Logo/Titel in der Leiste, nur Navigation | D18, B |
+| Ampel | gerader, leicht abgerundeter **Ladebalken** mit 90-%-Zielmarke, Farbe **und** Text „erfüllt / knapp / nicht erfüllt“ | D4, B |
+| Animation | nur bei Daten: Balken füllt sich (~0,5 s), Kurven bauen sich auf, Spinnennetz baut sich auf; bei „weniger Bewegung“ (Systemeinstellung) aus | D7, D14, B |
+| Tegner | Auswahlliste 0–10 mit Kurzbeschreibung; „vor Verletzung“ in den Stammdaten, zusätzlich **„Tegner aktuell“ je Testung** (Etappe 4) | D5, D15 |
+| Berichte | im Stil B, druckfreundlich: weißer Grund, keine dunklen Vollflächen, in Schwarz-Weiß lesbar | D6, D13 |
+| Stammdaten | „konservativ“ → Verletzungsdatum, Begleit-OP-Liste und Geschlecht (w/m/divers) bleiben; LET mit Erklärung im Formular | D19 |
+
+### Startseite „Live-Monitor“ (Stand 23.10.2026, Fragerunde M1–M12)
+
+Ersetzt die früheren Varianten (Knöpfe + Kacheln; Messfenster mit Zahlen rund um das Logo; mehrere Messfenster im Hintergrund). Grund: Philipp wollte keine „Programmfenster“ mit Text, sondern einen ruhigen, gleichmäßigen Monitor-Hintergrund.
+
+| Thema | Entscheidung | Frage |
+|---|---|---|
+| Zweck | Visitenkarte/Show („wow, professionell“); App öffnet immer mit der Startseite | M2, S6 |
+| Grund | **dunkel** (Nachtblau) mit feinem Messgerät-Raster – nur auf der Startseite, Rest der App hell | M10, M12 |
+| Spuren | **3 Kanäle übereinander**: CMJ links/rechts (kräftiger), Knie-Extension, Drop Jump (dezenter) | M6 |
+| Bewegung | Laufband von rechts nach links, ca. **4 s** über den Bildschirm; meist ruhige Linie, dazwischen **zufällig** ein Sprung/eine Kraftkurve, jeder Kanal unabhängig; „Schreibkopf“ am rechten Rand | M7, M11 |
+| Leuchten | dezentes Leuchten der Linien, nur hier | M10 |
+| Text/Zahlen | **keine** in den Kurven (keine Achsen, keine Kennzahlen); daher auch kein Hinweis „Beispieldaten“ nötig. Kurven sind modelliert, keine Pat.-Daten | M4 |
+| Logo | Original-Logo auf weißer Fläche mit abgerundeten Ecken in der Mitte, Titel weiß darunter | M8 |
+| Interaktion | Klick irgendwo → sofort ein Sprung auf der CMJ-Spur | M9 |
+| Navigation | Leiste oben wie auf allen Seiten; Rechenhilfe-Hinweis unten bleibt | – |
+| Weniger Bewegung | bei dieser Systemeinstellung stehen die Kurven still | – |
 
 ## 11. Später (nicht in Version 1)
 

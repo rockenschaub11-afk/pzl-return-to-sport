@@ -39,9 +39,22 @@ describe('App-Rahmen', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Berichte' })).toBeInTheDocument()
   })
 
-  it('leitet die Startseite auf die Pat.-Liste um', async () => {
+  it('zeigt auf der Startseite den Live-Monitor ohne Knöpfe und ohne Zahlen', () => {
     zeige('/')
-    expect(await screen.findByRole('heading', { level: 2, name: 'Pat.-Liste' })).toBeInTheDocument()
+    const startseite = screen.getByRole('heading', { level: 1 }).closest('section')!
+    expect(startseite.querySelector('canvas.start-monitor')).toBeInTheDocument()
+    expect(startseite.querySelector('a, button')).toBeNull()
+    expect(startseite).not.toHaveTextContent(/\d/)
+  })
+
+  it('zeigt auf den übrigen Seiten den Kopf mit Logo-Link zur Startseite', () => {
+    zeige('/berichte')
+    expect(screen.getByRole('link', { name: 'Zur Startseite' })).toHaveAttribute('href', '/')
+  })
+
+  it('leitet unbekannte Adressen auf die Startseite um', () => {
+    zeige('/gibt-es-nicht')
+    expect(screen.getByRole('heading', { level: 1, name: 'PZL Return-to-Sport' })).toBeInTheDocument()
   })
 })
 

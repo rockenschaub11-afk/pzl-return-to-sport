@@ -23,6 +23,7 @@ Alles kostenlos. Keine Cloud, keine Pat.-Daten außerhalb des Laptops.
 |---|---|---|
 | 1 | **Grundgerüst** | App startet lokal, Praxis-Logo, Navigation, Hinweis „Rechenhilfe“ |
 | 2 | **Pat.-Liste & Stammdaten** | Kürzel anlegen/suchen, Pflicht- und optionale Felder, Dubletten-Erkennung |
+| 2b | **Startseite & Design** (Nachtrag 23.10.2026) | Design Richtung B „Sportwissenschaft-Dashboard“; Startseite als dunkler Live-Monitor mit Logo; Tegner-Auswahlliste; LET-Erklärung |
 | 3 | **Testkatalog & Rechenkern** | `config/`-Dateien mit allen Tests, Schwellen, Quellen, Protokollen; LSI, Bestwert, CoV-Warnung, kg↔N, Ns/kg, Frauen-Regel – mit automatischen Tests |
 | 4 | **Endtestung erfassen** | Eingabemaske je Block (Klinik, HHD, Platten, Hops, Kraftausdauer, PROM-Score), Protokoll + „Warum?“, Winkel/Boxhöhe ändern, Zwischenspeichern, Ampel live |
 | 5 | **Meloq-Metriken nach ODS** | Kern-Satz fix, Zusatzmetriken nach O/D/S wählbar, persönlicher Standard |

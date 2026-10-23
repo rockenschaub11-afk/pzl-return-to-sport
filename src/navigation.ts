@@ -8,6 +8,11 @@ export interface Bereich {
 // Reihenfolge = Reihenfolge in der Navigation
 export const BEREICHE: Bereich[] = [
   {
+    pfad: '/',
+    titel: 'Start',
+    beschreibung: 'Startseite mit Schnellstart.',
+  },
+  {
     pfad: '/patienten',
     titel: 'Pat.-Liste',
     beschreibung: 'Kürzel anlegen und suchen, Stammdaten erfassen.',
