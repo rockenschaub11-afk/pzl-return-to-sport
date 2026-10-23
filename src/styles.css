@@ -1,0 +1,166 @@
+/* Farben aus dem Praxis-Logo (public/logo-pzl.svg) */
+:root {
+  --pzl-blau: #1d71b8;
+  --pzl-blau-dunkel: #155a94;
+  --pzl-tuerkis: #00b5cb;
+  --pzl-tuerkis-hell: #e6f7fa;
+  --pzl-grau: #9a999d;
+  --text: #1f2933;
+  --text-leise: #52606d;
+  --hintergrund: #f5f8fb;
+  --flaeche: #ffffff;
+  --rand: #d9e2ec;
+
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--hintergrund);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--hintergrund);
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.kopf {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--flaeche);
+  border-bottom: 4px solid var(--pzl-tuerkis);
+}
+
+.kopf-logo {
+  height: 56px;
+  width: auto;
+}
+
+.kopf-titel {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--pzl-blau);
+}
+
+.navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0 1.5rem;
+  background: var(--pzl-blau);
+}
+
+.nav-link {
+  padding: 0.75rem 1rem;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+}
+
+.nav-link:hover {
+  background: var(--pzl-blau-dunkel);
+}
+
+.nav-link.active {
+  border-bottom-color: var(--pzl-tuerkis);
+  background: var(--pzl-blau-dunkel);
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid var(--pzl-tuerkis);
+  outline-offset: -2px;
+}
+
+.inhalt {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.karte {
+  background: var(--flaeche);
+  border: 1px solid var(--rand);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+}
+
+.karte h2 {
+  margin-top: 0;
+  color: var(--pzl-blau);
+}
+
+.platzhalter-etappe {
+  display: inline-block;
+  margin-bottom: 0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: var(--pzl-tuerkis-hell);
+  color: var(--text-leise);
+  font-size: 0.9rem;
+}
+
+/* Hinweis bleibt immer sichtbar am unteren Rand */
+.hinweis {
+  position: sticky;
+  bottom: 0;
+  padding: 0.6rem 1.5rem;
+  background: var(--pzl-tuerkis-hell);
+  border-top: 2px solid var(--pzl-tuerkis);
+  color: var(--pzl-blau-dunkel);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Schmale Fenster: kleineres Logo, Navigation untereinander statt nebeneinander */
+@media (max-width: 640px) {
+  .kopf {
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .kopf-logo {
+    height: 40px;
+  }
+
+  .kopf-titel {
+    font-size: 1.15rem;
+  }
+
+  .navigation {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+  }
+
+  .nav-link {
+    border-bottom: 0;
+    border-left: 4px solid transparent;
+  }
+
+  .nav-link.active {
+    border-left-color: var(--pzl-tuerkis);
+  }
+
+  .inhalt {
+    padding: 1rem;
+  }
+
+  .hinweis {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}
