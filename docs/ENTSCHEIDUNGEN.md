@@ -324,6 +324,8 @@ Ersetzt die früheren Varianten (Knöpfe + Kacheln; Messfenster mit Zahlen rund 
 | Navigation | Leiste oben wie auf allen Seiten; Rechenhilfe-Hinweis unten bleibt | – |
 | Weniger Bewegung | bei dieser Systemeinstellung stehen die Kurven still | – |
 
+**Nachtrag 26.10.2026 (Etappe 9b, Philipp nach Beispielbild):** Startseite als **Bühne + Arbeitsbereich** statt Splash: Titelblock links (Überschrift, Unterzeile, kurzer Text, Knöpfe „Pat.-Liste öffnen“ / „Testung starten“), rechts ein begrenztes **Messfenster** mit den Kurven (Raster nur dort, feine Nulllinie je Spur, kaum Leuchten, Farben aus dem Designsystem, folgt hell/dunkel). Darunter drei Einstiegs-Karten (Pat.-Liste, Testung, Berichte) mit Zählern aus der Datenbank und „Letzte Testungen“ (nur Kürzel, nie Namen). Logo in der Seitenleiste statt in der Mitte. Ersetzt M2 (keine Knöpfe), M8 (Logo mittig), M10 (eigener Nachtblau-Grund, Leuchten). Bleibt: M4 (keine Zahlen/Achsen in den Kurven), M9 (Klick ins Messfenster löst einen Sprung aus), „weniger Bewegung“.
+
 ## 11. Später (nicht in Version 1)
 
 1. CSV/Excel-Import aus Meloq und VALD Hub (Beispieldateien mit Fantasiekürzel nötig) (F11 b)

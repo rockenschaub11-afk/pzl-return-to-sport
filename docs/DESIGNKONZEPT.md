@@ -204,4 +204,6 @@ Hover `--flaeche-hoch` (150 ms) · Fokus 2-px-Ring `--fokus` überall · Ausgew�
 ≥ 1280: Leiste 88 px, Inhalt bis 1320 px, Übersicht 1 : 2,4, Erfassung mit stehender Übersicht (320 px) · 1024–1279: Kennzahlen zweispaltig · 720–1023: einspaltig, Übersicht oben zuklappbar · < 720: Leiste unten (Start, Pat.-Liste, Testung, Berichte, Mehr), Tippflächen 44 px, Tabellen waagrecht scrollbar, Seitenkopf zweizeilig.
 
 ### 10.9 Umsetzung
+Umgesetzt in Etappe 9b, Schritte 1–8 (26.10.2026). Abweichung mit Absicht: Der Hinweis „Dokumentations- und Rechenhilfe – ersetzt keine ärztliche Freigabe“ bleibt als sichtbare Zeile am Seitenende (nicht nur als „i“ in der Seitenleiste), weil er rechtlich immer lesbar sein soll (F36).
+
 Hell/Dunkel über `data-theme` am `<html>`; die Wahl merkt sich der Browser (`localStorage`, keine Pat.-Daten, keine Datenbankänderung), damit beim Start nichts aufblitzt. Standard dunkel.

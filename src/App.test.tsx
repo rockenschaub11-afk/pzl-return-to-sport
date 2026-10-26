@@ -42,12 +42,13 @@ describe('App-Rahmen', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Sicherung' })).toBeInTheDocument()
   })
 
-  it('zeigt auf der Startseite den Live-Monitor ohne Knöpfe und ohne Zahlen', () => {
+  it('zeigt auf der Startseite Titel, Messfenster und die Einstiege (Nachtrag 26.10.2026)', async () => {
     zeige('/')
-    const startseite = screen.getByRole('heading', { level: 1 }).closest('section')!
+    const startseite = screen.getByRole('heading', { level: 1, name: 'PZL Return-to-Sport' }).closest('section')!
     expect(startseite.querySelector('canvas.start-monitor')).toBeInTheDocument()
-    expect(startseite.querySelector('a, button')).toBeNull()
-    expect(startseite).not.toHaveTextContent(/\d/)
+    expect(within(startseite).getByRole('link', { name: 'Pat.-Liste öffnen' })).toHaveAttribute('href', '/patienten')
+    expect(within(startseite).getByRole('link', { name: 'Testung starten' })).toHaveAttribute('href', '/testung')
+    expect(await within(startseite).findByText('Noch keine Testung. Über die Pat.-Liste ein Kürzel wählen und eine Testung beginnen.')).toBeInTheDocument()
   })
 
   it('zeigt unter Einstellungen/Info den Testkatalog mit Schwellen und Quellen', () => {

@@ -31,6 +31,7 @@ Alles kostenlos. Keine Cloud, keine Pat.-Daten außerhalb des Laptops.
 | 7 | **Phasen & Verlauf** | Phase aus OP-Datum + Übersteuern, Testsets je Phase, Read-Spalten, Verlaufsdiagramme, Normdaten als graue Info |
 | 8 | **Fragebogen-Rechner** | Score-Rechner ACL-RSI, IKDC, KOOS, Tampa (ohne Fragebogentexte) |
 | 9 | **Berichte** | Arztbericht und Pat./Trainer-Bericht als PDF, Name nur temporär |
+| 9b | **Redesign** (Nachtrag 26.10.2026) | Designsystem (`docs/DESIGNKONZEPT.md` 10): Graphit, dunkel + Umschalter hell, Seitenleiste, Bausteine, Korridor-Diagramme, Kürzel-Seite als Dashboard, Testkarten in drei Lautstärken, Listen als Tabellen; Berichte/Druck weiß |
 | 10 | **Export, Import, Sicherung** | Datei je Kürzel und Gesamtsicherung mit Passwort, Wochen-Erinnerung |
 | 11 | **Veröffentlichen** | PWA/offline, GitHub Pages unter Philipps Account, Installationsanleitung Windows/Mac |
 | 12 | **Pilot** | Philipp testet 2–3 echte Pat., Korrekturrunde, Kurzanleitung in der App, dann Kolleg:innen |

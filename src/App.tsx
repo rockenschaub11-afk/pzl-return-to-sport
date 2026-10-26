@@ -20,8 +20,7 @@ export default function App() {
 
   return (
     <div className="app">
-      {/* Startseite zeigt das Logo groß in der Mitte – dort nicht in der Leiste */}
-      <Seitenleiste mitLogo={!startseite} />
+      <Seitenleiste mitLogo />
 
       {/* Prüfung beim Start: fehlerhafte Konfiguration sofort sichtbar machen */}
       {KATALOG_FEHLER.length > 0 && (
