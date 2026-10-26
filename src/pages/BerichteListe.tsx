@@ -45,7 +45,7 @@ export default function BerichteListe() {
                   <span>
                     <strong>{p.kuerzel}</strong> · {ART_TEXT[ph.art]} · {phaseNach(ph.phase).name} · {datumDeutsch(t.datum)}
                   </span>
-                  <span className={`chip${t.status === 'abgeschlossen' ? ' chip-wettkampf' : ''}`}>{statusText(t)}</span>
+                  <span className={`status${t.status === 'abgeschlossen' ? '' : ' status-arbeit'}`}>{statusText(t)}</span>
                   <span className="bericht-liste-knoepfe">
                     <Link to={`/berichte/${t.id}/arzt`} className="knopf">
                       <span>Arztbericht</span>

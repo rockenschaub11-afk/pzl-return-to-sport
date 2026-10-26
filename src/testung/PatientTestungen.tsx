@@ -43,7 +43,7 @@ export default function PatientTestungen({ patientId }: { patientId: string }) {
                   <span>
                     {ART_TEXT[ph.art]} · {KATALOG.phasen.find((x) => x.id === ph.phase)?.name} · {datumDeutsch(t.datum)}
                   </span>
-                  <span className={`chip${t.status === 'abgeschlossen' ? ' chip-wettkampf' : ''}`}>{statusText(t)}</span>
+                  <span className={`status${t.status === 'abgeschlossen' ? '' : ' status-arbeit'}`}>{statusText(t)}</span>
                   <span className="testung-fortschritt">
                     {f.erfasst} / {f.gesamt} Tests
                   </span>

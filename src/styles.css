@@ -41,8 +41,9 @@
   --gelb: #e9b23f;
   --warnung: #e9b23f;
   --warnung-hell: rgb(233 178 63 / 0.12);
-  --fehler: #f7765f;
-  --fehler-hell: rgb(247 118 95 / 0.12);
+  --fehler: #ff8fb1;
+  --fehler-hell: rgb(255 143 177 / 0.12);
+  --karten-rand: transparent;
   --schatten: none;
   --schatten-hoch: 0 8px 24px rgb(0 0 0 / 0.35);
 }
@@ -86,14 +87,16 @@
   --gelb: #9a6400;
   --warnung: #9a6200;
   --warnung-hell: #fff5e0;
-  --fehler: #c62828;
-  --fehler-hell: #fdecec;
+  --fehler: #b3124e;
+  --fehler-hell: #fbe8ef;
+  --karten-rand: #d9dee5;
   --schatten: 0 1px 2px rgb(10 31 60 / 0.06);
   --schatten-hoch: 0 4px 16px rgb(10 31 60 / 0.1);
 }
 
 :root {
-  --radius: 6px;
+  --radius: 10px;
+  --radius-karte: 14px;
 
   --schrift-titel: 'Montserrat', 'Barlow', system-ui, sans-serif;
   --schrift: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -114,7 +117,7 @@ body {
 }
 
 a {
-  color: var(--pzl-blau);
+  color: var(--text);
 }
 
 /* Titel in Montserrat (DESIGNKONZEPT 10.2) */
@@ -410,10 +413,9 @@ h3 {
 
 .karte {
   background: var(--flaeche);
-  border: 1px solid var(--rand);
-  border-radius: var(--radius);
-  padding: 1.25rem 1.5rem;
-  box-shadow: var(--schatten);
+  border: 1px solid var(--karten-rand);
+  border-radius: var(--radius-karte);
+  padding: 1.125rem 1.25rem;
 }
 
 .platzhalter-etappe {
@@ -438,11 +440,12 @@ h3 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   min-height: 2.5rem;
   padding: 0.4rem 1.1rem;
-  border: 1px solid var(--rand-stark);
+  border: 1px solid var(--linie-stark);
   border-radius: var(--radius);
-  background: var(--flaeche);
+  background: transparent;
   color: var(--text);
   font: inherit;
   font-weight: 600;
@@ -455,11 +458,12 @@ h3 {
 
 .knopf:hover {
   border-color: var(--text-leise);
+  background: var(--flaeche-hoch);
 }
 
 .knopf:focus-visible {
   outline: 2px solid var(--fokus);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
 .knopf-haupt {
@@ -487,10 +491,12 @@ h3 {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--pzl-blau);
+  color: var(--text);
   font: inherit;
   font-weight: 600;
   text-decoration: underline;
+  text-decoration-color: var(--text-sehr-leise);
+  text-underline-offset: 3px;
   cursor: pointer;
 }
 
@@ -567,17 +573,18 @@ h3 {
   place-items: center;
   width: 2rem;
   height: 2rem;
-  border-radius: 4px;
-  color: var(--auf-akzent);
+  border: 1.5px solid var(--seite-betroffen);
+  border-radius: 50%;
+  color: var(--seite-betroffen);
   font-weight: 700;
 }
 
 .seite-links {
-  background: var(--pzl-blau);
+  /* Buchstabe = betroffene Seite; Farbe immer „betroffen“ */
 }
 
 .seite-rechts {
-  background: var(--pzl-tuerkis-dunkel);
+  /* siehe .seite-links */
 }
 
 .pat-info {
@@ -587,7 +594,7 @@ h3 {
 }
 
 .pat-info strong {
-  color: var(--pzl-blau);
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -600,25 +607,51 @@ h3 {
 }
 
 .chip {
-  padding: 0.05rem 0.5rem;
-  border: 1px solid var(--rand);
+  display: inline-block;
+  padding: 0.05rem 0.6rem;
+  border: 1px solid var(--linie-stark);
   border-radius: 999px;
-  background: var(--hintergrund);
-  color: var(--text-leise);
-  font-size: 0.8rem;
+  background: transparent;
+  color: var(--text);
+  font-size: 0.8125rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .chip-wettkampf {
-  border-color: var(--pzl-blau);
-  background: color-mix(in srgb, var(--pzl-blau) 14%, transparent);
-  color: var(--pzl-blau-dunkel);
+  /* Niveau ist ein Merkmal – keine Datenfarbe */
 }
 
 .chip-freizeit {
-  border-color: var(--pzl-tuerkis);
-  background: var(--pzl-tuerkis-hell);
-  color: var(--pzl-tuerkis-dunkel);
+  color: var(--text-leise);
+}
+
+/* Status (in Arbeit / abgeschlossen) – nie Ampelfarbe (DESIGNKONZEPT 5) */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-sehr-leise);
+}
+
+.status-arbeit {
+  color: var(--text);
+}
+
+.status-arbeit::before {
+  background: var(--seite-betroffen);
 }
 
 .leer {
@@ -658,16 +691,17 @@ h3 {
   display: inline-block;
   margin-left: 0.5rem;
   padding: 0 0.5rem;
-  border-radius: 4px;
-  background: var(--pzl-blau);
-  color: var(--auf-akzent);
+  border: 1px solid var(--linie-stark);
+  border-radius: 999px;
+  color: var(--text);
+  font-family: var(--schrift);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 500;
   vertical-align: middle;
 }
 
 .block-marke-leise {
-  background: var(--raster);
+  border-color: var(--linie);
   color: var(--text-leise);
 }
 
@@ -690,8 +724,9 @@ h3 {
 }
 
 .feld-label {
-  font-weight: 600;
-  font-size: 0.95rem;
+  color: var(--text-leise);
+  font-weight: 500;
+  font-size: 0.8125rem;
 }
 
 .feld-hilfe {
@@ -700,19 +735,37 @@ h3 {
 }
 
 .feld-meldung {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
   color: var(--fehler);
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.feld-meldung::before {
+  content: '!';
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--fehler);
+  color: var(--grund);
+  font-size: 0.7rem;
+  font-weight: 700;
 }
 
 .feld input:not([type='checkbox']),
 .feld select {
   width: 100%;
   max-width: 24rem;
-  padding: 0.55rem 0.8rem;
-  border: 1px solid var(--rand-stark);
+  min-height: 2.5rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--linie-stark);
   border-radius: var(--radius);
-  background: var(--flaeche);
+  background: var(--feld);
   font: inherit;
   color: inherit;
 }
@@ -724,8 +777,8 @@ h3 {
 .feld input:focus,
 .feld select:focus {
   outline: none;
-  border-color: var(--pzl-tuerkis);
-  box-shadow: 0 0 0 2px var(--fokus);
+  border-color: var(--fokus);
+  box-shadow: 0 0 0 1px var(--fokus);
 }
 
 .feld-fehler input:not([type='checkbox']) {
@@ -746,21 +799,23 @@ h3 {
 }
 
 .auswahl-knopf {
-  padding: 0.45rem 0.95rem;
-  border: 1px solid var(--rand-stark);
-  border-radius: var(--radius);
-  background: var(--flaeche);
+  min-height: 2.5rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--linie-stark);
+  border-radius: 999px;
+  background: transparent;
   color: var(--text);
   font: inherit;
   font-weight: 500;
   cursor: pointer;
   transition:
-    background 0.12s ease,
-    border-color 0.12s ease;
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .auswahl-knopf:hover {
   border-color: var(--text-leise);
+  background: var(--flaeche-hoch);
 }
 
 .auswahl-knopf[aria-pressed='true'] {
@@ -771,7 +826,7 @@ h3 {
 
 .auswahl-knopf:focus-visible {
   outline: 2px solid var(--fokus);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
 .feld-fehler .auswahl-knopf {
@@ -793,19 +848,20 @@ h3 {
 .haken input {
   width: 1.15rem;
   height: 1.15rem;
-  accent-color: var(--pzl-blau);
+  accent-color: var(--aktion);
 }
 
 .meldung {
   margin: -0.4rem 0 1.1rem;
   padding: 0.6rem 0.9rem;
   border: 1px solid;
+  border-left-width: 4px;
   border-radius: var(--radius);
 }
 
 .meldung-info {
-  border-color: color-mix(in srgb, var(--pzl-tuerkis) 45%, transparent);
-  background: var(--pzl-tuerkis-hell);
+  border-color: var(--linie-stark);
+  background: var(--feld);
 }
 
 .meldung-warnung {
@@ -905,12 +961,9 @@ h3 {
 
 .speicher-status {
   align-self: center;
-  padding: 0.2rem 0.7rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--gruen) 14%, transparent);
-  color: var(--gruen);
-  font-size: 0.85rem;
-  font-weight: 600;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+  font-weight: 500;
 }
 
 .speicher-laeuft {
@@ -1004,7 +1057,7 @@ h3 {
 .test-protokoll summary,
 .test-mehr summary {
   width: fit-content;
-  color: var(--pzl-blau);
+  color: var(--text-leise);
   font-weight: 600;
   cursor: pointer;
 }
@@ -1042,9 +1095,10 @@ h3 {
 .zahl-feld input {
   width: 5.5rem;
   padding: 0.45rem 0.6rem;
-  border: 1px solid var(--rand-stark);
+  border: 1px solid var(--linie-stark);
   border-radius: var(--radius);
-  background: var(--flaeche);
+  background: var(--feld);
+  color: inherit;
   font: inherit;
   text-align: right;
   font-variant-numeric: tabular-nums;
@@ -1052,8 +1106,8 @@ h3 {
 
 .zahl-feld input:focus {
   outline: none;
-  border-color: var(--pzl-tuerkis);
-  box-shadow: 0 0 0 2px var(--fokus);
+  border-color: var(--fokus);
+  box-shadow: 0 0 0 1px var(--fokus);
 }
 
 .zahl-einheit {
@@ -1176,7 +1230,7 @@ h3 {
 .test-hinzu {
   margin: 0 0.75rem 0.75rem 0;
   border-style: dashed;
-  color: var(--pzl-blau);
+  color: var(--text);
 }
 
 .test-entfernen {
@@ -1227,36 +1281,56 @@ h3 {
 
 .ampel-rot .ladebalken-fuellung,
 .ampel-punkt.ampel-rot {
-  background: var(--fehler);
+  background: var(--nicht-erfuellt);
 }
 
 .ampel-marke {
-  display: inline-block;
-  padding: 0.05rem 0.55rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.05rem 0.6rem;
+  border: 1px solid currentColor;
   border-radius: 999px;
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   white-space: nowrap;
 }
 
 .ampel-marke.ampel-gruen {
-  background: color-mix(in srgb, var(--gruen) 14%, transparent);
-  color: var(--gruen);
+  background: color-mix(in srgb, var(--erfuellt) 12%, transparent);
+  color: var(--erfuellt);
+}
+
+.ampel-marke.ampel-gruen::before {
+  content: '✓';
 }
 
 .ampel-marke.ampel-gelb {
-  background: color-mix(in srgb, var(--gelb) 14%, transparent);
-  color: var(--gelb);
+  background: color-mix(in srgb, var(--knapp) 12%, transparent);
+  color: var(--knapp);
+}
+
+.ampel-marke.ampel-gelb::before {
+  content: '~';
 }
 
 .ampel-marke.ampel-rot {
-  background: var(--fehler-hell);
-  color: var(--fehler);
+  background: color-mix(in srgb, var(--nicht-erfuellt) 12%, transparent);
+  color: var(--nicht-erfuellt);
+}
+
+.ampel-marke.ampel-rot::before {
+  content: '✗';
 }
 
 .ampel-marke.ampel-offen {
-  background: var(--raster);
+  border-style: dashed;
+  border-color: var(--linie-stark);
   color: var(--text-leise);
+}
+
+.ampel-marke.ampel-offen::before {
+  content: '○';
 }
 
 .ampel-punkt {
@@ -1321,7 +1395,7 @@ h3 {
 }
 
 .testung-uebersicht li a:hover {
-  color: var(--pzl-blau);
+  color: var(--text);
 }
 
 .uebersicht-fuss {
@@ -1410,10 +1484,10 @@ h3 {
 }
 
 .phase-marke {
-  padding: 0.15rem 0.7rem;
-  border-radius: 4px;
-  background: var(--aktion);
-  color: var(--aktion-text);
+  padding: 0.1rem 0.75rem;
+  border: 1px solid var(--linie-stark);
+  border-radius: 999px;
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -1439,8 +1513,8 @@ h3 {
   margin-top: 0.6rem;
   padding: 0.5rem 0.75rem;
   border-left: 3px solid var(--rand-stark);
-  background: var(--hintergrund);
-  color: var(--text-sehr-leise);
+  background: var(--feld);
+  color: var(--text-leise);
   font-size: 0.85rem;
 }
 
@@ -1558,9 +1632,9 @@ h3 {
   width: 100%;
   max-width: 40rem;
   padding: 0.55rem 0.8rem;
-  border: 1px solid var(--rand-stark);
+  border: 1px solid var(--linie-stark);
   border-radius: var(--radius);
-  background: var(--flaeche);
+  background: var(--feld);
   font: inherit;
   color: inherit;
   resize: vertical;
@@ -1568,8 +1642,8 @@ h3 {
 
 .feld textarea:focus {
   outline: none;
-  border-color: var(--pzl-tuerkis);
-  box-shadow: 0 0 0 2px var(--fokus);
+  border-color: var(--fokus);
+  box-shadow: 0 0 0 1px var(--fokus);
 }
 
 .feld-fehler textarea {
@@ -1632,7 +1706,7 @@ h3 {
 
 .rts-punkte li.nein::before {
   content: '✗';
-  color: var(--fehler);
+  color: var(--nicht-erfuellt);
 }
 
 .rts-punkte li.warnung::before {
@@ -1718,13 +1792,13 @@ h3 {
 }
 
 .entscheidung-option.gewaehlt {
-  border-color: var(--pzl-blau);
-  background: color-mix(in srgb, var(--pzl-blau) 14%, transparent);
+  border-color: var(--aktion);
+  background: var(--flaeche-hoch);
   font-weight: 600;
 }
 
 .entscheidung-option input {
-  accent-color: var(--pzl-blau);
+  accent-color: var(--aktion);
 }
 
 .entscheidung-fertig p {
@@ -1768,8 +1842,9 @@ fieldset:disabled .test-hinzu {
   place-items: center;
   width: 1.2rem;
   height: 1.2rem;
+  border: 1px solid var(--linie-stark);
   border-radius: 4px;
-  color: var(--auf-akzent);
+  color: var(--text-leise);
   font-size: 0.7rem;
   font-weight: 700;
   vertical-align: 0.05rem;
@@ -1777,15 +1852,15 @@ fieldset:disabled .test-hinzu {
 }
 
 .ods-output {
-  background: var(--pzl-tuerkis-dunkel);
+  color: var(--text);
 }
 
 .ods-driver {
-  background: var(--pzl-blau);
+  color: var(--text);
 }
 
 .ods-strategy {
-  background: var(--text-sehr-leise);
+  color: var(--text-leise);
 }
 
 .ods-erklaerung {
@@ -1795,7 +1870,7 @@ fieldset:disabled .test-hinzu {
 
 .ods-erklaerung summary {
   width: fit-content;
-  color: var(--pzl-blau);
+  color: var(--text-leise);
   font-weight: 600;
   cursor: pointer;
 }
@@ -2039,30 +2114,30 @@ fieldset:disabled .test-hinzu {
 }
 
 .kat-status {
-  padding: 0.05rem 0.45rem;
-  border-radius: 4px;
+  padding: 0.05rem 0.5rem;
+  border: 1px solid var(--linie-stark);
+  border-radius: 999px;
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .kat-status-pflicht {
-  background: var(--pzl-blau);
-  color: var(--auf-akzent);
+  color: var(--text);
 }
 
 .kat-status-wuenschenswert {
-  background: color-mix(in srgb, var(--pzl-blau) 14%, transparent);
-  color: var(--pzl-blau-dunkel);
+  border-color: var(--linie);
+  color: var(--text-leise);
 }
 
 .kat-status-warnung {
-  background: var(--warnung-hell);
-  color: var(--warnung);
+  border-color: var(--knapp);
+  color: var(--knapp);
 }
 
 .kat-status-info {
-  background: var(--raster);
-  color: var(--text-leise);
+  border-color: var(--linie);
+  color: var(--text-sehr-leise);
 }
 
 .kat-protokolle {
@@ -2551,7 +2626,7 @@ fieldset:disabled .test-hinzu {
 }
 
 .bericht-ampel.ampel-rot {
-  color: var(--fehler);
+  color: var(--nicht-erfuellt);
 }
 
 .bericht-ampel.ampel-offen {

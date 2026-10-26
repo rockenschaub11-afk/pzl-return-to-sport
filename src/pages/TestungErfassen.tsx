@@ -407,7 +407,6 @@ function UebersichtZeile({ test, ergebnis }: { test: TestDef; ergebnis: TestErge
   return (
     <li>
       <a href={`#test-${test.id}`} onClick={(e) => springen(e, `test-${test.id}`)}>
-        <span className={`ampel-punkt ampel-${ergebnis.ampel ?? 'offen'}`} aria-hidden="true" />
         <span>{test.name}</span>
       </a>
       <AmpelMarke ampel={ergebnis.ampel} />
