@@ -260,65 +260,7 @@ export default function TestKarte(props: Props) {
         </p>
       ))}
 
-      {(protokoll || test.hinweise?.length) && (
-        <details className="test-protokoll">
-          <summary>Protokoll & Warum</summary>
-          {protokoll && (
-            <>
-              <p>{protokoll.ablauf}</p>
-              <p>
-                <strong>Warum:</strong> {protokoll.warum} <span className="kat-quelle">({protokoll.quelle})</span>
-              </p>
-              {protokoll.winkelGrad !== undefined && (
-                <label className="protokoll-wert">
-                  Winkel tatsächlich
-                  <Zahl wert={e.winkel} onChange={(v) => setze('winkel', v)} label="Winkel tatsächlich" einheit={`° (Standard ${protokoll.winkelGrad}°)`} />
-                </label>
-              )}
-              {protokoll.boxhoeheCm !== undefined && (
-                <label className="protokoll-wert">
-                  Boxhöhe tatsächlich
-                  <Zahl wert={e.box} onChange={(v) => setze('box', v)} label="Boxhöhe tatsächlich" einheit={`cm (Standard ${protokoll.boxhoeheCm} cm)`} />
-                </label>
-              )}
-            </>
-          )}
-          {test.hinweise?.map((h) => (
-            <p key={h} className="hinweis-leise">
-              {h}
-            </p>
-          ))}
-        </details>
-      )}
-
-      <div className="test-eingabe">
-        <Eingaben {...props} />
-      </div>
-
-      <FragebogenRechner testId={test.id} eingabe={e} setze={setze} />
-
-      {istMeloqTest(test.id) && props.meloqAuswahl && (
-        <MeloqBereich
-          test={test.id}
-          eingabe={e}
-          setze={setze}
-          seiten={props.seiten}
-          berechnung={b}
-          auswahl={props.meloqAuswahl}
-          kg={props.koerpergewichtKg}
-        />
-      )}
-
-      {mitMehr && (
-        <details className="test-mehr" open={!!(e.hebel || e.vor)}>
-          <summary>mehr</summary>
-          <div className="seiten-paar">
-            {mitHebel && <Zahl wert={e.hebel} onChange={(v) => setze('hebel', v)} label="Hebelarm" einheit="m Hebelarm (für Nm/kg)" breit />}
-            <Zahl wert={e.vor} onChange={(v) => setze('vor', v)} label="Vorverletzungswert" einheit="Vorverletzungswert (betroffene Seite, gleiche Einheit)" breit />
-          </div>
-        </details>
-      )}
-
+      {/* 1. Ergebnis (laut) */}
       <div className="test-ergebnis">
         {ergebnis.kriterien.map((k) => (
           <KriteriumZeile key={k.kriterium.id} e={k} />
@@ -340,8 +282,69 @@ export default function TestKarte(props: Props) {
             streuen um {zahl(s.cv, 1)} % (mehr als 10 %).
           </p>
         ))}
+        {ergebnis.hinweise.map((h) => (
+          <p key={h} className="meldung meldung-info">
+            {h}
+          </p>
+        ))}
+      </div>
+
+      {/* 2. Eingabe */}
+      <div className="test-eingabe">
+        <Eingaben {...props} />
+      </div>
+
+      <FragebogenRechner testId={test.id} eingabe={e} setze={setze} />
+
+      {istMeloqTest(test.id) && props.meloqAuswahl && (
+        <MeloqBereich
+          test={test.id}
+          eingabe={e}
+          setze={setze}
+          seiten={props.seiten}
+          berechnung={b}
+          auswahl={props.meloqAuswahl}
+          kg={props.koerpergewichtKg}
+        />
+      )}
+
+
+      {/* 3. Mehr (leise, zugeklappt) */}
+      <div className="test-leise">
+        {(protokoll || test.hinweise?.length) && (
+          <details className="test-protokoll">
+            <summary>Protokoll & Warum</summary>
+            {protokoll && (
+              <>
+                <p>{protokoll.ablauf}</p>
+                <p>
+                  <strong>Warum:</strong> {protokoll.warum} <span className="kat-quelle">({protokoll.quelle})</span>
+                </p>
+                {protokoll.winkelGrad !== undefined && (
+                  <label className="protokoll-wert">
+                    Winkel tatsächlich
+                    <Zahl wert={e.winkel} onChange={(v) => setze('winkel', v)} label="Winkel tatsächlich" einheit={`° (Standard ${protokoll.winkelGrad}°)`} />
+                  </label>
+                )}
+                {protokoll.boxhoeheCm !== undefined && (
+                  <label className="protokoll-wert">
+                    Boxhöhe tatsächlich
+                    <Zahl wert={e.box} onChange={(v) => setze('box', v)} label="Boxhöhe tatsächlich" einheit={`cm (Standard ${protokoll.boxhoeheCm} cm)`} />
+                  </label>
+                )}
+              </>
+            )}
+            {test.hinweise?.map((h) => (
+              <p key={h} className="hinweis-leise">
+                {h}
+              </p>
+            ))}
+          </details>
+        )}
         {props.normdaten && (
-          <div className="normdaten">
+          <details className="test-mehr test-normdaten">
+            <summary>Normdaten (typisch nach VKB-OP)</summary>
+            <div className="normdaten">
             {props.normdaten.keine ? (
               <p>{props.normdaten.keine}</p>
             ) : (
@@ -353,15 +356,20 @@ export default function TestKarte(props: Props) {
               </>
             )}
             {props.normdaten.hinweis && <p>{props.normdaten.hinweis}</p>}
-          </div>
+            </div>
+          </details>
         )}
-        {ergebnis.hinweise.map((h) => (
-          <p key={h} className="meldung meldung-info">
-            {h}
-          </p>
-        ))}
+        {mitMehr && (
+          <details className="test-mehr" open={!!(e.hebel || e.vor)}>
+            <summary>Hebelarm, Vorverletzung</summary>
+            <div className="seiten-paar">
+              {mitHebel && <Zahl wert={e.hebel} onChange={(v) => setze('hebel', v)} label="Hebelarm" einheit="m Hebelarm (für Nm/kg)" breit />}
+              <Zahl wert={e.vor} onChange={(v) => setze('vor', v)} label="Vorverletzungswert" einheit="Vorverletzungswert (betroffene Seite, gleiche Einheit)" breit />
+            </div>
+          </details>
+        )}
+        {props.fuss}
       </div>
-      {props.fuss}
     </article>
   )
 }

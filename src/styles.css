@@ -982,13 +982,31 @@ h3 {
   z-index: 5;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.25rem 1.25rem;
   margin: 0 0 1rem;
   padding: 0.55rem 1rem;
-  border: 1px solid var(--rand);
+  border: 1px solid var(--linie);
   border-radius: var(--radius);
   background: color-mix(in srgb, var(--flaeche) 96%, transparent);
-  box-shadow: var(--schatten);
+  backdrop-filter: blur(6px);
+}
+
+.sprung-kontext {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.6rem;
+  margin-right: auto;
+  color: var(--text-leise);
+}
+
+.sprung-kontext strong {
+  color: var(--text);
+}
+
+.sprung-speicher {
+  font-size: 0.8125rem;
 }
 
 .block-sprung a {
@@ -1020,12 +1038,11 @@ h3 {
 }
 
 .test-karte {
-  scroll-margin-top: 120px;
-  padding: 1rem 1.25rem;
-  border: 1px solid var(--rand);
-  border-radius: var(--radius);
+  scroll-margin-top: 80px;
+  padding: 1.125rem 1.25rem;
+  border: 1px solid var(--karten-rand);
+  border-radius: var(--radius-karte);
   background: var(--flaeche);
-  box-shadow: var(--schatten);
 }
 
 .test-kopf {
@@ -1038,9 +1055,10 @@ h3 {
 
 .test-kopf h4 {
   margin: 0;
-  font-size: 1.05rem;
+  color: var(--text);
+  font-family: var(--schrift-titel);
+  font-size: 1.0625rem;
   font-weight: 600;
-  color: var(--nacht);
 }
 
 .test-kopf .chip {
@@ -1050,22 +1068,37 @@ h3 {
 
 .test-protokoll,
 .test-mehr {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
+  margin-top: 0.35rem;
+  font-size: 0.875rem;
+}
+
+/* 3. Lautstärke: alles Zusätzliche leise und zugeklappt */
+.test-leise {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.25rem 1.25rem;
+  margin-top: 0.9rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--linie);
+}
+
+.test-leise > details[open] {
+  flex-basis: 100%;
 }
 
 .test-protokoll summary,
 .test-mehr summary {
   width: fit-content;
   color: var(--text-leise);
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 
 .test-protokoll[open] {
   padding: 0.5rem 0.75rem;
   border-radius: var(--radius);
-  background: var(--hintergrund);
+  background: var(--feld);
 }
 
 .test-protokoll p {
@@ -1174,9 +1207,10 @@ h3 {
 }
 
 .test-ergebnis {
-  margin-top: 0.8rem;
-  padding-top: 0.6rem;
-  border-top: 1px solid var(--raster);
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.9rem 0.7rem;
+  border-radius: var(--radius);
+  background: var(--feld);
 }
 
 .kriterium-zeile {
@@ -1203,7 +1237,9 @@ h3 {
 }
 
 .kriterium-wert {
-  font-weight: 700;
+  font-family: var(--schrift-titel);
+  font-size: 1.0625rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1367,10 +1403,9 @@ h3 {
   max-height: calc(100vh - 96px);
   overflow-y: auto;
   padding: 1rem;
-  border: 1px solid var(--rand);
-  border-radius: var(--radius);
+  border: 1px solid var(--karten-rand);
+  border-radius: var(--radius-karte);
   background: var(--flaeche);
-  box-shadow: var(--schatten);
 }
 
 .testung-uebersicht h3 {
@@ -1800,18 +1835,18 @@ h3 {
 .rts-kasten {
   margin-bottom: 1rem;
   padding: 0.75rem 0.9rem;
+  border: 1px solid var(--karten-rand);
+  border-left: 4px solid;
   border-radius: var(--radius);
-  border: 2px solid;
+  background: var(--flaeche);
 }
 
 .rts-erfuellt {
-  border-color: var(--gruen);
-  background: color-mix(in srgb, var(--gruen) 12%, transparent);
+  border-left-color: var(--erfuellt);
 }
 
 .rts-offen {
-  border-color: var(--rand-stark);
-  background: var(--hintergrund);
+  border-left-color: var(--aktion);
 }
 
 .rts-titel {
@@ -1823,9 +1858,10 @@ h3 {
 
 .rts-ergebnis {
   margin: 0.15rem 0 0.4rem;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--nacht);
+  color: var(--text);
+  font-family: var(--schrift-titel);
+  font-size: 1.125rem;
+  font-weight: 600;
 }
 
 .rts-erfuellt .rts-ergebnis,

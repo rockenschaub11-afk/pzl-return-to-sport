@@ -246,6 +246,10 @@ export default function TestungErfassen() {
       </fieldset>
 
       <nav className="block-sprung" aria-label="Blöcke">
+        <span className="sprung-kontext">
+          <strong>{patient.kuerzel}</strong> · {ART_TEXT[ph.art]} · {phaseNach(phase).name}
+          <span className="sprung-speicher">{speichert ? 'speichert …' : '✓ gespeichert'}</span>
+        </span>
         {BLOECKE.filter((b) => sichtbar.some((t) => t.block === b) || zumHinzufuegen.optional.some((t) => t.block === b)).map((b) => (
           <a key={b} href={`#block-${b}`} onClick={(e) => springen(e, `block-${b}`)}>
             {BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}
