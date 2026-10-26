@@ -7,6 +7,7 @@ import BerichteListe from './pages/BerichteListe'
 import Info from './pages/Info'
 import PatientenListe from './pages/PatientenListe'
 import PatientFormular from './pages/PatientFormular'
+import PatientSeite from './pages/PatientSeite'
 import Platzhalter from './pages/Platzhalter'
 import Start from './pages/Start'
 import TestungErfassen from './pages/TestungErfassen'
@@ -39,7 +40,7 @@ export default function App() {
           <Route path="/" element={<Start />} />
           <Route path="/patienten" element={<PatientenListe />} />
           <Route path="/patienten/neu" element={<PatientFormular key="neu" />} />
-          <Route path="/patienten/:id" element={<PatientFormular />} />
+          <Route path="/patienten/:id" element={<PatientSeite />} />
           <Route path="/info" element={<Info />} />
           <Route path="/testung" element={<TestungListe />} />
           <Route path="/testung/:id" element={<TestungErfassen />} />

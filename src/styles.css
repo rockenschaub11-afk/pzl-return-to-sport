@@ -2998,3 +2998,246 @@ fieldset:disabled .test-hinzu {
     padding-bottom: 0.1rem;
   }
 }
+
+/* ---------- Seite eines Kürzels als Dashboard (DESIGNKONZEPT 7, Etappe 9b Schritt 5) ---------- */
+
+.seitenkopf-fest {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  margin: -1.75rem -1.5rem 0.5rem;
+  padding: 1rem 1.5rem 0.75rem;
+  background: var(--grund);
+  box-shadow: 0 1px 0 var(--linie);
+}
+
+.seitenkopf-zeile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.reiter {
+  display: flex;
+  gap: 0.375rem;
+  margin: 0.75rem 0 1.25rem;
+  overflow-x: auto;
+}
+
+.reiter button {
+  flex: none;
+  min-height: 2.5rem;
+  padding: 0.45rem 1.1rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-leise);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.reiter button:hover {
+  color: var(--text);
+}
+
+.reiter button[aria-selected='true'] {
+  background: var(--aktion);
+  color: var(--aktion-text);
+  font-weight: 600;
+}
+
+.reiter button:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.karte-laut {
+  border-left: 4px solid var(--aktion);
+}
+
+.status-letzte {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  gap: 1rem 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.status-aussage {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+}
+
+.status-herkunft {
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+.status-titel {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.375rem;
+  line-height: 1.25;
+}
+
+.status-warnung {
+  margin: 0.4rem 0 0;
+  color: var(--knapp);
+  font-weight: 600;
+}
+
+.status-offen {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0.9rem;
+  padding: 0;
+  list-style: none;
+}
+
+.status-offen li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.6rem;
+}
+
+.leer-handlung {
+  margin-bottom: 1.25rem;
+}
+
+.leer-handlung p {
+  margin: 0.2rem 0;
+}
+
+.dashboard-raster {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) minmax(0, 2.4fr);
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.dashboard-spalte {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.dashboard-spalte > .karte.block,
+.dashboard-spalte > .karte {
+  margin: 0;
+}
+
+.kopfkarte-zeile {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.kopfkarte-seite {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.0625rem;
+}
+
+.kopfkarte-zeile .hinweis-leise {
+  margin: 0.1rem 0 0;
+}
+
+.bein-symbol {
+  flex: none;
+  width: 46px;
+  height: 64px;
+}
+
+.bein-symbol path {
+  fill: var(--feld);
+  stroke: var(--text-sehr-leise);
+}
+
+.bein-knie-ring {
+  fill: none;
+  stroke: var(--seite-betroffen);
+  stroke-width: 2.5;
+}
+
+.bein-knie {
+  fill: var(--seite-betroffen);
+}
+
+.kopfkarte-fakten {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem 1rem;
+  margin: 1rem 0 0;
+}
+
+.kopfkarte-fakten dt {
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+.kopfkarte-fakten dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.kennzahl-kopf {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.kennzahl-name {
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+.kennzahl-zahl {
+  margin: 0.25rem 0 0.6rem;
+  font-family: var(--schrift-titel);
+  font-size: 2.125rem;
+  font-weight: 600;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.kennzahl-zahl small {
+  margin-left: 0.2rem;
+  color: var(--text-leise);
+  font-family: var(--schrift);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.kennzahl-bezug {
+  margin: 0.6rem 0 0;
+  color: var(--text-sehr-leise);
+  font-size: 0.75rem;
+}
+
+.kennzahl-testungen {
+  justify-self: start;
+}
+
+.platzhalter-karte {
+  min-height: 12rem;
+  background: var(--feld);
+}
+
+@media (max-width: 1060px) {
+  .status-letzte,
+  .dashboard-raster {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .seitenkopf-fest {
+    margin: -1.25rem -1rem 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+}

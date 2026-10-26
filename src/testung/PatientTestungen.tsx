@@ -5,9 +5,22 @@ import { KATALOG } from '../katalog'
 import { datumDeutsch, isoDatum } from '../patienten/stammdaten'
 import { ART_TEXT, fortschritt, monateBisTestung, phaseAusMonaten, phasenStand, statusText } from './ablauf'
 
-/** Testungen eines Kürzels und Knopf „Neue Testung“ (auf der Seite des Kürzels). */
-export default function PatientTestungen({ patientId }: { patientId: string }) {
+/** Neue Testung mit Phase aus OP-Datum und heutigem Datum anlegen und öffnen. */
+export function useNeueTestung(patientId: string) {
   const navigate = useNavigate()
+  return async () => {
+    // Klick kann vor dem Laden des Kürzels kommen – deshalb direkt nachlesen
+    const p = await db.patienten.get(patientId)
+    if (!p) return
+    const heute = isoDatum(new Date())
+    const phase = phaseAusMonaten(monateBisTestung(p.opDatum, heute) ?? 0)
+    navigate(`/testung/${await neueTestung(patientId, heute, phase)}`)
+  }
+}
+
+/** Testungen eines Kürzels (Reiter „Testungen“ der Kürzel-Seite). */
+export default function PatientTestungen({ patientId, mitKnopf = true }: { patientId: string; mitKnopf?: boolean }) {
+  const starten = useNeueTestung(patientId)
   const testungen = useLiveQuery(
     () => db.testungen.where('patientId').equals(patientId).reverse().sortBy('datum'),
     [patientId],
@@ -15,22 +28,17 @@ export default function PatientTestungen({ patientId }: { patientId: string }) {
 
   const patient = useLiveQuery(() => db.patienten.get(patientId), [patientId])
 
-  async function starten() {
-    // Klick kann vor dem Laden des Kürzels kommen – dann direkt nachlesen
-    const p = patient ?? (await db.patienten.get(patientId))
-    if (!p) return
-    const heute = isoDatum(new Date())
-    const phase = phaseAusMonaten(monateBisTestung(p.opDatum, heute) ?? 0)
-    navigate(`/testung/${await neueTestung(patientId, heute, phase)}`)
-  }
+
 
   return (
     <div className="karte block">
       <div className="block-kopf">
         <h3 className="block-titel">Testungen</h3>
-        <button type="button" className="knopf knopf-haupt" onClick={starten}>
-          <span>Neue Testung</span>
-        </button>
+        {mitKnopf && (
+          <button type="button" className="knopf knopf-haupt" onClick={starten}>
+            <span>Neue Testung</span>
+          </button>
+        )}
       </div>
       {testungen && testungen.length > 0 ? (
         <ul className="testung-liste">

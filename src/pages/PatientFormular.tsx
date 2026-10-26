@@ -19,10 +19,9 @@ import {
   type BegleitOp,
   type Stammdaten,
 } from '../patienten/stammdaten'
-import PatientTestungen from '../testung/PatientTestungen'
-import VerlaufBereich from '../testung/VerlaufBereich'
 
-export default function PatientFormular() {
+/** Stammdaten-Formular. Für ein vorhandenes Kürzel eingebettet im Reiter „Stammdaten“ der Kürzel-Seite. */
+export default function PatientFormular({ eingebettet = false }: { eingebettet?: boolean }) {
   const { id } = useParams()
   const neu = id === undefined
   const navigate = useNavigate()
@@ -92,17 +91,16 @@ export default function PatientFormular() {
 
   return (
     <form onSubmit={speichern} noValidate>
-      <div className="seitenkopf">
-        <div>
-          <p className="seitenzusatz">
-            <Link to="/patienten">← Pat.-Liste</Link>
-          </p>
-          <h2 className="seitentitel">{neu ? 'Neues Kürzel' : normalisiereKuerzel(daten.kuerzel) || 'Kürzel'}</h2>
+      {!eingebettet && (
+        <div className="seitenkopf">
+          <div>
+            <p className="seitenzusatz">
+              <Link to="/patienten">← Pat.-Liste</Link>
+            </p>
+            <h2 className="seitentitel">{neu ? 'Neues Kürzel' : normalisiereKuerzel(daten.kuerzel) || 'Kürzel'}</h2>
+          </div>
         </div>
-      </div>
-
-      {id && <PatientTestungen patientId={id} />}
-      {id && gespeichert && <VerlaufBereich patient={gespeichert} />}
+      )}
 
       <fieldset className="karte block">
         <legend className="block-titel">
