@@ -2,11 +2,12 @@
 // je Testung Bestwerte gesund/betroffen (bzw. ein Wert) und LSI bzw. Asymmetrie.
 
 import type { Testung } from '../db'
-import { phaseNach } from '../katalog'
-import type { PhaseId } from '../katalog/typen'
+import { KATALOG, phaseNach, testNach } from '../katalog'
+import type { Kriterium, PhaseId } from '../katalog/typen'
 import type { Patient } from '../patienten/stammdaten'
+import { schwelleFuer, type Ampel } from '../rechnen/bewertung'
 import { alsNewton, nProKg } from '../rechnen/einheiten'
-import { ERFASSBARE_TESTS, monateBisTestung, phasenStand, werteAus, type TestAuswertung } from './ablauf'
+import { ERFASSBARE_TESTS, monateBisTestung, phasenStand, sichtbareTests, werteAus, type TestAuswertung } from './ablauf'
 import { ERFASSUNG, parseZahl } from './erfassung'
 import { kernStrategie } from './meloq'
 
@@ -30,6 +31,11 @@ export interface VerlaufPunkt {
   /** ein Wert (wenn seiten = false) */
   wert: number | null
   zweites: number | null
+  /** Monate seit OP mit Nachkommastellen – Lage auf der Zeitachse */
+  genau: number | null
+  /** Ampel des Kriteriums, das den Wert bzw. das zweite Diagramm bewertet (null = ohne Ampel) */
+  ampelWert: Ampel | null
+  ampelZweites: Ampel | null
 }
 
 const LSI = { name: 'LSI', ziel: 90 } as const
@@ -76,7 +82,7 @@ export const VERLAUF_OPTIONEN: readonly VerlaufOption[] = ERFASSBARE_TESTS.flatM
 })
 
 /** Werte einer Verlaufsgröße aus einer ausgewerteten Testung. */
-function punktWerte(option: VerlaufOption, testung: Testung, a: Map<string, TestAuswertung>): Omit<VerlaufPunkt, 'testungId' | 'datum' | 'monate' | 'phase'> {
+function punktWerte(option: VerlaufOption, testung: Testung, a: Map<string, TestAuswertung>): Omit<VerlaufPunkt, 'testungId' | 'datum' | 'monate' | 'phase' | 'genau' | 'ampelWert' | 'ampelZweites'> {
   const [testId, strategie] = option.id.split(':')
   const aus = a.get(testId)
   const leer = { gesund: null, betroffen: null, wert: null, zweites: null }
@@ -125,21 +131,109 @@ export function verlaufsDaten(
     .sort((x, y) => x.datum.localeCompare(y.datum))
     .map((t) => {
       const phase = phasenStand(t, patient.opDatum).phase
+      const a = werteAus(t, phase, patient.geschlecht)
+      const k = kriterienFuer(option)
       return {
         testungId: t.id,
         datum: t.datum,
         monate: monateBisTestung(patient.opDatum, t.datum),
+        genau: monateGenau(patient.opDatum, t.datum),
         phase,
-        ...punktWerte(option, t, werteAus(t, phase, patient.geschlecht)),
+        ...punktWerte(option, t, a),
+        ampelWert: ampelVon(a, option, k.wert),
+        ampelZweites: ampelVon(a, option, k.zweites),
       }
     })
     .filter((p) => p.gesund !== null || p.betroffen !== null || p.wert !== null)
+}
+
+/** Monate seit OP mit Nachkommastellen (für die Lage auf der Zeitachse; die Phase rechnet weiter mit vollen Monaten). */
+export function monateGenau(opDatum: string, datum: string): number | null {
+  if (!opDatum || !datum) return null
+  const tage = (new Date(`${datum}T12:00:00`).getTime() - new Date(`${opDatum}T12:00:00`).getTime()) / 86_400_000
+  return Math.max(0, tage / 30.4375)
+}
+
+/** Welches vorhandene Kriterium die Werte im ersten bzw. zweiten Diagramm bewertet – Strategy-Werte haben keines. */
+export function kriterienFuer(option: VerlaufOption): { wert?: Kriterium; zweites?: Kriterium } {
+  const [testId, strategie] = option.id.split(':')
+  const test = testNach(testId)
+  const art = ERFASSUNG[testId]
+  if (!test || !art || strategie) return {}
+  const ids: Partial<Record<string, [string | undefined, string | undefined]>> = {
+    kraft: ['relativ', 'lsi'],
+    versuche: [undefined, 'lsi'],
+    einzeln: [art.typ === 'einzeln' ? art.kriterium : undefined, 'lsi'],
+    flexion: ['grad', 'lsi'],
+    sl_sprung: ['hoehe', 'lsi'],
+    sl_dj: ['hoehe', 'lsi'],
+    cmj: ['hoehe', 'impuls_asymmetrie'],
+    imtp: ['relativ', undefined],
+    defizit: ['defizit', undefined],
+    score: ['score', undefined],
+    direkt: [art.typ === 'direkt' ? art.felder[0].kriterium : undefined, undefined],
+  }
+  const [w, z] = ids[art.typ] ?? [undefined, undefined]
+  const finde = (id?: string) => (id ? test.kriterien.find((k) => k.id === id) : undefined)
+  return { wert: finde(w), zweites: option.zweites ? finde(z) : undefined }
+}
+
+function ampelVon(a: Map<string, TestAuswertung>, option: VerlaufOption, k?: Kriterium): Ampel | null {
+  if (!k) return null
+  const e = a.get(option.id.split(':')[0])?.ergebnis.kriterien.find((x) => x.kriterium.id === k.id)
+  return e && e.zustand === 'bewertet' && e.ampel ? e.ampel : null
+}
+
+export interface Zielkorridor {
+  /** Schwelle je Abschnitt in Monaten seit OP (bis = null: offen) */
+  stufen: { von: number; bis: number | null; wert: number }[]
+  /** oben = Werte über der Schwelle sind erfüllt (> / ≥), unten = darunter (< / ≤) */
+  richtung: 'oben' | 'unten'
+  text: string
+}
+
+/** Zielbereich aus den Schwellen der Phasen (config) – nichts Neues, nur die vorhandenen Grenzwerte über die Zeit. */
+export function zielkorridor(k: Kriterium | undefined): Zielkorridor | null {
+  if (!k || !k.vergleich) return null
+  const stufen: Zielkorridor['stufen'] = []
+  for (const p of KATALOG.phasen) {
+    const s = schwelleFuer(k, p.id)
+    if (!s) continue
+    const letzte = stufen[stufen.length - 1]
+    if (letzte && letzte.wert === s.wert && letzte.bis === p.vonMonat) letzte.bis = p.bisMonat
+    else stufen.push({ von: p.vonMonat, bis: p.bisMonat, wert: s.wert })
+  }
+  if (stufen.length === 0) return null
+  const richtung = k.vergleich === '>' || k.vergleich === '>=' ? 'oben' : 'unten'
+  const zeichen = { '>': 'über', '>=': 'ab', '<': 'unter', '<=': 'bis' }[k.vergleich]
+  const einheit = k.einheit === '%' ? ' %' : k.einheit ? ` ${k.einheit}` : ''
+  const werte = [...new Set(stufen.map((x) => x.wert.toLocaleString('de-AT')))]
+  return { stufen, richtung, text: `Ziel: ${k.bezeichnung} ${zeichen} ${werte.join(' / ')}${einheit}${werte.length > 1 ? ' (je Phase)' : ''}` }
+}
+
+/** Testungen, in deren Testset der Test liegt, die aber keinen Wert dazu haben („nicht gemessen“). */
+export function fehlendeMessungen(
+  patient: Pick<Patient, 'opDatum' | 'geschlecht'>,
+  testungen: readonly Testung[],
+  option: VerlaufOption,
+): { testungId: string; datum: string; genau: number | null; phase: PhaseId }[] {
+  const testId = option.id.split(':')[0]
+  const mitWert = new Set(verlaufsDaten(patient, testungen, option).map((p) => p.testungId))
+  return [...testungen]
+    .sort((x, y) => x.datum.localeCompare(y.datum))
+    .filter((t) => !mitWert.has(t.id))
+    .map((t) => ({ t, phase: phasenStand(t, patient.opDatum).phase }))
+    .filter(({ t, phase }) => sichtbareTests(t, phase).some((x) => x.id === testId))
+    .map(({ t, phase }) => ({ testungId: t.id, datum: t.datum, genau: monateGenau(patient.opDatum, t.datum), phase }))
 }
 
 /** Nur Verlaufsgrößen, zu denen es mindestens einen Wert gibt. */
 export function verfuegbareOptionen(patient: Pick<Patient, 'opDatum' | 'geschlecht'>, testungen: readonly Testung[]): VerlaufOption[] {
   return VERLAUF_OPTIONEN.filter((o) => verlaufsDaten(patient, testungen, o).length > 0)
 }
+
+/** Phasengrenzen in Monaten seit OP (für die Zeitachse der Diagramme). */
+export const PHASEN_MONATE: readonly { name: string; von: number; bis: number | null }[] = KATALOG.phasen.map((p) => ({ name: p.name, von: p.vonMonat, bis: p.bisMonat }))
 
 /** Phasenbänder als Datumsbereiche ab OP (für den Hintergrund der Diagramme). */
 export function phasenBaender(opDatum: string): { phase: PhaseId; name: string; von: Date; bis: Date | null }[] {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Testung } from '../db'
-import { phasenBaender, verfuegbareOptionen, VERLAUF_OPTIONEN, verlaufsDaten } from './verlauf'
+import { fehlendeMessungen, kriterienFuer, phasenBaender, verfuegbareOptionen, VERLAUF_OPTIONEN, verlaufsDaten, zielkorridor } from './verlauf'
 
 const patient = { opDatum: '2026-01-15', geschlecht: 'maennlich' as const }
 
@@ -42,6 +42,36 @@ describe('Verlauf', () => {
 
   it('bietet nur Größen mit Werten an', () => {
     expect(verfuegbareOptionen(patient, testungen).map((o) => o.id)).toEqual(['hhd_knie_ext', 'cmj', 'cmj:ct'])
+  })
+
+  it('Punkte tragen die tatsächliche Ampel des Kriteriums', () => {
+    const p = verlaufsDaten(patient, testungen, option('hhd_knie_ext'))
+    // Mitte: 40 kg → 5,6 N/kg < 7,0 → nicht erfüllt; LSI 72,7 % → nicht erfüllt
+    expect(p[0]).toMatchObject({ ampelWert: 'rot', ampelZweites: 'rot' })
+    // Spät: LSI 90 % → erfüllt
+    expect(p[1].ampelZweites).toBe('gruen')
+    // Strategy-Werte haben keine Ampel
+    expect(verlaufsDaten(patient, testungen, option('cmj:ct'))[0].ampelWert).toBeNull()
+  })
+
+  it('Zielkorridor aus den Schwellen je Phase (config), nichts Neues', () => {
+    const k = zielkorridor(kriterienFuer(option('hhd_knie_ext')).wert)
+    expect(k?.richtung).toBe('oben')
+    expect(k?.stufen).toEqual([
+      { von: 0, bis: 3, wert: 5.5 },
+      { von: 3, bis: 5, wert: 7 },
+      { von: 5, bis: null, wert: 7.5 },
+    ])
+    expect(zielkorridor(kriterienFuer(option('hhd_knie_ext')).zweites)?.stufen).toEqual([{ von: 0, bis: null, wert: 90 }])
+    // Hops haben nur ein LSI-Ziel, kein Absolutziel
+    expect(kriterienFuer(option('single_hop')).wert).toBeUndefined()
+  })
+
+  it('zeigt fehlende Messungen nur für Tests im Testset', () => {
+    const f = fehlendeMessungen(patient, testungen, option('cmj'))
+    // CMJ gehört zum Testset „Mitte“, wurde dort aber nicht gemessen
+    expect(f.map((x) => x.datum)).toEqual(['2026-04-20'])
+    expect(f[0].genau).toBeGreaterThan(3)
   })
 
   it('Phasenbänder ab OP-Datum', () => {

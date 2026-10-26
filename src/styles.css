@@ -1260,6 +1260,22 @@ h3 {
     background 0.3s ease;
 }
 
+.ladebalken-mehr {
+  position: absolute;
+  top: -0.55rem;
+  right: -0.75rem;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.ladebalken-100 {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 1px;
+  background: var(--text-sehr-leise);
+}
+
 .ladebalken-ziel {
   position: absolute;
   top: -4px;
@@ -1534,46 +1550,41 @@ h3 {
 }
 
 .diagramm {
+  position: relative;
+  min-width: 0;
   margin: 0;
 }
 
 .diagramm figcaption {
   margin-bottom: 0.25rem;
+  color: var(--text);
+  font-family: var(--schrift-titel);
+  font-size: 0.9375rem;
   font-weight: 600;
-  font-size: 0.92rem;
-  color: var(--nacht);
+}
+
+.diagramm-einheit {
+  color: var(--text-leise);
+  font-family: var(--schrift);
+  font-weight: 500;
 }
 
 .diagramm svg {
   display: block;
   width: 100%;
   height: auto;
-}
-
-.diagramm-band-0 {
-  fill: color-mix(in srgb, var(--text) 3%, transparent);
-}
-
-.diagramm-band-1 {
-  fill: color-mix(in srgb, var(--text) 6%, transparent);
-}
-
-.diagramm-band-text {
-  fill: var(--text-sehr-leise);
-  font-family: var(--schrift);
-  font-size: 11px;
-  font-weight: 600;
-  text-anchor: middle;
+  overflow: visible;
 }
 
 .diagramm-raster {
-  stroke: var(--raster);
+  stroke: var(--linie);
 }
 
 .diagramm-achse {
   fill: var(--text-sehr-leise);
   font-family: var(--schrift);
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1585,34 +1596,170 @@ h3 {
   text-anchor: middle;
 }
 
-.diagramm-ziel {
-  stroke: var(--gruen);
-  stroke-width: 1.5;
-  stroke-dasharray: 5 4;
+/* Zielkorridor – das einzige Grau im Diagramm */
+.diagramm-korridor {
+  fill: var(--korridor);
 }
 
-.diagramm-ziel-text {
-  fill: var(--gruen);
+.diagramm-phase {
+  stroke: var(--linie-stark);
+  stroke-width: 1;
+}
+
+.diagramm-phase-text {
+  fill: var(--text-leise);
   font-family: var(--schrift);
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 500;
+  text-anchor: middle;
+}
+
+.diagramm-linie {
+  stroke-dasharray: 1;
+  animation: diagramm-zeichnen 0.8s ease-out both;
+}
+
+@keyframes diagramm-zeichnen {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.diagramm-symbol {
+  font-family: var(--schrift);
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.diagramm-fehlt {
+  fill: none;
+  stroke: var(--text-sehr-leise);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+
+.diagramm-zone {
+  fill: transparent;
+  cursor: pointer;
+  outline: none;
+}
+
+.diagramm-fokus {
+  fill: none;
+  stroke: var(--fokus);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+
+/* Info-Fenster – immer dunkel */
+.diagramm-fenster {
+  position: absolute;
+  top: 2.5rem;
+  z-index: 5;
+  min-width: 220px;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  background: #191b20;
+  color: #eef1f4;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+  font-size: 0.9375rem;
+  pointer-events: none;
+}
+
+.diagramm-fenster-datum {
+  display: block;
+  width: max-content;
+  margin: 0 auto 0.5rem;
+  padding: 0.1rem 0.75rem;
+  border-radius: 999px;
+  background: #eef1f4;
+  color: #191b20;
+  font-size: 0.8125rem;
   font-weight: 600;
-  text-anchor: end;
+}
+
+.diagramm-fenster dl {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.15rem 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.diagramm-fenster-zeile {
+  display: contents;
+}
+
+.diagramm-fenster dt {
+  color: #a4adb8;
+}
+
+.diagramm-fenster dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.diagramm-fenster .ampel-marke.ampel-gruen {
+  color: #4fc48d;
+}
+
+.diagramm-fenster .ampel-marke.ampel-gelb {
+  color: #e9b23f;
+}
+
+.diagramm-fenster .ampel-marke.ampel-rot {
+  color: #f7765f;
+}
+
+.diagramm-fenster .ampel-marke.ampel-offen {
+  color: #a4adb8;
 }
 
 .diagramm-legende {
   display: flex;
-  gap: 1rem;
-  margin: 0.2rem 0 0;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.1rem;
+  margin: 0.3rem 0 0;
   color: var(--text-leise);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
 }
 
 .diagramm-legende i {
   display: inline-block;
-  width: 1rem;
+  width: 1.1rem;
   height: 3px;
   margin-right: 0.3rem;
   vertical-align: middle;
+}
+
+.diagramm-legende .diagramm-legende-korridor {
+  height: 0.6rem;
+  border-radius: 3px;
+  background: var(--korridor);
+  outline: 1px solid var(--linie);
+}
+
+.diagramm-hinweis {
+  margin: 0.3rem 0 0;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+@media print {
+  .diagramm-fenster,
+  .diagramm-fokus {
+    display: none;
+  }
+
+  .diagramm-linie {
+    animation: none;
+  }
 }
 
 .verlauf-tabelle td {
@@ -2693,28 +2840,28 @@ fieldset:disabled .test-hinzu {
 
 .netz-gesund {
   fill: none;
-  stroke: var(--pzl-tuerkis-dunkel);
+  stroke: var(--seite-gesund);
   stroke-width: 1.5;
   stroke-dasharray: 6 4;
 }
 
 .netz-ziel {
   fill: none;
-  stroke: var(--gruen);
+  stroke: var(--erfuellt);
   stroke-width: 1;
   stroke-dasharray: 2 3;
 }
 
 .netz-flaeche {
-  fill: rgb(29 113 184 / 0.2);
-  stroke: var(--pzl-blau);
+  fill: color-mix(in srgb, var(--seite-betroffen) 20%, transparent);
+  stroke: var(--seite-betroffen);
   stroke-width: 2;
   animation: netz-auf 0.6s ease-out;
 }
 
 .netz-punkt {
-  fill: #fff;
-  stroke: var(--pzl-blau);
+  fill: var(--flaeche);
+  stroke: var(--seite-betroffen);
   stroke-width: 2;
 }
 
@@ -2750,17 +2897,17 @@ fieldset:disabled .test-hinzu {
 }
 
 .netz-legende-gesund {
-  border-top: 2px dashed var(--pzl-tuerkis-dunkel);
+  border-top: 2px dashed var(--seite-gesund);
 }
 
 .netz-legende-betroffen {
   height: 0.6rem;
-  border: 2px solid var(--pzl-blau);
-  background: rgb(29 113 184 / 0.2);
+  border: 2px solid var(--seite-betroffen);
+  background: color-mix(in srgb, var(--seite-betroffen) 20%, transparent);
 }
 
 .netz-legende-ziel {
-  border-top: 2px dotted var(--gruen);
+  border-top: 2px dotted var(--erfuellt);
 }
 
 @keyframes netz-auf {

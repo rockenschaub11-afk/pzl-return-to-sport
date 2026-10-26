@@ -9,11 +9,10 @@ import { HINWEIS } from '../navigation'
 import type { Patient } from '../patienten/stammdaten'
 import LinienDiagramm from '../testung/LinienDiagramm'
 import { useMeloqAuswahl } from '../testung/meloqAuswahl'
-import { phasenBaender, verfuegbareOptionen, verlaufsDaten } from '../testung/verlauf'
+import { verfuegbareOptionen } from '../testung/verlauf'
+import { verlaufsDiagramme } from '../testung/verlaufDiagramme'
 
 const logoUrl = `${import.meta.env.BASE_URL}logo-pzl.svg`
-const BLAU = '#1d71b8'
-const TUERKIS = '#00a3b8'
 const PRAXIS = 'Physio Zentrum Linz'
 
 /** Druckansicht für Arztbericht und Pat./Trainer-Bericht (Etappe 9). „Als PDF speichern“ im Druckdialog des Browsers. */
@@ -381,8 +380,7 @@ function ArztTestZeilen({ t }: { t: ArztBericht['bloecke'][number]['tests'][numb
 function VerlaufAbschnitt({ patient, testungen, tabelle, wahl }: { patient: Patient; testungen: Testung[]; tabelle: VerlaufTabelle; wahl: string }) {
   const optionen = verfuegbareOptionen(patient, testungen)
   const option = optionen.length > 0 ? waehleOption(optionen, wahl) : undefined
-  const punkte = option ? verlaufsDaten(patient, testungen, option) : []
-  const baender = phasenBaender(patient.opDatum)
+  const v = option ? verlaufsDiagramme(patient, testungen, option) : null
 
   return (
     <section className="bericht-abschnitt bericht-verlauf">
@@ -418,26 +416,11 @@ function VerlaufAbschnitt({ patient, testungen, tabelle, wahl }: { patient: Pati
           </tbody>
         </table>
       )}
-      {option && punkte.length > 1 && (
+      {v && v.punkte.length > 1 && (
         <div className="bericht-diagramme">
-          <LinienDiagramm
-            titel={`${option.name} (${option.einheit})`}
-            punkte={punkte.map((p) => ({ datum: p.datum, werte: option.seiten ? [p.gesund, p.betroffen] : [p.wert] }))}
-            reihen={option.seiten ? [{ name: 'gesund', farbe: TUERKIS, gestrichelt: true }, { name: 'betroffen', farbe: BLAU }] : [{ name: option.name, farbe: BLAU }]}
-            einheit={option.einheit}
-            baender={baender}
-          />
-          {option.zweites && punkte.some((p) => p.zweites !== null) && (
-            <LinienDiagramm
-              titel={`${option.zweites.name} (%)`}
-              punkte={punkte.map((p) => ({ datum: p.datum, werte: [p.zweites] }))}
-              reihen={[{ name: option.zweites.name, farbe: BLAU }]}
-              einheit="%"
-              ziel={{ wert: option.zweites.ziel, text: `${option.zweites.name === 'LSI' ? 'Ziel ≥' : 'Ziel <'} ${option.zweites.ziel} %` }}
-              baender={baender}
-              abNull={option.zweites.name === 'Asymmetrie'}
-            />
-          )}
+          {v.diagramme.map((d) => (
+            <LinienDiagramm key={d.titel} {...d} />
+          ))}
         </div>
       )}
     </section>

@@ -4,11 +4,8 @@ import { db } from '../db'
 import { phaseNach } from '../katalog'
 import { datumDeutsch, type Patient } from '../patienten/stammdaten'
 import LinienDiagramm from './LinienDiagramm'
-import { phasenBaender, verfuegbareOptionen, verlaufsDaten } from './verlauf'
-
-// Farben aus dem Designsystem: Blau = betroffen, Türkis = gesund (gestrichelt)
-const BLAU = 'var(--seite-betroffen)'
-const TUERKIS = 'var(--seite-gesund)'
+import { verfuegbareOptionen } from './verlauf'
+import { verlaufsDiagramme } from './verlaufDiagramme'
 const zahl = (v: number | null) => (v === null ? '–' : v.toLocaleString('de-AT', { maximumFractionDigits: 1 }))
 
 /** Verlauf über alle Testungen eines Kürzels (Etappe-7-Frage 6). */
@@ -27,14 +24,7 @@ export default function VerlaufBereich({ patient }: { patient: Patient }) {
     )
   }
   const option = optionen.find((o) => o.id === wahl) ?? optionen.find((o) => o.id === 'hhd_knie_ext') ?? optionen[0]
-  const punkte = verlaufsDaten(patient, testungen, option)
-  const baender = phasenBaender(patient.opDatum)
-  const reihen = option.seiten
-    ? [
-        { name: 'gesund', farbe: TUERKIS, gestrichelt: true },
-        { name: 'betroffen', farbe: BLAU },
-      ]
-    : [{ name: option.name, farbe: BLAU }]
+  const { punkte, diagramme } = verlaufsDiagramme(patient, testungen, option)
 
   return (
     <div className="karte block verlauf">
@@ -53,24 +43,9 @@ export default function VerlaufBereich({ patient }: { patient: Patient }) {
       </div>
 
       <div className="verlauf-diagramme">
-        <LinienDiagramm
-          titel={`${option.name} (${option.einheit})`}
-          punkte={punkte.map((p) => ({ datum: p.datum, werte: option.seiten ? [p.gesund, p.betroffen] : [p.wert] }))}
-          reihen={reihen}
-          einheit={option.einheit}
-          baender={baender}
-        />
-        {option.zweites && punkte.some((p) => p.zweites !== null) && (
-          <LinienDiagramm
-            titel={`${option.zweites.name} (%)`}
-            punkte={punkte.map((p) => ({ datum: p.datum, werte: [p.zweites] }))}
-            reihen={[{ name: option.zweites.name, farbe: BLAU }]}
-            einheit="%"
-            ziel={{ wert: option.zweites.ziel, text: `${option.zweites.name === 'LSI' ? 'Ziel ≥' : 'Ziel <'} ${option.zweites.ziel} %` }}
-            baender={baender}
-            abNull={option.zweites.name === 'Asymmetrie'}
-          />
-        )}
+        {diagramme.map((d) => (
+          <LinienDiagramm key={d.titel} {...d} />
+        ))}
       </div>
 
       <details className="test-mehr">
