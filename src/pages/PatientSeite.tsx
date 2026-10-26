@@ -58,9 +58,14 @@ export default function PatientSeite() {
             {phaseHeute && <span className="chip">heute: {phaseHeute.name}</span>}
           </div>
         </div>
-        <button type="button" className="knopf knopf-haupt" onClick={starten}>
-          <span>Neue Testung</span>
-        </button>
+        <div className="aktionen">
+          <Link to={`/sicherung?kuerzel=${patient.id}`} className="knopf">
+            <span>Übergeben</span>
+          </Link>
+          <button type="button" className="knopf knopf-haupt" onClick={starten}>
+            <span>Neue Testung</span>
+          </button>
+        </div>
       </div>
 
       <div className="reiter" role="tablist" aria-label="Bereiche des Kürzels">

@@ -9,6 +9,7 @@ import PatientenListe from './pages/PatientenListe'
 import PatientFormular from './pages/PatientFormular'
 import PatientSeite from './pages/PatientSeite'
 import Platzhalter from './pages/Platzhalter'
+import SicherungSeite from './pages/SicherungSeite'
 import Start from './pages/Start'
 import TestungErfassen from './pages/TestungErfassen'
 import TestungListe from './pages/TestungListe'
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/testung" element={<TestungListe />} />
           <Route path="/testung/:id" element={<TestungErfassen />} />
           <Route path="/berichte" element={<BerichteListe />} />
+          <Route path="/sicherung" element={<SicherungSeite />} />
           <Route path="/berichte/:id/:art" element={<Bericht />} />
           {BEREICHE.filter((b) => b.etappe).map((b) => (
             <Route key={b.pfad} path={b.pfad} element={<Platzhalter bereich={b} />} />

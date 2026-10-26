@@ -11,6 +11,7 @@ import { BEREICHE } from '../navigation'
 import { datumDeutsch } from '../patienten/stammdaten'
 import { nachDatum } from '../patienten/uebersicht'
 import { ausloesen, neuerKanal, planen, vorbereiten, wertImKanal, type Kanal } from '../start/monitor'
+import { useSicherungsStand } from '../sicherung/sicherung'
 import { BerichtZeichnung, KnieZeichnung, PlattenZeichnung } from '../start/Zeichnungen'
 import { ART_TEXT, phasenStand, statusText } from '../testung/ablauf'
 
@@ -182,6 +183,7 @@ export default function Start() {
   const testungen = useLiveQuery(() => db.testungen.toArray())
   const kuerzel = new Map((patienten ?? []).map((p) => [p.id, p]))
   const neueste = nachDatum(testungen ?? []).filter((t) => kuerzel.has(t.patientId))
+  const sicherung = useSicherungsStand()
   const inArbeit = (testungen ?? []).filter((t) => t.status === 'in_arbeit').length
 
   const einstiege = [
@@ -230,6 +232,15 @@ export default function Start() {
         </nav>
         <DarstellungUmschalter />
       </header>
+
+      {sicherung?.faellig && (
+        <p className="start-erinnerung" role="status">
+          <span>{sicherung.tage === null ? 'Noch keine Sicherung angelegt.' : `Letzte Sicherung vor ${sicherung.tage} Tagen.`}</span>
+          <Link to="/sicherung" className="knopf">
+            <span>Jetzt sichern</span>
+          </Link>
+        </p>
+      )}
 
       <div className="start-buehne">
         <div className="start-text">

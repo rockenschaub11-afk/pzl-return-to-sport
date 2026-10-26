@@ -33,7 +33,6 @@ export const BEREICHE: Bereich[] = [
     pfad: '/sicherung',
     titel: 'Sicherung',
     beschreibung: 'Export/Import je Kürzel und Gesamtsicherung mit Passwort.',
-    etappe: 'Etappe 10',
   },
   {
     pfad: '/info',

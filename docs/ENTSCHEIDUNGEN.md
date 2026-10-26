@@ -276,6 +276,17 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 
 **Umsetzung (Nachtrag 26.10.2026, Etappe 7):** Werte in `config/normdaten.json`. Angezeigt nur, wenn **Geschlecht und Altersband genau passen** (16–20 = 16–19 Jahre, 20–30 = 20–29 Jahre, aus dem Geburtsjahr) und die Testung höchstens **1,5 Monate** vom Normzeitpunkt (6/9/12 Mo) entfernt ist – sonst „keine passenden Normdaten“ mit Grund. **Geklärt (Report S. 37, Fußnote S. 29):** „CMJ 30,7 / 34,5 cm“ bei 12 Mo, m 20–30 = Mittelwert nach VKB-OP („Injured“) bzw. Vergleichsgruppe ohne Verletzung („Uninjured“, beim beidbeinigen Sprung die Person). Beide werden angezeigt, die Vergleichsgruppe als eigene graue Zeile (Philipp, 26.10.2026).
 
+## 9a. Export, Import, Sicherung (Nachtrag 26.10.2026, Etappe 10, von Philipp bestätigt)
+
+| Thema | Entscheidung |
+|---|---|
+| Passwort | **immer Pflicht**, mind. 8 Zeichen, zweimal eingeben; AES-GCM, Schlüssel per PBKDF2-SHA-256 (310 000 Runden), alles im Browser (Web Crypto). Passwort vergessen = Datei nicht lesbar |
+| Datei | `.pzlrts`; offen stehen nur Art (Kürzel/Gesamt) und Erstellungsdatum, alles andere verschlüsselt. Dateiname: `PZL-<Kürzel>-<Datum>` bzw. `PZL-Sicherung-<Datum>` – nie ein Name |
+| Kürzel übergeben (F7) | ein Kürzel mit allen Testungen; Import bei gleichem Kürzel: **Rückfrage** „Als …-2 anlegen“ oder „Vorhandenes ersetzen“ |
+| Gesamtsicherung (F8) | alle Kürzel, Testungen, Meloq-Auswahl und Therapeut:in-Kürzel (nicht Hell/Dunkel). Wiederherstellen = **zusammenführen**: Fehlendes ergänzen, bei gleicher Testung gewinnt die zuletzt geänderte, nichts wird gelöscht; Vorschau „neu / aktualisiert / unverändert“. Gleiches Kürzel mit anderer id → …-2 |
+| Erinnerung (F8) | nach 7 Tagen ohne Gesamtsicherung (wenn Daten da sind): ruhiger Hinweis auf der Startseite „Jetzt sichern“ und Punkt bei „Sicherung“ in der Seitenleiste; keine Pop-ups |
+| Zugang | Menü „Sicherung“; auf der Seite eines Kürzels Knopf „Übergeben“ |
+
 ## 10. Ausgaben (F5, F30, F41)
 
 | Ausgabe | Inhalt |

@@ -37,9 +37,9 @@ describe('App-Rahmen', () => {
     }
   })
 
-  it('öffnet die gewählte Platzhalterseite', () => {
+  it('öffnet die Seite „Sicherung“', async () => {
     zeige('/sicherung')
-    expect(screen.getByRole('heading', { level: 2, name: 'Sicherung' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 2, name: 'Sicherung' })).toBeInTheDocument()
   })
 
   it('zeigt auf der Startseite Titel, Messfenster und die Einstiege (Nachtrag 26.10.2026)', async () => {

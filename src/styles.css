@@ -3819,3 +3819,60 @@ fieldset:disabled .test-hinzu {
     width: 42%;
   }
 }
+
+/* ---------- Sicherung (Etappe 10) ---------- */
+
+.leiste-punkt {
+  position: absolute;
+  top: 8px;
+  right: 18px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--knapp);
+  box-shadow: 0 0 0 2px var(--tief);
+}
+
+.start-erinnerung {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin: 0;
+  padding: 0.6rem 0.75rem 0.6rem 1rem;
+  border: 1px solid var(--linie-stark);
+  border-left: 4px solid var(--knapp);
+  border-radius: var(--radius);
+  background: var(--flaeche);
+}
+
+.sicherung > form,
+.sicherung > .karte {
+  margin-bottom: 1.25rem;
+}
+
+.import-vorschau ul {
+  margin: 0.25rem 0 0.75rem;
+  padding-left: 1.2rem;
+}
+
+.import-vorschau .meldung {
+  margin: 0.5rem 0;
+}
+
+/* Deaktivierte Knöpfe (DESIGNKONZEPT 10.5): 45 % und kein Hover */
+.knopf:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.knopf:disabled:hover {
+  border-color: var(--linie-stark);
+  background: transparent;
+}
+
+.knopf-haupt:disabled:hover {
+  border-color: var(--aktion);
+  background: var(--aktion);
+}

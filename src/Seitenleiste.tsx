@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import DarstellungUmschalter from './Darstellung'
 import { BEREICHE } from './navigation'
+import { useSicherungsStand } from './sicherung/sicherung'
 
 const logoUrl = `${import.meta.env.BASE_URL}logo-pzl.svg`
 
@@ -67,6 +68,7 @@ function Symbol({ children }: { children: ReactNode }) {
 export default function Seitenleiste({ mitLogo }: { mitLogo: boolean }) {
   const { pathname } = useLocation()
   const [mehrOffen, setMehrOffen] = useState(false)
+  const sicherungFaellig = useSicherungsStand()?.faellig ?? false
   // Menü „Mehr“ schließt sich beim Seitenwechsel
   useEffect(() => setMehrOffen(false), [pathname])
 
@@ -84,12 +86,14 @@ export default function Seitenleiste({ mitLogo }: { mitLogo: boolean }) {
         {BEREICHE.map((b) => (
           <NavLink key={b.pfad} to={b.pfad} end={b.pfad === '/'} className={`leiste-link${HANDY_LEISTE.includes(b.pfad) ? '' : ' nur-breit'}`}>
             <Symbol>{SYMBOLE[b.pfad]}</Symbol>
+            {b.pfad === '/sicherung' && sicherungFaellig && <span className="leiste-punkt" title="Sicherung fällig" />}
             <span aria-hidden={b.kurz ? true : undefined}>{b.kurz ?? b.titel}</span>
             {b.kurz && <span className="sr-only">{b.titel}</span>}
           </NavLink>
         ))}
         <button type="button" className="leiste-link leiste-mehr" aria-expanded={mehrOffen} aria-controls="leiste-mehr" onClick={() => setMehrOffen((o) => !o)}>
           <Symbol>{MEHR}</Symbol>
+          {sicherungFaellig && <span className="leiste-punkt" title="Sicherung fällig" />}
           <span>Mehr</span>
         </button>
       </nav>
