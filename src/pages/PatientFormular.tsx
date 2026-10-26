@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import Laedt from '../Laedt'
 import { db, KuerzelVergebenFehler, loeschePatient, speicherePatient } from '../db'
 import {
   BEGLEIT_OP_HILFE,
@@ -53,7 +54,7 @@ export default function PatientFormular({ eingebettet = false }: { eingebettet?:
       </div>
     )
   }
-  if (!geladen || !alle) return null
+  if (!geladen || !alle) return <Laedt />
 
   const setze = <K extends keyof Stammdaten>(feld: K, wert: Stammdaten[K]) =>
     setDaten((d) => ({ ...d, [feld]: wert }))

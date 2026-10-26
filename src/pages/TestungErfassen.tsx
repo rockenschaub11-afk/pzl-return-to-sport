@@ -16,6 +16,7 @@ import {
   wochenBisTestung,
   type TestAuswertung,
 } from '../testung/ablauf'
+import Laedt from '../Laedt'
 import ErgebnisEntscheidung, { AbschlussVerlauf } from '../testung/ErgebnisEntscheidung'
 import { hatEingabe, parseZahl } from '../testung/erfassung'
 import KlinischAnders from '../testung/KlinischAnders'
@@ -75,7 +76,7 @@ export default function TestungErfassen() {
     [testung, patient, auswertung, ph],
   )
 
-  if (gespeichert === undefined) return null
+  if (gespeichert === undefined) return <Laedt zeilen={4} />
   if (gespeichert === null) {
     return (
       <div className="karte">
@@ -86,7 +87,7 @@ export default function TestungErfassen() {
       </div>
     )
   }
-  if (!testung || !patient || !ph) return null
+  if (!testung || !patient || !ph) return <Laedt zeilen={4} />
 
   const phase = ph.phase
   const seiten = seitennamen(patient)

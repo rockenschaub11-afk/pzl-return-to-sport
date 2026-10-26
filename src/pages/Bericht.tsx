@@ -4,6 +4,7 @@ import { Link, NavLink, useParams } from 'react-router-dom'
 import { AMPEL_ZEICHEN, arztBericht, patBericht, verlaufTabelle, type ArztBericht, type Bewertung, type PatBericht, type VerlaufTabelle } from '../berichte/bericht'
 import Spinnennetz from '../berichte/Spinnennetz'
 import { db, type Testung } from '../db'
+import Laedt from '../Laedt'
 import { MELOQ } from '../katalog/meloq'
 import { HINWEIS } from '../navigation'
 import type { Patient } from '../patienten/stammdaten'
@@ -37,7 +38,7 @@ export default function Bericht() {
     }
   }, [arzt, testung, patient])
 
-  if (testung === undefined) return null
+  if (testung === undefined) return <Laedt />
   if (testung === null) {
     return (
       <div className="karte">
@@ -48,7 +49,7 @@ export default function Bericht() {
       </div>
     )
   }
-  if (!patient || !alle) return null
+  if (!patient || !alle) return <Laedt />
 
   return (
     <section>

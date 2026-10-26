@@ -2365,16 +2365,16 @@ fieldset:disabled .test-hinzu {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 56px - 38px);
+  min-height: calc(100vh - 42px);
   padding: 2rem 1.5rem;
   overflow: hidden;
   cursor: pointer;
-  background-color: #081a33;
+  background-color: #191b20;
   /* feines Messgerät-Raster */
   background-image:
     linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
     linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px),
-    radial-gradient(ellipse at 50% 45%, #0f2d55 0%, #081a33 70%);
+    radial-gradient(ellipse at 50% 45%, #2a2f37 0%, #191b20 70%);
   background-size:
     40px 40px,
     40px 40px,
@@ -3276,4 +3276,121 @@ fieldset:disabled .test-hinzu {
     margin: -1.25rem -1rem 0.5rem;
     padding: 0.75rem 1rem;
   }
+}
+
+/* ---------- Listen als Tabellen, Lade- und Leerzustand (DESIGNKONZEPT 10.4, 10.7; Etappe 9b Schritt 7) ---------- */
+
+.liste-rahmen {
+  margin-top: 0.75rem;
+  overflow-x: auto;
+}
+
+.liste-tabelle {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.liste-tabelle th {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--linie);
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.liste-tabelle td {
+  height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--linie);
+  vertical-align: middle;
+}
+
+.liste-tabelle tbody tr {
+  transition: background 0.15s ease;
+}
+
+.liste-tabelle tbody tr[class],
+.liste-tabelle tbody tr:has(a.liste-kuerzel) {
+  cursor: pointer;
+}
+
+.liste-tabelle tbody tr:hover td,
+.liste-tabelle tbody tr:focus-within td {
+  background: var(--flaeche-hoch);
+}
+
+.liste-kuerzel {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.liste-kuerzel:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.liste-kuerzel .seiten-marke {
+  display: inline-grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-right: 0.6rem;
+  font-size: 0.8rem;
+}
+
+.liste-zahl {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.liste-leise {
+  color: var(--text-leise);
+}
+
+.liste-rechts {
+  text-align: right;
+}
+
+.liste-stapel {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.liste-tabelle .bericht-liste-knoepfe {
+  justify-content: flex-end;
+}
+
+.liste-tabelle .pat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.leer {
+  display: grid;
+  justify-items: start;
+  gap: 0.25rem;
+}
+
+.leer .knopf {
+  margin-top: 0.5rem;
+}
+
+.laedt {
+  display: grid;
+  gap: 0.75rem;
+  padding-block: 1.5rem;
+}
+
+.laedt-zeile {
+  display: block;
+  height: 0.875rem;
+  border-radius: 999px;
+  background: var(--feld);
 }

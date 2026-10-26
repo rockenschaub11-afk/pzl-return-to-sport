@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { db, neueTestung } from '../db'
+import Laedt from '../Laedt'
 import { KATALOG } from '../katalog'
 import { datumDeutsch, isoDatum } from '../patienten/stammdaten'
 import { ART_TEXT, fortschritt, monateBisTestung, phaseAusMonaten, phasenStand, statusText } from '../testung/ablauf'
@@ -12,7 +13,7 @@ export default function TestungListe() {
   const patienten = useLiveQuery(() => db.patienten.orderBy('kuerzelNorm').toArray())
   const [auswahl, setAuswahl] = useState('')
 
-  if (!testungen || !patienten) return null
+  if (!testungen || !patienten) return <Laedt />
   const kuerzel = new Map(patienten.map((p) => [p.id, p.kuerzel]))
   const opDatum = new Map(patienten.map((p) => [p.id, p.opDatum]))
   const beschreibung = (t: (typeof testungen)[number]) => {
@@ -70,40 +71,63 @@ export default function TestungListe() {
         {offen.length === 0 ? (
           <p className="hinweis-leise">Keine angefangenen Testungen.</p>
         ) : (
-          <ul className="testung-liste">
-            {offen.map((t) => {
-              const b = beschreibung(t)
-              const f = fortschritt(t, b.ph.phase)
-              return (
-                <li key={t.id}>
-                  <Link to={`/testung/${t.id}`} className="testung-zeile">
-                    <span className="testung-kuerzel">{kuerzel.get(t.patientId) ?? '?'}</span>
-                    <span>{beschreibung(t).text}</span>
-                    <span className="testung-fortschritt">
-                      {f.erfasst} / {f.gesamt} Tests
-                    </span>
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
+          <div className="liste-rahmen">
+            <table className="liste-tabelle">
+              <thead>
+                <tr>
+                  <th>Kürzel</th>
+                  <th>Testung</th>
+                  <th>Fortschritt</th>
+                </tr>
+              </thead>
+              <tbody>
+                {offen.map((t) => (
+                  <tr key={t.id} onClick={() => navigate(`/testung/${t.id}`)}>
+                    <td>
+                      <Link to={`/testung/${t.id}`} className="liste-kuerzel">
+                        {kuerzel.get(t.patientId) ?? '?'}
+                      </Link>
+                    </td>
+                    <td>{beschreibung(t).text}</td>
+                    <td>{(() => {
+                      const f = fortschritt(t, beschreibung(t).ph.phase)
+                      return <span className="liste-zahl">{f.erfasst} / {f.gesamt} Tests</span>
+                    })()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
       {fertig.length > 0 && (
         <div className="karte block">
           <h3 className="block-titel">Zuletzt abgeschlossen</h3>
-          <ul className="testung-liste">
-            {fertig.map((t) => (
-              <li key={t.id}>
-                <Link to={`/testung/${t.id}`} className="testung-zeile">
-                  <span className="testung-kuerzel">{kuerzel.get(t.patientId) ?? '?'}</span>
-                  <span>{beschreibung(t).text}</span>
-                  <span className="testung-fortschritt">{statusText(t)}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="liste-rahmen">
+            <table className="liste-tabelle">
+              <thead>
+                <tr>
+                  <th>Kürzel</th>
+                  <th>Testung</th>
+                  <th>Stand</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fertig.map((t) => (
+                  <tr key={t.id} onClick={() => navigate(`/testung/${t.id}`)}>
+                    <td>
+                      <Link to={`/testung/${t.id}`} className="liste-kuerzel">
+                        {kuerzel.get(t.patientId) ?? '?'}
+                      </Link>
+                    </td>
+                    <td>{beschreibung(t).text}</td>
+                    <td><span className="status">{statusText(t)}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </section>

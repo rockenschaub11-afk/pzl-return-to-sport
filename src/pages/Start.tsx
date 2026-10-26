@@ -8,9 +8,9 @@ const SICHTBAR_S = 4
 
 // Kanäle von oben nach unten: Anteil der Höhe, Linienfarben, Stärke
 const SPUREN = [
-  { art: 'cmj', anteil: 0.44, farben: ['#4d9fff', '#4fe0f0'], breite: 2.4, deckkraft: 1 },
-  { art: 'ext', anteil: 0.28, farben: ['#8fc4ff'], breite: 1.8, deckkraft: 0.6 },
-  { art: 'dj', anteil: 0.28, farben: ['#4fe0f0'], breite: 1.8, deckkraft: 0.6 },
+  { art: 'cmj', anteil: 0.44, farben: ['#5ea8ea', '#36c5d6'], breite: 2.4, deckkraft: 1 },
+  { art: 'ext', anteil: 0.28, farben: ['#8cc2f0'], breite: 1.8, deckkraft: 0.6 },
+  { art: 'dj', anteil: 0.28, farben: ['#36c5d6'], breite: 1.8, deckkraft: 0.6 },
 ] as const
 
 function wenigerBewegung(): boolean {

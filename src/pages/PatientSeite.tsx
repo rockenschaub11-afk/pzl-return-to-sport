@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { db, type Testung } from '../db'
+import Laedt from '../Laedt'
 import { phaseNach } from '../katalog'
 import { letzterStand, lsiKennzahl, nachDatum } from '../patienten/uebersicht'
 import { BEGLEIT_OPS, GRAFTS, monateSeit, NIVEAUS, type Patient } from '../patienten/stammdaten'
@@ -29,7 +30,7 @@ export default function PatientSeite() {
   const [reiter, setReiter] = useState<ReiterId>('uebersicht')
   const starten = useNeueTestung(id)
 
-  if (patient === undefined) return <div className="platzhalter-karte karte" aria-busy="true" aria-label="Lädt" />
+  if (patient === undefined) return <Laedt />
   if (patient === null) {
     return (
       <div className="karte">
