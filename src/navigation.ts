@@ -1,6 +1,8 @@
 export interface Bereich {
   pfad: string
   titel: string
+  /** kurzer Name für die Seitenleiste (sonst titel) */
+  kurz?: string
   beschreibung: string
   etappe?: string // gesetzt = noch Platzhalter
 }
@@ -36,6 +38,7 @@ export const BEREICHE: Bereich[] = [
   {
     pfad: '/info',
     titel: 'Einstellungen/Info',
+    kurz: 'Info',
     beschreibung: 'Einstellungen, Testkatalog mit Schwellen und Quellen.',
   },
 ]

@@ -1,7 +1,7 @@
-import { Link, Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
-import DarstellungUmschalter from './Darstellung'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { KATALOG_FEHLER } from './katalog'
 import { BEREICHE, HINWEIS } from './navigation'
+import Seitenleiste from './Seitenleiste'
 import Bericht from './pages/Bericht'
 import BerichteListe from './pages/BerichteListe'
 import Info from './pages/Info'
@@ -12,8 +12,6 @@ import Start from './pages/Start'
 import TestungErfassen from './pages/TestungErfassen'
 import TestungListe from './pages/TestungListe'
 
-const logoUrl = `${import.meta.env.BASE_URL}logo-pzl.svg`
-
 export default function App() {
   const { pathname } = useLocation()
   const startseite = pathname === '/'
@@ -21,28 +19,8 @@ export default function App() {
 
   return (
     <div className="app">
-      <header className="kopf">
-        {/* Startseite zeigt das Logo groß in der Mitte – dort nur die Navigation */}
-        {!startseite && (
-          <Link to="/" className="kopf-marke" aria-label="Zur Startseite">
-            <span className="kopf-logo-chip">
-              <img className="kopf-logo" src={logoUrl} alt="Physio Zentrum Linz" />
-            </span>
-            <span className="kopf-titel">
-              <span className="kopf-titel-pzl">PZL</span> Return-to-Sport
-            </span>
-          </Link>
-        )}
-
-        <nav className="navigation" aria-label="Hauptnavigation">
-          {BEREICHE.map((b) => (
-            <NavLink key={b.pfad} to={b.pfad} end={b.pfad === '/'} className="nav-link">
-              {b.titel}
-            </NavLink>
-          ))}
-        </nav>
-        <DarstellungUmschalter />
-      </header>
+      {/* Startseite zeigt das Logo groß in der Mitte – dort nicht in der Leiste */}
+      <Seitenleiste mitLogo={!startseite} />
 
       {/* Prüfung beim Start: fehlerhafte Konfiguration sofort sichtbar machen */}
       {KATALOG_FEHLER.length > 0 && (

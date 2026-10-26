@@ -139,80 +139,202 @@ h3 {
   flex-direction: column;
 }
 
-/* ---------- Kopfleiste ---------- */
+/* ---------- Seitenleiste (DESIGNKONZEPT 5, 10.8) – in beiden Modi dunkel ---------- */
 
-.kopf {
-  position: sticky;
-  top: 0;
-  z-index: 10;
+.leiste {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 20;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem 2rem;
-  min-height: 56px;
-  padding: 0 1.5rem;
+  gap: 4px;
+  width: 88px;
+  padding: 14px 0;
   background: var(--tief);
-  color: #fff;
+  color: #a4adb8;
 }
 
-.kopf-marke {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0;
-  color: #fff;
-  text-decoration: none;
-}
-
-.kopf-logo-chip {
-  display: flex;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+.leiste-logo {
+  display: block;
+  width: 64px;
+  margin-bottom: 16px;
+  padding: 6px;
+  border-radius: 10px;
   background: #fff;
 }
 
-.kopf-logo {
+.leiste-logo img {
   display: block;
-  height: 30px;
-  width: auto;
+  width: 100%;
 }
 
-.kopf-titel {
-  font-weight: 600;
-  font-size: 1.1rem;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
+.leiste-logo-platz {
+  height: 16px;
 }
 
-.kopf-titel-pzl {
-  color: var(--pzl-tuerkis);
-}
-
-.navigation {
+.leiste-nav {
   display: flex;
-  flex-wrap: wrap;
-  align-self: stretch;
-  gap: 0 0.25rem;
-}
-
-.nav-link {
-  display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 0 0.85rem;
-  min-height: 56px;
-  border-bottom: 3px solid transparent;
-  color: rgb(255 255 255 / 0.72);
-  text-decoration: none;
+  gap: 4px;
+}
+
+.leiste-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 76px;
+  padding: 10px 0;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
   font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
   transition:
     color 0.15s ease,
-    border-color 0.15s ease;
+    background 0.15s ease;
 }
 
-/* Hell/Dunkel-Umschalter in der Kopfleiste (immer dunkel) */
+.leiste-link:hover {
+  color: #eef1f4;
+}
+
+.leiste-link.active {
+  background: rgb(255 255 255 / 0.06);
+  color: #eef1f4;
+}
+
+.leiste-link.active::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: -6px;
+  width: 3px;
+  border-radius: 3px;
+  background: #36c5d6;
+}
+
+.leiste-link:focus-visible,
+.leiste-logo:focus-visible,
+.leiste-mehr-menue a:focus-visible {
+  outline: 2px solid #eef1f4;
+  outline-offset: 2px;
+}
+
+.leiste-symbol {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.leiste-mehr {
+  display: none;
+}
+
+.leiste-unten {
+  margin-top: auto;
+}
+
+.leiste-mehr-menue {
+  display: none;
+}
+
+/* Inhalt rechts neben der Leiste */
+.app {
+  padding-left: 88px;
+}
+
+@media (max-width: 720px) {
+  .leiste {
+    inset: auto 0 0 0;
+    flex-direction: row;
+    width: auto;
+    height: 64px;
+    padding: 0 4px;
+  }
+
+  .leiste-logo,
+  .leiste-logo-platz,
+  .leiste-unten,
+  .leiste-link.nur-breit {
+    display: none;
+  }
+
+  .leiste-nav {
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .leiste-link {
+    width: auto;
+    min-width: 56px;
+    min-height: 44px;
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+
+  .leiste-link.active::before {
+    top: -1px;
+    right: 10px;
+    bottom: auto;
+    left: 10px;
+    width: auto;
+    height: 3px;
+  }
+
+  .leiste-mehr {
+    display: flex;
+  }
+
+  .leiste-mehr-menue {
+    position: fixed;
+    right: 8px;
+    bottom: 72px;
+    z-index: 30;
+    display: grid;
+    gap: 4px;
+    min-width: 220px;
+    padding: 8px;
+    border-radius: 14px;
+    background: var(--tief);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+  }
+
+  .leiste-mehr-menue a {
+    padding: 12px;
+    border-radius: 10px;
+    color: #eef1f4;
+    text-decoration: none;
+  }
+
+  .leiste-mehr-menue .darstellung {
+    width: max-content;
+    margin: 6px 12px;
+  }
+
+  .app {
+    padding-left: 0;
+    padding-bottom: 64px;
+  }
+}
+
+/* Hell/Dunkel-Umschalter (sitzt auf der dunklen Leiste) */
 .darstellung {
   display: flex;
-  margin-left: auto;
   padding: 3px;
   border-radius: 999px;
   background: rgb(255 255 255 / 0.08);
@@ -247,20 +369,6 @@ h3 {
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-.nav-link:hover {
-  color: #fff;
-}
-
-.nav-link.active {
-  color: #fff;
-  border-bottom-color: var(--pzl-tuerkis);
-}
-
-.nav-link:focus-visible {
-  outline: 2px solid var(--pzl-tuerkis);
-  outline-offset: -2px;
 }
 
 /* ---------- Inhalt ---------- */
@@ -817,7 +925,7 @@ h3 {
 
 .block-sprung {
   position: sticky;
-  top: 56px;
+  top: 8px;
   z-index: 5;
   display: flex;
   flex-wrap: wrap;
@@ -1165,8 +1273,8 @@ h3 {
 
 .testung-uebersicht {
   position: sticky;
-  top: 120px;
-  max-height: calc(100vh - 180px);
+  top: 72px;
+  max-height: calc(100vh - 96px);
   overflow-y: auto;
   padding: 1rem;
   border: 1px solid var(--rand);
@@ -1977,12 +2085,8 @@ fieldset:disabled .test-hinzu {
 /* ---------- Hinweis unten ---------- */
 
 .hinweis {
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-  padding: 0.45rem 1.5rem;
+  padding: 0.6rem 1.5rem;
   border-top: 1px solid var(--rand);
-  background: var(--flaeche);
   color: var(--text-leise);
   font-size: 0.9rem;
   font-weight: 500;
