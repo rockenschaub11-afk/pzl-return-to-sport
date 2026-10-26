@@ -5,6 +5,8 @@ import { datumDeutsch } from '../patienten/stammdaten'
 export interface Reihe {
   name: string
   farbe: string
+  /** gestrichelt – damit die Linien auch in Schwarz-Weiß unterscheidbar sind */
+  gestrichelt?: boolean
 }
 
 export interface Band {
@@ -100,7 +102,7 @@ export default function LinienDiagramm({ titel, punkte, reihen, einheit, ziel, b
           const pts = punkte.map((p, i) => ({ t: zeiten[i], v: p.werte[ri], datum: p.datum })).filter((p): p is { t: number; v: number; datum: string } => p.v !== null)
           return (
             <g key={r.name}>
-              <polyline points={pts.map((p) => `${x(p.t)},${y(p.v)}`).join(' ')} fill="none" stroke={r.farbe} strokeWidth={2.5} />
+              <polyline points={pts.map((p) => `${x(p.t)},${y(p.v)}`).join(' ')} fill="none" stroke={r.farbe} strokeWidth={2.5} strokeDasharray={r.gestrichelt ? '7 4' : undefined} />
               {pts.map((p) => (
                 <circle key={p.datum} cx={x(p.t)} cy={y(p.v)} r={4.5} fill="#fff" stroke={r.farbe} strokeWidth={2.5}>
                   <title>{`${r.name} ${datumDeutsch(p.datum)}: ${zahl(p.v)} ${einheit}`}</title>
@@ -121,7 +123,7 @@ export default function LinienDiagramm({ titel, punkte, reihen, einheit, ziel, b
         <p className="diagramm-legende">
           {reihen.map((r) => (
             <span key={r.name}>
-              <i style={{ background: r.farbe }} /> {r.name}
+              <i style={r.gestrichelt ? { height: 0, borderTop: `3px dashed ${r.farbe}` } : { background: r.farbe }} /> {r.name}
             </span>
           ))}
         </p>

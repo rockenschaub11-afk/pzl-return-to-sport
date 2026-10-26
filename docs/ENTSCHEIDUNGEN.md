@@ -284,6 +284,13 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 | Arztbericht (PDF) | Kopf mit Logo/Praxis, Kürzel (+ Name nur temporär), Stammdaten, Kern-Satz + ausgewählte Metriken mit Wert, LSI, Ampel, Quelle; Vorschlag + Entscheidung mit Begründung; Verlauf; Unterschriftfeld; Hinweis „Ersetzt keine ärztliche Freigabe“ |
 | Pat./Trainer-Bericht | 1 Seite, nur Output-Werte + Ampeln, Spinnennetz L/R, „Was fehlt noch?“ in Alltagssprache |
 
+**Umsetzung (Nachtrag 26.10.2026, Etappe 9, von Philipp bestätigt):**
+- Druckansicht je Testung (Knopf „Bericht“ in der Testung, Menü „Berichte“), Umschalter Arztbericht / Pat./Trainer-Bericht, „Drucken / Als PDF speichern“ über den Browser. Kopfleiste, Navigation und Hinweisleiste werden nicht gedruckt.
+- **Name** nur im Eingabefeld der Druckansicht (Arbeitsspeicher), nie in IndexedDB/localStorage, nicht im Dateinamen (Seitentitel nur mit Kürzel).
+- Testungen „in Arbeit“ druckbar, deutlich als **ENTWURF** markiert; Entscheidung erscheint erst nach Abschluss.
+- Arztbericht: Stammdaten, Phase (inkl. „übersteuert“ + Begründung), RTS-Vorschlag + Beurteilung mit Begründung (nur Endtestung), alle Kriterien mit Wert, Ziel, Bewertung (Zeichen ✓ ~ ✗ + Text) und Quelle, Meloq-Kern-Satz-Strategy und die persönlich gewählten Zusatzmetriken (ohne Ampel), „klinisch anders beurteilt“ markiert; Verlauf als Tabelle (Hauptwert der Pflicht-Tests, bis zu 6 Testungen bis zu dieser) + ein wählbares Diagramm (Standard Knie-Extension HHD); Unterschriftfeld.
+- Pat./Trainer-Bericht (1 Seite): Leistungswerte aus HHD, Platten, Hops, Kraftausdauer (ohne Klinik, Fragebögen und Driver-Werte), Klinik in einer Zeile, Spinnennetz mit LSI je Test mit Seitenvergleich (gesund = 100 %, Ziel 90 %), „Was fehlt noch?“ in Alltagssprache; Ergebnis „Kriterien erfüllt / (noch) nicht erfüllt“ nur bei abgeschlossener Endtestung, mit „Ersetzt keine ärztliche Freigabe“.
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.

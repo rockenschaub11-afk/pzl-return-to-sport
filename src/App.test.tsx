@@ -38,8 +38,8 @@ describe('App-Rahmen', () => {
   })
 
   it('öffnet die gewählte Platzhalterseite', () => {
-    zeige('/berichte')
-    expect(screen.getByRole('heading', { level: 2, name: 'Berichte' })).toBeInTheDocument()
+    zeige('/sicherung')
+    expect(screen.getByRole('heading', { level: 2, name: 'Sicherung' })).toBeInTheDocument()
   })
 
   it('zeigt auf der Startseite den Live-Monitor ohne Knöpfe und ohne Zahlen', () => {

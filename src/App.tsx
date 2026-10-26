@@ -1,6 +1,8 @@
 import { Link, Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { KATALOG_FEHLER } from './katalog'
 import { BEREICHE, HINWEIS } from './navigation'
+import Bericht from './pages/Bericht'
+import BerichteListe from './pages/BerichteListe'
 import Info from './pages/Info'
 import PatientenListe from './pages/PatientenListe'
 import PatientFormular from './pages/PatientFormular'
@@ -61,6 +63,8 @@ export default function App() {
           <Route path="/info" element={<Info />} />
           <Route path="/testung" element={<TestungListe />} />
           <Route path="/testung/:id" element={<TestungErfassen />} />
+          <Route path="/berichte" element={<BerichteListe />} />
+          <Route path="/berichte/:id/:art" element={<Bericht />} />
           {BEREICHE.filter((b) => b.etappe).map((b) => (
             <Route key={b.pfad} path={b.pfad} element={<Platzhalter bereich={b} />} />
           ))}

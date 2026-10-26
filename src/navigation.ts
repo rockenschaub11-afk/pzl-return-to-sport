@@ -26,7 +26,6 @@ export const BEREICHE: Bereich[] = [
     pfad: '/berichte',
     titel: 'Berichte',
     beschreibung: 'Arztbericht und Pat./Trainer-Bericht als PDF.',
-    etappe: 'Etappe 9',
   },
   {
     pfad: '/sicherung',

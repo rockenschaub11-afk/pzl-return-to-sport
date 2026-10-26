@@ -144,9 +144,14 @@ export default function TestungErfassen() {
             {monate !== null && ` · ${monate} Monate bis zur Testung`}
           </p>
         </div>
-        <span className={`speicher-status${speichert ? ' speicher-laeuft' : ''}`} aria-live="polite">
-          {speichert ? 'speichert …' : '✓ gespeichert'}
-        </span>
+        <div className="testung-kopf-aktionen">
+          <span className={`speicher-status${speichert ? ' speicher-laeuft' : ''}`} aria-live="polite">
+            {speichert ? 'speichert …' : '✓ gespeichert'}
+          </span>
+          <Link to={`/berichte/${testung.id}/arzt`} className="knopf">
+            <span>Bericht</span>
+          </Link>
+        </div>
       </div>
 
       {abgeschlossen && (

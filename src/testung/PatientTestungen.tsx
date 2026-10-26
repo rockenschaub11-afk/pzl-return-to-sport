@@ -16,9 +16,11 @@ export default function PatientTestungen({ patientId }: { patientId: string }) {
   const patient = useLiveQuery(() => db.patienten.get(patientId), [patientId])
 
   async function starten() {
-    if (!patient) return
+    // Klick kann vor dem Laden des Kürzels kommen – dann direkt nachlesen
+    const p = patient ?? (await db.patienten.get(patientId))
+    if (!p) return
     const heute = isoDatum(new Date())
-    const phase = phaseAusMonaten(monateBisTestung(patient.opDatum, heute) ?? 0)
+    const phase = phaseAusMonaten(monateBisTestung(p.opDatum, heute) ?? 0)
     navigate(`/testung/${await neueTestung(patientId, heute, phase)}`)
   }
 

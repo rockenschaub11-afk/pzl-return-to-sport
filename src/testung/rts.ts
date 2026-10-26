@@ -36,7 +36,7 @@ export interface RtsVorschlag {
 
 const ZEICHEN = { '>': '>', '>=': '≥', '<': '<', '<=': '≤' } as const
 
-function wertText(e: KriteriumErgebnis): string {
+export function wertText(e: KriteriumErgebnis): string {
   const k = e.kriterium
   if (typeof e.wert === 'boolean') return e.wert ? 'ja' : 'nein'
   if (typeof e.wert === 'string') return e.wert
@@ -47,7 +47,7 @@ function wertText(e: KriteriumErgebnis): string {
 
 const einheit = (k: Kriterium) => (k.einheit === '%' ? ' %' : k.einheit ? ` ${k.einheit}` : '')
 
-function zielText(e: KriteriumErgebnis): string {
+export function zielText(e: KriteriumErgebnis): string {
   const k = e.kriterium
   if (k.art === 'auswahl') return k.erlaubt?.join(' / ') ?? ''
   if (k.art === 'janein') return 'ja'
@@ -55,20 +55,19 @@ function zielText(e: KriteriumErgebnis): string {
   return `${ZEICHEN[k.vergleich]} ${e.schwelle.wert.toLocaleString('de-AT')}${einheit(k)}`
 }
 
+/** Gemessene Pflicht-Kriterien, die nicht grün sind; Frauen-Regel (F26) blockiert nicht. */
+export function pflichtVerfehlt(a: TestAuswertung): KriteriumErgebnis[] {
+  return a.ergebnis.kriterien.filter(
+    (e) => e.kriterium.status === 'pflicht' && e.zustand === 'bewertet' && e.ampel !== 'gruen' && !(!e.zaehlt && !!e.kriterium.frauenWuenschenswert),
+  )
+}
+
 /** Pflicht-Status eines Tests nach Ampel: nur grün zählt; Frauen-Regel (F26) blockiert nicht. */
 export function pflichtStatus(a: TestAuswertung): { status: PflichtStatus; gruende: string[] } | null {
   const pflicht = a.ergebnis.kriterien.filter((e) => e.kriterium.status === 'pflicht' && e.zustand !== 'nicht_anwendbar' && e.zustand !== 'info')
   if (pflicht.length === 0) return null
-  const gruende: string[] = []
-  let fehlt = false
-  for (const e of pflicht) {
-    if (e.zustand === 'offen') {
-      fehlt = true
-      continue
-    }
-    const frauenAusnahme = !e.zaehlt && !!e.kriterium.frauenWuenschenswert
-    if (e.ampel !== 'gruen' && !frauenAusnahme) gruende.push(`${e.kriterium.bezeichnung} ${wertText(e)} – Ziel ${zielText(e)}`)
-  }
+  const fehlt = pflicht.some((e) => e.zustand === 'offen')
+  const gruende = pflichtVerfehlt(a).map((e) => `${e.kriterium.bezeichnung} ${wertText(e)} – Ziel ${zielText(e)}`)
   if (gruende.length > 0) return { status: 'nicht_erfuellt', gruende }
   return { status: fehlt ? 'fehlt' : 'erfuellt', gruende: fehlt ? ['noch nicht (vollständig) gemessen'] : [] }
 }
