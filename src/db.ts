@@ -19,10 +19,17 @@ export interface Testung {
   geaendertAm: string
 }
 
+/** Einstellungen dieses Laptops, z. B. die persönliche Meloq-Auswahl (wird in Etappe 10 mitgesichert). */
+export interface Einstellung {
+  id: string
+  wert: unknown
+}
+
 // Alle Daten liegen nur in der IndexedDB dieses Browsers – nichts verlässt den Laptop.
 export const db = new Dexie('pzl-return-to-sport') as Dexie & {
   patienten: EntityTable<Patient, 'id'>
   testungen: EntityTable<Testung, 'id'>
+  einstellungen: EntityTable<Einstellung, 'id'>
 }
 
 db.version(1).stores({
@@ -33,6 +40,12 @@ db.version(1).stores({
 db.version(2).stores({
   patienten: 'id, &kuerzelNorm, geaendertAm',
   testungen: 'id, patientId, geaendertAm',
+})
+
+db.version(3).stores({
+  patienten: 'id, &kuerzelNorm, geaendertAm',
+  testungen: 'id, patientId, geaendertAm',
+  einstellungen: 'id',
 })
 
 export class KuerzelVergebenFehler extends Error {
@@ -100,6 +113,10 @@ export async function speichereTestung(testung: Testung): Promise<void> {
 
 export async function loescheTestung(id: string): Promise<void> {
   await db.testungen.delete(id)
+}
+
+export async function speichereEinstellung(id: string, wert: unknown): Promise<void> {
+  await db.einstellungen.put({ id, wert })
 }
 
 /** Bittet den Browser, die Daten nicht automatisch zu löschen, wenn der Speicher knapp wird. */

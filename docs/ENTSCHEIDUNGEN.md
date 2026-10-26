@@ -165,6 +165,15 @@ Sprunghöhe (aus Flugzeit), Flugzeit, Peak Force (Propulsion) L/R in kg, Peak Po
 Alle weiteren Metriken frei wählbar (nach O/D/S gruppiert); Auswahl wird als persönlicher Standard am Laptop gespeichert. Strategy-Werte ohne Ampel, aber mit LSI und Verlauf.
 Quellen: Hawkin Dynamics „ODS System“; McMahon et al., Jump Framework (Strength Cond J 2021).
 
+**Umsetzung (Nachtrag 26.10.2026, Etappe 5, von Philipp bestätigt):**
+- Gilt für CMJ, SL-CMJ, SL-Drop-Jump. Metriken-Liste in `config/meloq.json`.
+- Kern-Satz-Strategy (Contraction Time, Kontaktzeit) als Spalte in der Versuchstabelle; Anzeige vom gewerteten Versuch, ohne Ampel, mit LSI.
+- Zusatzmetriken nur für den gewerteten Versuch (größte Höhe), gruppiert nach O/D/S, **ohne Ampel**; LSI (einbeinig) bzw. Asymmetrie (CMJ links/rechts).
+- Eingabe genau wie in der Meloq-App; Anzeige zusätzlich Kraft → N/kg, Power → W/kg, RFD → N/s; Zeiten in ms.
+- Auswahl = ein persönlicher Standard je Laptop (IndexedDB, wird in Etappe 10 mitgesichert); änderbar in der Testung („Metriken wählen“) und unter Einstellungen/Info. Abgewählte Werte bleiben gespeichert.
+- Start-Standard: Flugzeit, Peak Force L/R, Peak Power L/R.
+- Kurze, aufklappbare Erklärung „Was heißt Output / Driver / Strategy?“ – damit es ohne Vorwissen bedienbar bleibt.
+
 ### 6.5 Handdynamometer VALD DynaMo
 Anzeige in kg/N, Peak Force, Zeit bis Peak, RFD. Hinweis: Die DynaMo-App verlangt Vor-/Nachname, Geburtsdatum, Geschlecht (VALD-Cloud) – betrifft die VALD-Nutzung, nicht diese App.
 

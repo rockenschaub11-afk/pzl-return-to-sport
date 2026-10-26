@@ -1,0 +1,55 @@
+{
+  "_info": [
+    "Meloq-Metriken nach dem ODS-Framework (docs/ENTSCHEIDUNGEN.md 6.1, 6.4). Eingabe genau wie in der Meloq-App.",
+    "ods: output | driver | strategy. seitig: Meloq zeigt beim beidbeinigen CMJ links/rechts getrennt (bei einbeinigen Tests gilt jeder Wert ohnehin je Bein).",
+    "relativ: Anzeige zusätzlich zum Meloq-Wert – kg → N/kg, W → W/kg, kg/s → N/s.",
+    "kern: fester Kern-Satz je Test (bestimmt die Ampel bzw. wird immer angezeigt); zusatz: frei wählbar; standard: Vorauswahl, bevor jemand etwas wählt."
+  ],
+  "ods": {
+    "output": { "name": "Output", "kurz": "Ergebnis", "erklaerung": "Was am Ende herauskommt – z. B. Sprunghöhe oder Flugzeit." },
+    "driver": { "name": "Driver", "kurz": "Antrieb", "erklaerung": "Womit das Ergebnis erreicht wird – Kraft, Impuls, Power, Kraftanstieg." },
+    "strategy": { "name": "Strategy", "kurz": "Strategie", "erklaerung": "Wie gesprungen wird – z. B. wie lange die Ausholbewegung oder der Bodenkontakt dauert." }
+  },
+  "odsHinweis": "Dieselbe Sprunghöhe kann mit unterschiedlichem Antrieb und unterschiedlicher Strategie entstehen – nach VKB-OP wird oft länger ausgeholt oder ein Bein entlastet. Darum lohnt neben dem Output der Blick auf Driver und Strategy.",
+  "odsQuelle": "Hawkin Dynamics, ODS System; McMahon et al., Jump Framework (Strength Cond J 2021)",
+  "kern": {
+    "cmj": [
+      { "id": "hoehe", "name": "Sprunghöhe", "ods": "output" },
+      { "id": "net_impulse", "name": "Net Impulse L/R (→ Ns/kg, Asymmetrie)", "ods": "driver" },
+      { "id": "ct", "name": "Contraction Time", "ods": "strategy", "einheit": "ms" }
+    ],
+    "sl_cmj": [
+      { "id": "hoehe", "name": "Sprunghöhe je Bein", "ods": "output" },
+      { "id": "net_impulse", "name": "Net Impulse je Bein", "ods": "driver" },
+      { "id": "ct", "name": "Contraction Time je Bein", "ods": "strategy", "einheit": "ms" }
+    ],
+    "sl_dj": [
+      { "id": "hoehe", "name": "Sprunghöhe + RSI", "ods": "output" },
+      { "id": "kz", "name": "Kontaktzeit je Bein", "ods": "strategy", "einheit": "ms" }
+    ]
+  },
+  "zusatz": [
+    { "id": "flugzeit", "name": "Flugzeit", "ods": "output", "einheit": "ms", "seitig": false, "tests": ["cmj", "sl_cmj", "sl_dj"] },
+    { "id": "peak_force", "name": "Peak Force (Propulsion)", "ods": "driver", "einheit": "kg", "relativ": "N/kg", "seitig": true, "tests": ["cmj", "sl_cmj", "sl_dj"] },
+    { "id": "peak_power", "name": "Peak Power (Propulsion)", "ods": "driver", "einheit": "W", "relativ": "W/kg", "seitig": true, "tests": ["cmj", "sl_cmj", "sl_dj"] },
+    { "id": "peak_velocity", "name": "Peak Velocity", "ods": "driver", "einheit": "m/s", "seitig": false, "tests": ["cmj", "sl_cmj"] },
+    { "id": "peak_power_braking", "name": "Peak Power (Braking)", "ods": "driver", "einheit": "W", "relativ": "W/kg", "seitig": true, "tests": ["cmj", "sl_cmj"] },
+    { "id": "net_peak_braking_force", "name": "Net Peak Braking Force", "ods": "driver", "einheit": "kg", "relativ": "N/kg", "seitig": false, "tests": ["cmj", "sl_cmj"] },
+    { "id": "rfd_braking", "name": "RFD 0–100 ms (Braking)", "ods": "driver", "einheit": "kg/s", "relativ": "N/s", "seitig": true, "tests": ["cmj", "sl_cmj"] },
+    {
+      "id": "meloq_rsi",
+      "name": "Meloq-RSI (Flugzeit / Kontraktionszeit)",
+      "ods": "strategy",
+      "einheit": "",
+      "seitig": false,
+      "tests": ["cmj", "sl_cmj"],
+      "hinweis": "Nicht mit Read-RSI-mod (Höhe/Zeit) vergleichbar – keine Schwelle."
+    }
+  ],
+  "standard": {
+    "cmj": ["flugzeit", "peak_force", "peak_power"],
+    "sl_cmj": ["flugzeit", "peak_force", "peak_power"],
+    "sl_dj": ["flugzeit", "peak_force", "peak_power"]
+  },
+  "nichtMessbar": "Exzentrischer Bremsimpuls (eccentric deceleration impulse) wird von Meloq nicht angezeigt – die Read-Schwellen dazu entfallen."
+}

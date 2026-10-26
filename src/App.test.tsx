@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
 import App from './App'
-import { db, speicherePatient } from './db'
+import { db, neueEndtestung, speicherePatient } from './db'
 import { BEREICHE, HINWEIS } from './navigation'
 import { LEER } from './patienten/stammdaten'
 
@@ -91,6 +91,25 @@ describe('Endtestung', () => {
       const [t] = await db.testungen.toArray()
       expect(t.eingaben.hhd_knie_ext.b1).toBe('63')
     })
+  })
+})
+
+describe('Meloq-Metriken', () => {
+  it('bietet den Standard an und merkt sich eine geänderte Auswahl', async () => {
+    const user = userEvent.setup()
+    await db.einstellungen.clear()
+    const patientId = await speicherePatient({ ...LEER, kuerzel: 'TT-1999', seite: 'rechts', opDatum: '2025-10-01', niveau: 'freizeit' })
+    const testungId = await neueEndtestung(patientId, '2026-10-26')
+    zeige(`/testung/${testungId}`)
+
+    const cmj = within(await screen.findByRole('article', { name: /^CMJ/ }))
+    expect(cmj.getByRole('columnheader', { name: 'Contraction Time (ms)' })).toBeInTheDocument()
+    expect(cmj.getByLabelText('Peak Force (Propulsion) Links')).toBeInTheDocument()
+    expect(cmj.queryByLabelText('Peak Velocity', { selector: 'input[inputmode=decimal]' })).not.toBeInTheDocument()
+
+    await user.click(cmj.getByLabelText('Peak Velocity', { selector: 'input[type=checkbox]' }))
+    expect(await cmj.findByLabelText('Peak Velocity', { selector: 'input[inputmode=decimal]' })).toBeInTheDocument()
+    expect((await db.einstellungen.get('meloqAuswahl'))?.wert).toMatchObject({ cmj: ['flugzeit', 'peak_force', 'peak_power', 'peak_velocity'] })
   })
 })
 

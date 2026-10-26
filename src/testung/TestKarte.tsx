@@ -3,7 +3,10 @@ import { protokollNach } from '../katalog'
 import type { TestDef } from '../katalog/typen'
 import type { KriteriumErgebnis, TestErgebnis } from '../rechnen/bewertung'
 import { ERFASSUNG, KOOS_SUBSKALEN, VERSUCHE, type Berechnung, type TestEingabe } from './erfassung'
+import { istMeloqTest } from '../katalog/meloq'
 import Ladebalken, { AMPEL_TEXT, AmpelMarke } from './Ladebalken'
+import MeloqBereich, { KernStrategie } from './MeloqBereich'
+import type { MeloqAuswahl } from './meloqAuswahl'
 
 export interface Seitennamen {
   gesund: string
@@ -18,6 +21,9 @@ interface Props {
   berechnung: Berechnung
   ergebnis: TestErgebnis
   koerpergewichtFehlt: boolean
+  /** persönlicher Meloq-Standard (nur Platten-Tests) */
+  meloqAuswahl?: MeloqAuswahl
+  koerpergewichtKg: number | null
 }
 
 const zahl = (v: number, nachkomma = 1) =>
@@ -157,17 +163,22 @@ function Eingaben({ test, eingabe: e, setze, seiten, berechnung }: Props) {
     case 'cmj':
       return (
         <Raster
-          kopf={['Sprunghöhe (cm)', 'Net Impulse L (kg·s)', 'Net Impulse R (kg·s)']}
+          kopf={['Sprunghöhe (cm)', 'Net Impulse L (kg·s)', 'Net Impulse R (kg·s)', 'Contraction Time (ms)']}
           zeilen={VERSUCHE.map((n) => ({
             titel: `Versuch ${n}`,
-            zellen: (['hoehe', 'impL', 'impR'] as const).map((f) => <Zahl key={f} wert={e[`v${n}_${f}`]} onChange={(v) => setze(`v${n}_${f}`, v)} label={`Versuch ${n} ${f}`} />),
+            zellen: (['hoehe', 'impL', 'impR', 'ct'] as const).map((f) => <Zahl key={f} wert={e[`v${n}_${f}`]} onChange={(v) => setze(`v${n}_${f}`, v)} label={`Versuch ${n} ${f}`} />),
           }))}
         />
       )
     case 'sl_sprung':
-      return <Raster kopf={['Sprunghöhe (cm)', 'Net Impulse (kg·s)']} zeilen={sprungSeiten([['hoehe', 'Höhe'], ['imp', 'Net Impulse']])} />
+      return (
+        <Raster
+          kopf={['Sprunghöhe (cm)', 'Net Impulse (kg·s)', 'Contraction Time (ms)']}
+          zeilen={sprungSeiten([['hoehe', 'Höhe'], ['imp', 'Net Impulse'], ['ct', 'Contraction Time']])}
+        />
+      )
     case 'sl_dj':
-      return <Raster kopf={['Sprunghöhe (cm)', 'RSI']} zeilen={sprungSeiten([['hoehe', 'Höhe'], ['rsi', 'RSI']])} />
+      return <Raster kopf={['Sprunghöhe (cm)', 'RSI', 'Kontaktzeit (ms)']} zeilen={sprungSeiten([['hoehe', 'Höhe'], ['rsi', 'RSI'], ['kz', 'Kontaktzeit']])} />
     default:
       return null
   }
@@ -218,9 +229,9 @@ export default function TestKarte(props: Props) {
   const mitHebel = art === 'kraft'
 
   return (
-    <article className="test-karte" id={`test-${test.id}`}>
+    <article className="test-karte" id={`test-${test.id}`} aria-labelledby={`titel-${test.id}`}>
       <header className="test-kopf">
-        <h4>
+        <h4 id={`titel-${test.id}`}>
           {test.name}
           {test.optional && <span className="chip">optional</span>}
         </h4>
@@ -262,6 +273,18 @@ export default function TestKarte(props: Props) {
         <Eingaben {...props} />
       </div>
 
+      {istMeloqTest(test.id) && props.meloqAuswahl && (
+        <MeloqBereich
+          test={test.id}
+          eingabe={e}
+          setze={setze}
+          seiten={props.seiten}
+          berechnung={b}
+          auswahl={props.meloqAuswahl}
+          kg={props.koerpergewichtKg}
+        />
+      )}
+
       {mitMehr && (
         <details className="test-mehr" open={!!(e.hebel || e.vor)}>
           <summary>mehr</summary>
@@ -276,6 +299,7 @@ export default function TestKarte(props: Props) {
         {ergebnis.kriterien.map((k) => (
           <KriteriumZeile key={k.kriterium.id} e={k} />
         ))}
+        {istMeloqTest(test.id) && <KernStrategie test={test.id} eingabe={e} berechnung={b} seiten={props.seiten} />}
         {b.lsiVorverletzung !== null && (
           <p className="test-zusatz">LSI zur Vorverletzung: {zahl(b.lsiVorverletzung, 1)} %</p>
         )}

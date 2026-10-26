@@ -1,7 +1,10 @@
 import { Fragment } from 'react'
 import { KATALOG, protokollNach } from '../katalog'
 import { BLOCK_NAMEN, BLOECKE, PHASEN_IDS, STATUS_NAMEN, type Kriterium, type PhaseId, type TestDef } from '../katalog/typen'
+import { MELOQ, MELOQ_TESTS } from '../katalog/meloq'
 import { schwelleFuer } from '../rechnen/bewertung'
+import { useMeloqAuswahl } from '../testung/meloqAuswahl'
+import MetrikWahl, { OdsErklaerung } from '../testung/MetrikWahl'
 
 const zahl = (v: number, nachkomma?: number) =>
   v.toLocaleString('de-AT', { minimumFractionDigits: nachkomma ?? 0, maximumFractionDigits: Math.max(nachkomma ?? 0, 2) })
@@ -30,6 +33,7 @@ function StatusMarke({ status }: { status: Kriterium['status'] }) {
 
 export default function Info() {
   const { regeln, phasen } = KATALOG
+  const meloqAuswahl = useMeloqAuswahl()
   return (
     <section>
       <div className="seitenkopf">
@@ -40,6 +44,27 @@ export default function Info() {
       </div>
 
       <div className="karte kat-regeln">
+        <h3>Meloq-Metriken (persönlicher Standard)</h3>
+        <p>
+          Welche weiteren Meloq-Werte in der Testung zum Eintragen angeboten werden. Der Kern-Satz ist immer dabei. Die Auswahl gilt für diesen
+          Laptop und lässt sich auch direkt in der Testung unter „Metriken wählen“ ändern.
+        </p>
+        <OdsErklaerung />
+        {meloqAuswahl && (
+          <div className="meloq-einstellung">
+            {MELOQ_TESTS.map((t) => (
+              <div key={t}>
+                <h4>{KATALOG.tests.find((x) => x.id === t)?.name}</h4>
+                <p className="hinweis-leise">Kern-Satz: {MELOQ.kern[t].map((k) => k.name).join(' · ')}</p>
+                <MetrikWahl test={t} auswahl={meloqAuswahl} />
+              </div>
+            ))}
+          </div>
+        )}
+        <p className="hinweis-leise">{MELOQ.nichtMessbar}</p>
+      </div>
+
+      <div className="karte kat-regeln kat-block">
         <h3>Testkatalog & Schwellen</h3>
         <p>
           Alle Schwellen sind fest in der App hinterlegt (Änderung nur per Update). Jede Schwelle trägt ihre Quelle.

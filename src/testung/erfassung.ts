@@ -91,6 +91,8 @@ export interface Berechnung {
   nmProKg?: { gesund: number | null; betroffen: number | null }
   /** relative Werte brauchen das Körpergewicht */
   brauchtKoerpergewicht: boolean
+  /** gewerteter Versuch (größte Sprunghöhe) – für Kern-Satz und Zusatzmetriken */
+  besterVersuch: Partial<Record<'gesamt' | 'gesund' | 'betroffen', number>>
 }
 
 interface Kontext {
@@ -108,7 +110,7 @@ function besterSprung(e: TestEingabe, praefix: string, felder: string[]) {
     const h = parseZahl(e[`${praefix}${n}_hoehe`])
     if (h === null) continue
     if (!bester || h > (bester.hoehe ?? -Infinity)) {
-      bester = { hoehe: h }
+      bester = { hoehe: h, n }
       for (const f of felder) bester[f] = parseZahl(e[`${praefix}${n}_${f}`])
     }
   }
@@ -120,7 +122,10 @@ export function berechne(test: TestDef, e: TestEingabe, kontext: Kontext): Berec
   const kg = kontext.koerpergewichtKg && kontext.koerpergewichtKg > 0 ? kontext.koerpergewichtKg : null
   const grenze = (kontext.regeln ?? KATALOG.regeln).variationskoeffizientWarnungUeber
   const zeitTest = !!test.zeitTest
-  const ergebnis: Berechnung = { werte: {}, lsiVorverletzung: null, streuung: [], brauchtKoerpergewicht: false }
+  const ergebnis: Berechnung = { werte: {}, lsiVorverletzung: null, streuung: [], brauchtKoerpergewicht: false, besterVersuch: {} }
+  const merke = (wo: 'gesamt' | 'gesund' | 'betroffen', s: Record<string, number | null> | null) => {
+    if (s?.n) ergebnis.besterVersuch[wo] = s.n
+  }
 
   const pruefeStreuung = (werte: (number | null)[], seite: 'gesund' | 'betroffen' | 'beide') => {
     const cv = variationskoeffizient(werte)
@@ -176,6 +181,7 @@ export function berechne(test: TestDef, e: TestEingabe, kontext: Kontext): Berec
     case 'cmj': {
       pruefeStreuung(versuche(e, 'v', 'hoehe'), 'beide')
       const s = besterSprung(e, 'v', ['impL', 'impR'])
+      merke('gesamt', s)
       ergebnis.werte.hoehe = s?.hoehe ?? null
       const l = s?.impL ?? null
       const r = s?.impR ?? null
@@ -189,6 +195,8 @@ export function berechne(test: TestDef, e: TestEingabe, kontext: Kontext): Berec
       pruefeStreuung(versuche(e, 'b', 'hoehe'), 'betroffen')
       const g = besterSprung(e, 'g', ['imp'])
       const b = besterSprung(e, 'b', ['imp'])
+      merke('gesund', g)
+      merke('betroffen', b)
       const gh = g?.hoehe ?? null
       const bh = b?.hoehe ?? null
       ergebnis.seiten = { gesund: gh, betroffen: bh, einheit: 'cm' }
@@ -207,6 +215,8 @@ export function berechne(test: TestDef, e: TestEingabe, kontext: Kontext): Berec
       pruefeStreuung(versuche(e, 'b', 'hoehe'), 'betroffen')
       const g = besterSprung(e, 'g', ['rsi'])
       const b = besterSprung(e, 'b', ['rsi'])
+      merke('gesund', g)
+      merke('betroffen', b)
       const gh = g?.hoehe ?? null
       const bh = b?.hoehe ?? null
       ergebnis.seiten = { gesund: gh, betroffen: bh, einheit: 'cm' }

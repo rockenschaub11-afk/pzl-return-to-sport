@@ -9,6 +9,7 @@ import { bewerteTest, type TestErgebnis } from '../rechnen/bewertung'
 import { ENDTESTUNG_PHASE, ENDTESTUNG_TESTS, sichtbareTests } from '../testung/ablauf'
 import { berechne, hatEingabe, parseZahl, type Berechnung } from '../testung/erfassung'
 import { AmpelMarke } from '../testung/Ladebalken'
+import { useMeloqAuswahl } from '../testung/meloqAuswahl'
 import TestKarte, { type Seitennamen } from '../testung/TestKarte'
 
 const SPEICHER_VERZOEGERUNG_MS = 400
@@ -23,6 +24,7 @@ export default function TestungErfassen() {
   const [speichert, setSpeichert] = useState(false)
   const [loeschenFragen, setLoeschenFragen] = useState(false)
   const zuletzt = useRef<string>('')
+  const meloqAuswahl = useMeloqAuswahl()
 
   // einmal laden – danach ist der lokale Stand führend
   useEffect(() => {
@@ -167,6 +169,8 @@ export default function TestungErfassen() {
                         berechnung={a.berechnung}
                         ergebnis={a.ergebnis}
                         koerpergewichtFehlt={kgFehlt}
+                        koerpergewichtKg={kg}
+                        meloqAuswahl={meloqAuswahl}
                       />
                       {t.optional && !hatEingabe(testung.eingaben[t.id]) && (
                         <button type="button" className="text-knopf test-entfernen" onClick={() => optionalWeg(t.id)}>
