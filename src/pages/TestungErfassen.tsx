@@ -1,18 +1,23 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { db, loescheTestung, speichereTestung, type Testung } from '../db'
+import { db, loescheTestung, speichereEinstellung, speichereTestung, type Entscheidung, type Testung } from '../db'
 import { KATALOG, protokollNach } from '../katalog'
 import { BLOCK_NAMEN, BLOECKE, type TestDef } from '../katalog/typen'
 import { datumDeutsch, monateSeit, TEGNER_STUFEN, type Patient } from '../patienten/stammdaten'
-import { bewerteTest, type TestErgebnis } from '../rechnen/bewertung'
-import { ENDTESTUNG_PHASE, ENDTESTUNG_TESTS, sichtbareTests } from '../testung/ablauf'
-import { berechne, hatEingabe, parseZahl, type Berechnung } from '../testung/erfassung'
+import type { TestErgebnis } from '../rechnen/bewertung'
+import { ENDTESTUNG_PHASE, ENDTESTUNG_TESTS, sichtbareTests, werteAus, type TestAuswertung } from '../testung/ablauf'
+import ErgebnisEntscheidung from '../testung/ErgebnisEntscheidung'
+import { hatEingabe, parseZahl } from '../testung/erfassung'
+import KlinischAnders from '../testung/KlinischAnders'
+import { pflichtStatus, rtsVorschlag } from '../testung/rts'
+import RtsKasten from '../testung/RtsKasten'
 import { AmpelMarke } from '../testung/Ladebalken'
 import { useMeloqAuswahl } from '../testung/meloqAuswahl'
 import TestKarte, { type Seitennamen } from '../testung/TestKarte'
 
 const SPEICHER_VERZOEGERUNG_MS = 400
+const THERAPEUT_SCHLUESSEL = 'therapeutKuerzel'
 
 export default function TestungErfassen() {
   const { id } = useParams()
@@ -25,6 +30,7 @@ export default function TestungErfassen() {
   const [loeschenFragen, setLoeschenFragen] = useState(false)
   const zuletzt = useRef<string>('')
   const meloqAuswahl = useMeloqAuswahl()
+  const therapeutStandard = useLiveQuery(async () => ((await db.einstellungen.get(THERAPEUT_SCHLUESSEL))?.wert as string | undefined) ?? '', [])
 
   // einmal laden – danach ist der lokale Stand führend
   useEffect(() => {
@@ -49,15 +55,8 @@ export default function TestungErfassen() {
   }, [testung])
 
   const kg = parseZahl(testung?.koerpergewichtKg)
-  const auswertung = useMemo(() => {
-    const m = new Map<string, { berechnung: Berechnung; ergebnis: TestErgebnis }>()
-    if (!testung) return m
-    for (const t of ENDTESTUNG_TESTS) {
-      const berechnung = berechne(t, testung.eingaben[t.id] ?? {}, { koerpergewichtKg: kg })
-      m.set(t.id, { berechnung, ergebnis: bewerteTest(t, ENDTESTUNG_PHASE, berechnung.werte, { geschlecht: patient?.geschlecht }) })
-    }
-    return m
-  }, [testung, kg, patient?.geschlecht])
+  const auswertung = useMemo(() => (testung ? werteAus(testung, patient?.geschlecht) : new Map()), [testung, patient?.geschlecht])
+  const vorschlag = useMemo(() => (testung && patient ? rtsVorschlag(testung, patient, auswertung) : null), [testung, patient, auswertung])
 
   if (gespeichert === undefined) return null
   if (gespeichert === null) {
@@ -70,7 +69,7 @@ export default function TestungErfassen() {
       </div>
     )
   }
-  if (!testung || !patient) return null
+  if (!testung || !patient || !vorschlag) return null
 
   const seiten = seitennamen(patient)
   const sichtbar = sichtbareTests(testung)
@@ -81,6 +80,22 @@ export default function TestungErfassen() {
   const optionalWeg = (testId: string) => aendern({ optionaleTests: testung.optionaleTests.filter((o) => o !== testId) })
   const kgFehlt = kg === null || kg <= 0
   const monate = monateSeit(patient.opDatum)
+  const abgeschlossen = testung.status === 'abgeschlossen'
+  const entscheidung: Entscheidung = testung.entscheidung ?? { art: '', begruendung: '', therapeut: therapeutStandard ?? '' }
+
+  function abschliessen() {
+    aendern({
+      status: 'abgeschlossen',
+      abgeschlossenAm: new Date().toISOString(),
+      entscheidung: { ...entscheidung, vorschlagBeiAbschluss: vorschlag!.erfuellt ? 'erfuellt' : 'nicht_erfuellt' },
+    })
+    speichereEinstellung(THERAPEUT_SCHLUESSEL, entscheidung.therapeut.trim())
+    springen(null, 'ergebnis')
+  }
+
+  function wiederOeffnen() {
+    aendern({ status: 'in_arbeit', abgeschlossenAm: undefined, entscheidung: { art: '', begruendung: '', therapeut: entscheidung.therapeut } })
+  }
   const allgemein = protokollNach('allgemein')
 
   async function loeschen() {
@@ -107,6 +122,15 @@ export default function TestungErfassen() {
         </span>
       </div>
 
+      {abgeschlossen && (
+        <p className="meldung meldung-info testung-gesperrt">
+          Abgeschlossen am {testung.abgeschlossenAm ? datumDeutsch(testung.abgeschlossenAm.slice(0, 10)) : '–'} – schreibgeschützt. Zum Ändern unten
+          „Wieder öffnen“.
+        </p>
+      )}
+
+      {/* abgeschlossen = schreibgeschützt: fieldset sperrt alle Eingaben darin */}
+      <fieldset disabled={abgeschlossen} className="ohne-rahmen">
       <div className="karte block testung-kopf">
         <div className="feld-reihe">
           <label className="feld">
@@ -139,6 +163,7 @@ export default function TestungErfassen() {
           </p>
         )}
       </div>
+      </fieldset>
 
       <nav className="block-sprung" aria-label="Blöcke">
         {BLOECKE.map((b) => (
@@ -150,6 +175,7 @@ export default function TestungErfassen() {
 
       <div className="testung-raster">
         <div className="testung-haupt">
+          <fieldset disabled={abgeschlossen} className="ohne-rahmen">
           {BLOECKE.map((block) => {
             const imBlock = ENDTESTUNG_TESTS.filter((t) => t.block === block)
             const anzeigen = imBlock.filter((t) => sichtbar.includes(t))
@@ -158,7 +184,7 @@ export default function TestungErfassen() {
               <div key={block} id={`block-${block}`} className="testung-block">
                 <h3 className="testung-block-titel">{BLOCK_NAMEN[block]}</h3>
                 {anzeigen.map((t) => {
-                  const a = auswertung.get(t.id)!
+                  const a = auswertung.get(t.id)! as TestAuswertung
                   return (
                     <div key={t.id} className="test-huelle">
                       <TestKarte
@@ -171,6 +197,16 @@ export default function TestungErfassen() {
                         koerpergewichtFehlt={kgFehlt}
                         koerpergewichtKg={kg}
                         meloqAuswahl={meloqAuswahl}
+                        fuss={(() => {
+                          const p = pflichtStatus(a)
+                          return p ? (
+                            <KlinischAnders
+                              wert={testung.klinischAnders?.[t.id]}
+                              ampelStatus={p.status}
+                              setze={(w) => aendern({ klinischAnders: { ...testung.klinischAnders, [t.id]: w } })}
+                            />
+                          ) : null
+                        })()}
                       />
                       {t.optional && !hatEingabe(testung.eingaben[t.id]) && (
                         <button type="button" className="text-knopf test-entfernen" onClick={() => optionalWeg(t.id)}>
@@ -188,6 +224,15 @@ export default function TestungErfassen() {
               </div>
             )
           })}
+          </fieldset>
+
+          <ErgebnisEntscheidung
+            testung={{ ...testung, entscheidung }}
+            vorschlag={vorschlag}
+            setzeEntscheidung={(e) => aendern({ entscheidung: e })}
+            abschliessen={abschliessen}
+            wiederOeffnen={wiederOeffnen}
+          />
 
           <div className="aktionen testung-ende">
             <Link to={`/patienten/${patient.id}`} className="knopf">
@@ -215,6 +260,7 @@ export default function TestungErfassen() {
         </div>
 
         <aside className="testung-uebersicht" aria-label="Übersicht">
+          <RtsKasten v={vorschlag} mindestMonate={KATALOG.regeln.rts.mindestMonate} onDetails={() => springen(null, 'ergebnis')} />
           <h3>Übersicht</h3>
           {BLOECKE.map((block) => {
             const tests = sichtbar.filter((t) => t.block === block)
@@ -231,7 +277,7 @@ export default function TestungErfassen() {
             )
           })}
           <p className="uebersicht-fuss">
-            Gesamtbewertung („Kriterien erfüllt“) folgt in Etappe 6. Bewertet mit {KATALOG.phasen.find((p) => p.id === ENDTESTUNG_PHASE)?.lang}.
+            Bewertet mit {KATALOG.phasen.find((p) => p.id === ENDTESTUNG_PHASE)?.lang}.
           </p>
         </aside>
       </div>
@@ -252,8 +298,8 @@ function UebersichtZeile({ test, ergebnis }: { test: TestDef; ergebnis: TestErge
 }
 
 /** Sprungmarken ohne die Adresse (#/testung/…) zu verändern – HashRouter nutzt das # selbst. */
-function springen(e: React.MouseEvent, ziel: string) {
-  e.preventDefault()
+function springen(e: React.MouseEvent | null, ziel: string) {
+  e?.preventDefault()
   document.getElementById(ziel)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 

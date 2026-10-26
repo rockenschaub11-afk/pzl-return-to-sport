@@ -1136,6 +1136,224 @@ a {
   }
 }
 
+/* ---------- RTS-Vorschlag und Entscheidung (Etappe 6) ---------- */
+
+.ohne-rahmen {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.feld textarea {
+  width: 100%;
+  max-width: 40rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--rand-stark);
+  border-radius: var(--radius);
+  background: var(--flaeche);
+  font: inherit;
+  color: inherit;
+  resize: vertical;
+}
+
+.feld textarea:focus {
+  outline: none;
+  border-color: var(--pzl-tuerkis);
+  box-shadow: 0 0 0 3px rgb(0 181 203 / 0.18);
+}
+
+.feld-fehler textarea {
+  border-color: var(--fehler);
+}
+
+.rts-kasten {
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius);
+  border: 2px solid;
+}
+
+.rts-erfuellt {
+  border-color: var(--gruen);
+  background: #eef8f2;
+}
+
+.rts-offen {
+  border-color: var(--rand-stark);
+  background: var(--hintergrund);
+}
+
+.rts-titel {
+  margin: 0;
+  color: var(--text-leise);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rts-ergebnis {
+  margin: 0.15rem 0 0.4rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--nacht);
+}
+
+.rts-erfuellt .rts-ergebnis,
+.ergebnis-vorschlag.rts-erfuellt strong {
+  color: #1f6b41;
+}
+
+.rts-punkte {
+  margin: 0 0 0.4rem !important;
+}
+
+.rts-punkte li {
+  justify-content: flex-start !important;
+  gap: 0.4rem !important;
+}
+
+.rts-punkte li::before {
+  font-weight: 700;
+}
+
+.rts-punkte li.ok::before {
+  content: '✓';
+  color: var(--gruen);
+}
+
+.rts-punkte li.nein::before {
+  content: '✗';
+  color: var(--fehler);
+}
+
+.rts-punkte li.warnung::before {
+  content: '⚠';
+  color: var(--warnung);
+}
+
+.rts-hinweis {
+  display: block;
+  margin: 0.4rem 0 0;
+  color: var(--text-leise);
+  font-size: 0.75rem;
+}
+
+.rts-kasten .text-knopf {
+  font-size: 0.88rem;
+}
+
+.ergebnis {
+  scroll-margin-top: 120px;
+  margin: 1rem 0;
+}
+
+.ergebnis h4 {
+  margin: 1.1rem 0 0.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--nacht);
+}
+
+.ergebnis-vorschlag {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid;
+  border-radius: var(--radius);
+}
+
+.ergebnis-vorschlag strong {
+  font-size: 1.35rem;
+  color: var(--nacht);
+}
+
+.ergebnis-acl {
+  margin: 0.75rem 0 0;
+  font-weight: 600;
+}
+
+.ergebnis-liste {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.ergebnis-liste li + li {
+  margin-top: 0.2rem;
+}
+
+.ergebnis-leise {
+  color: var(--text-leise);
+}
+
+.ergebnis .meldung {
+  margin: 0.6rem 0 0;
+}
+
+.entscheidung-wahl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.entscheidung-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 34rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--rand-stark);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.entscheidung-option.gewaehlt {
+  border-color: var(--pzl-blau);
+  background: #e8f1fa;
+  font-weight: 600;
+}
+
+.entscheidung-option input {
+  accent-color: var(--pzl-blau);
+}
+
+.entscheidung-fertig p {
+  margin: 0.3rem 0;
+}
+
+.klinisch-anders.klinisch-aktiv summary {
+  color: var(--warnung);
+}
+
+.klinisch-anders .auswahl-knopf {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.klinisch-anders .feld {
+  margin: 0.5rem 0 0;
+}
+
+.testung-gesperrt {
+  margin: 0 0 1rem;
+}
+
+fieldset:disabled .zahl-feld input,
+fieldset:disabled input,
+fieldset:disabled select,
+fieldset:disabled textarea {
+  background: var(--hintergrund);
+  color: var(--text);
+}
+
+fieldset:disabled .auswahl-knopf,
+fieldset:disabled .test-hinzu {
+  cursor: default;
+}
+
 /* ---------- Meloq-Metriken nach ODS (Etappe 5) ---------- */
 
 .ods-marke {

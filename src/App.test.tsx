@@ -18,6 +18,7 @@ function zeige(pfad: string) {
 beforeEach(async () => {
   await db.patienten.clear()
   await db.testungen.clear()
+  await db.einstellungen.clear()
 })
 
 describe('App-Rahmen', () => {
@@ -91,6 +92,46 @@ describe('Endtestung', () => {
       const [t] = await db.testungen.toArray()
       expect(t.eingaben.hhd_knie_ext.b1).toBe('63')
     })
+  })
+})
+
+describe('RTS-Vorschlag und Abschluss', () => {
+  it('zeigt den Vorschlag, schließt mit Entscheidung ab und lässt sich wieder öffnen', async () => {
+    const user = userEvent.setup()
+    const patientId = await speicherePatient({ ...LEER, kuerzel: 'TT-1999', seite: 'links', opDatum: '2025-10-01', niveau: 'wettkampf', geschlecht: 'maennlich' })
+    const testungId = await neueEndtestung(patientId, '2026-08-01')
+    await db.testungen.update(testungId, {
+      koerpergewichtKg: '70',
+      eingaben: {
+        erguss: { wert: '0' }, rom_extension: { wert: '0' }, rom_flexion: { g: '140', b: '138' }, slr: { wert: 'ja' },
+        hhd_knie_ext: { g1: '60', b1: '58' }, hhd_knie_flex: { g1: '25', b1: '24' },
+        cmj: { v1_hoehe: '36', v1_impL: '13', v1_impR: '12,5' }, sl_cmj: { g1_hoehe: '20', b1_hoehe: '19' }, sl_dj: { g1_hoehe: '19', b1_hoehe: '18' },
+        single_hop: { g1: '150', b1: '145' }, triple_hop: { g1: '450', b1: '430' }, crossover_hop: { g1: '400', b1: '390' }, timed_hop: { g1: '2,2', b1: '2,3' },
+      },
+    })
+    zeige(`/testung/${testungId}`)
+
+    const kasten = await screen.findByText('RTS-Vorschlag')
+    expect(kasten.parentElement).toHaveTextContent('Kriterien erfüllt')
+    expect(document.body).not.toHaveTextContent(/Freigabe erteilt|freigegeben/)
+
+    // ohne Entscheidung nicht abschließbar
+    await user.click(screen.getByRole('button', { name: 'Testung abschließen' }))
+    expect(screen.getByText('Bitte eine Entscheidung wählen.')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('radio', { name: 'Vorschlag bestätigt' }))
+    await user.type(screen.getByPlaceholderText('z. B. PR'), 'PR')
+    await user.click(screen.getByRole('button', { name: 'Testung abschließen' }))
+
+    await waitFor(async () => expect((await db.testungen.get(testungId))?.status).toBe('abgeschlossen'))
+    expect((await db.testungen.get(testungId))?.entscheidung).toMatchObject({ art: 'bestaetigt', therapeut: 'PR', vorschlagBeiAbschluss: 'erfuellt' })
+    expect(screen.getByPlaceholderText('z. B. 72,5')).toBeDisabled()
+
+    await user.click(screen.getByRole('button', { name: 'Wieder öffnen …' }))
+    await user.click(screen.getByRole('button', { name: 'Ja, wieder öffnen' }))
+    await waitFor(async () => expect((await db.testungen.get(testungId))?.status).toBe('in_arbeit'))
+    expect((await db.testungen.get(testungId))?.entscheidung?.art).toBe('')
+    expect(screen.getByPlaceholderText('z. B. 72,5')).toBeEnabled()
   })
 })
 

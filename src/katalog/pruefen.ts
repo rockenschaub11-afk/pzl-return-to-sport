@@ -26,6 +26,7 @@ export function pruefeKatalog(k: Katalog): string[] {
   if (!istZahl(r.lsi?.gruenAb) || !istZahl(r.lsi?.gelbAb) || r.lsi.gelbAb >= r.lsi.gruenAb) melde('regeln.json', 'LSI-Grenzen fehlen oder gelbAb ≥ gruenAb')
   if (!istZahl(r.variationskoeffizientWarnungUeber)) melde('regeln.json', 'variationskoeffizientWarnungUeber fehlt')
   if (!istZahl(r.erdbeschleunigung)) melde('regeln.json', 'erdbeschleunigung fehlt')
+  if (!istZahl(r.rts?.mindestMonate) || !istZahl(r.rts?.freizeitEmpfehlungMonate)) melde('regeln.json', 'rts.mindestMonate oder rts.freizeitEmpfehlungMonate fehlt')
 
   // Protokolle
   const protokollIds = new Set<string>()

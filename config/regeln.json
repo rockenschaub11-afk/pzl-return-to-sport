@@ -11,5 +11,10 @@
   "erdbeschleunigung": 9.81,
   "hhdAbWochen": 8,
   "hhdAbWochenQuelle": "Read S. 24 (6–12 Wochen Wartezeit)",
+  "rts": {
+    "mindestMonate": 9,
+    "freizeitEmpfehlungMonate": 12,
+    "quelle": "Handbook S. 22–23; Read S. 4"
+  },
   "frauenHinweis": "Read-Benchmarks sind nicht geschlechtsspezifisch – bei Frauen ist der Absolutwert nur wünschenswert, der LSI bleibt Pflicht."
 }

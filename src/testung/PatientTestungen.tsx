@@ -2,7 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Link, useNavigate } from 'react-router-dom'
 import { db, neueEndtestung } from '../db'
 import { datumDeutsch, isoDatum } from '../patienten/stammdaten'
-import { fortschritt } from './ablauf'
+import { fortschritt, statusText } from './ablauf'
 
 /** Testungen eines Kürzels und Knopf „Neue Endtestung“ (auf der Seite des Kürzels). */
 export default function PatientTestungen({ patientId }: { patientId: string }) {
@@ -32,7 +32,7 @@ export default function PatientTestungen({ patientId }: { patientId: string }) {
               <li key={t.id}>
                 <Link to={`/testung/${t.id}`} className="testung-zeile">
                   <span>Endtestung · {datumDeutsch(t.datum)}</span>
-                  <span className="chip">in Arbeit</span>
+                  <span className={`chip${t.status === 'abgeschlossen' ? ' chip-wettkampf' : ''}`}>{statusText(t)}</span>
                   <span className="testung-fortschritt">
                     {f.erfasst} / {f.gesamt} Tests
                   </span>

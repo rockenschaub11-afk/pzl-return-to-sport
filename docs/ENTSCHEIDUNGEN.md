@@ -72,6 +72,20 @@ Dieses Dokument ist die **verbindliche Grundlage** für den Bau. Änderungen nur
 Sonst: Liste „Was fehlt noch?“. ACL-RSI < 55 → eigene Warnung (blockiert nicht).
 Therapeut:in **bestätigt oder überstimmt** mit Begründung (F10).
 
+### 3.2 Umsetzung RTS-Vorschlag (Nachtrag 26.10.2026, Etappe 6, von Philipp bestätigt)
+
+| Thema | Entscheidung |
+|---|---|
+| Pflicht-Test erfüllt | nur wenn **alle Pflicht-Kriterien grün**; gelb (LSI 80–89 %) = nicht erfüllt; wünschenswerte Kriterien blockieren nicht. Frauen-Regel (F26): nicht erreichter Read-Absolutwert blockiert nicht |
+| Fehlende Werte | Pflicht-Test ohne Wert → „noch nicht gemessen“ in „Was fehlt noch?“ |
+| Wünschenswert | eigene Liste „Wünschenswert, nicht erreicht“, blockiert nicht |
+| 9-Monats-Regel | OP-Datum bis **Datum der Testung**; konservativ: ab Verletzungsdatum (Hinweis); Freizeit: Hinweis „Read empfiehlt 12 Monate“, blockiert nicht. Werte in `config/regeln.json` (rts) |
+| Klinisch anders beurteilt (F33) | **je Test**, als erfüllt oder nicht erfüllt; zählt nur mit Begründung; wird markiert |
+| Entscheidung (F10) | „Vorschlag bestätigt“ / „Überstimmt: Kriterien als erfüllt beurteilt“ / „Überstimmt: Kriterien als nicht erfüllt beurteilt“; Begründung Pflicht beim Überstimmen; Therapeut:in-Kürzel Pflicht (Laptop merkt sich das letzte) |
+| Abschluss | „Testung abschließen“ erst mit gültiger Entscheidung; danach schreibgeschützt; Vorschlag zum Zeitpunkt des Abschlusses wird mitgespeichert. „Wieder öffnen“ (Rückfrage) setzt die Entscheidung zurück |
+| Anzeige | Kasten „RTS-Vorschlag“ live oben in der Übersicht; ausführlich unten „Ergebnis & Entscheidung“; ACL-RSI < 55 eigens hervorgehoben, blockiert nicht |
+| Formulierung | nur „Kriterien erfüllt“ / „Kriterien (noch) nicht erfüllt“, nie „Freigabe“; Hinweis „ersetzt keine ärztliche Freigabe“ direkt beim Ergebnis (F36) |
+
 ## 4. Endtestung – Tests, Schwellen, Status (F19, F26)
 
 Phase „Return to Competition“ (> 9 Monate).

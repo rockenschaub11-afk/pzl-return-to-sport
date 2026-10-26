@@ -24,6 +24,8 @@ interface Props {
   /** persönlicher Meloq-Standard (nur Platten-Tests) */
   meloqAuswahl?: MeloqAuswahl
   koerpergewichtKg: number | null
+  /** z. B. „klinisch anders beurteilen“ – unten in der Karte */
+  fuss?: ReactNode
 }
 
 const zahl = (v: number, nachkomma = 1) =>
@@ -322,6 +324,7 @@ export default function TestKarte(props: Props) {
           </p>
         ))}
       </div>
+      {props.fuss}
     </article>
   )
 }

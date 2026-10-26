@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { db, neueEndtestung } from '../db'
 import { datumDeutsch, isoDatum } from '../patienten/stammdaten'
-import { fortschritt } from '../testung/ablauf'
+import { fortschritt, statusText } from '../testung/ablauf'
 
 export default function TestungListe() {
   const navigate = useNavigate()
@@ -14,6 +14,7 @@ export default function TestungListe() {
   if (!testungen || !patienten) return null
   const kuerzel = new Map(patienten.map((p) => [p.id, p.kuerzel]))
   const offen = testungen.filter((t) => t.status === 'in_arbeit')
+  const fertig = testungen.filter((t) => t.status === 'abgeschlossen').slice(0, 20)
 
   async function starten() {
     if (!auswahl) return
@@ -78,6 +79,23 @@ export default function TestungListe() {
           </ul>
         )}
       </div>
+
+      {fertig.length > 0 && (
+        <div className="karte block">
+          <h3 className="block-titel">Zuletzt abgeschlossen</h3>
+          <ul className="testung-liste">
+            {fertig.map((t) => (
+              <li key={t.id}>
+                <Link to={`/testung/${t.id}`} className="testung-zeile">
+                  <span className="testung-kuerzel">{kuerzel.get(t.patientId) ?? '?'}</span>
+                  <span>Endtestung · {datumDeutsch(t.datum)}</span>
+                  <span className="testung-fortschritt">{statusText(t)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   )
 }

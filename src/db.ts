@@ -6,8 +6,8 @@ export interface Testung {
   id: string
   patientId: string
   art: 'endtestung'
-  /** in_arbeit bis zum Abschluss (Abschluss mit Entscheidung folgt in Etappe 6) */
-  status: 'in_arbeit'
+  /** in_arbeit bis zum Abschluss; abgeschlossen = schreibgeschützt */
+  status: 'in_arbeit' | 'abgeschlossen'
   datum: string // JJJJ-MM-TT
   koerpergewichtKg: string
   tegnerAktuell: string
@@ -15,8 +15,26 @@ export interface Testung {
   eingaben: Record<string, TestEingabe>
   /** optionale Tests, die hinzugefügt wurden */
   optionaleTests: string[]
+  /** „klinisch anders beurteilt“ je Test (F33) – zählt nur mit Begründung */
+  klinischAnders?: Record<string, KlinischAnders>
+  /** Entscheidung der Therapeut:in (F10) – Entwurf, bis die Testung abgeschlossen wird */
+  entscheidung?: Entscheidung
+  abgeschlossenAm?: string
   angelegtAm: string
   geaendertAm: string
+}
+
+export interface KlinischAnders {
+  urteil: 'erfuellt' | 'nicht_erfuellt' | ''
+  begruendung: string
+}
+
+export interface Entscheidung {
+  art: 'bestaetigt' | 'ueberstimmt_erfuellt' | 'ueberstimmt_nicht_erfuellt' | ''
+  begruendung: string
+  therapeut: string
+  /** Vorschlag der App zum Zeitpunkt des Abschlusses */
+  vorschlagBeiAbschluss?: 'erfuellt' | 'nicht_erfuellt'
 }
 
 /** Einstellungen dieses Laptops, z. B. die persönliche Meloq-Auswahl (wird in Etappe 10 mitgesichert). */

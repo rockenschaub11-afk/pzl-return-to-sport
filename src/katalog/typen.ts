@@ -81,6 +81,7 @@ export interface Regeln {
   hhdAbWochen: number
   hhdAbWochenQuelle: string
   frauenHinweis: string
+  rts: { mindestMonate: number; freizeitEmpfehlungMonate: number; quelle: string }
 }
 
 export interface Katalog {
