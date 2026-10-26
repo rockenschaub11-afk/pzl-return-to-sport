@@ -287,6 +287,17 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 | Erinnerung (F8) | nach 7 Tagen ohne Gesamtsicherung (wenn Daten da sind): ruhiger Hinweis auf der Startseite „Jetzt sichern“ und Punkt bei „Sicherung“ in der Seitenleiste; keine Pop-ups |
 | Zugang | Menü „Sicherung“; auf der Seite eines Kürzels Knopf „Übergeben“ |
 
+## 9b. Veröffentlichen (Nachtrag 26.10.2026, Etappe 11, von Philipp bestätigt)
+
+| Thema | Entscheidung |
+|---|---|
+| Adresse | **https://rockenschaub11-afk.github.io/pzl-return-to-sport/** – öffentliches Repository `rockenschaub11-afk/pzl-return-to-sport` (nur Code, nie Pat.-Daten) |
+| Bereitstellung | GitHub Actions (`.github/workflows/veroeffentlichen.yml`): bei jedem Push auf `master` Tests, Build, GitHub Pages |
+| Installierbar/offline | PWA (`vite-plugin-pwa`): Manifest, Symbole aus dem Original-Logo auf Weiß, alle Dateien inkl. Schriften im Offline-Speicher |
+| Updates | **ganz automatisch**: neue Version wird sofort aktiv, die Seite lädt neu (Eingaben sind dann gespeichert); geöffnete App prüft stündlich |
+| Commit-Autor | ab Etappe 11 „Philipp Eder“ <rockenschaub11@gmail.com> (öffentlich sichtbar) |
+| Anleitung | `docs/INSTALLATION.md` (Windows Edge/Chrome, Mac Safari/Chrome) |
+
 ## 10. Ausgaben (F5, F30, F41)
 
 | Ausgabe | Inhalt |

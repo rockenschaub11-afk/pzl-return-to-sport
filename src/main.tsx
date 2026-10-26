@@ -9,9 +9,11 @@ import '@fontsource/barlow/700.css'
 import '@fontsource/montserrat/600.css'
 import App from './App'
 import { dauerhaftenSpeicherAnfragen } from './db'
+import { updatesEinrichten } from './updates'
 import './styles.css'
 
 dauerhaftenSpeicherAnfragen()
+updatesEinrichten()
 
 // HashRouter: Adressen wie „…/#/testung“ funktionieren auf GitHub Pages ohne Server-Einstellungen.
 createRoot(document.getElementById('root')!).render(

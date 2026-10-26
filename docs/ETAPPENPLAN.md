@@ -43,4 +43,4 @@ Alles kostenlos. Keine Cloud, keine Pat.-Daten außerhalb des Laptops.
 - [ ] Meloq: RSI-Definition beim Drop Jump („i“) – bis dahin RSI-Ampel nur Info
 - [ ] Meloq: Einbeinstand – Schwankweg in mm vorhanden?
 - [ ] Lizenzanfragen verschicken (`docs/LIZENZANFRAGEN.md`)
-- [ ] GitHub-Benutzername (erst für Etappe 11)
+- [x] GitHub-Benutzername: rockenschaub11-afk (26.10.2026)
