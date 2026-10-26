@@ -19,6 +19,7 @@ import {
   type BegleitOp,
   type Stammdaten,
 } from '../patienten/stammdaten'
+import PatientTestungen from '../testung/PatientTestungen'
 
 export default function PatientFormular() {
   const { id } = useParams()
@@ -98,6 +99,8 @@ export default function PatientFormular() {
           <h2 className="seitentitel">{neu ? 'Neues Kürzel' : normalisiereKuerzel(daten.kuerzel) || 'Kürzel'}</h2>
         </div>
       </div>
+
+      {id && <PatientTestungen patientId={id} />}
 
       <fieldset className="karte block">
         <legend className="block-titel">
@@ -276,7 +279,7 @@ export default function PatientFormular() {
       {loeschenFragen && (
         <div className="meldung meldung-fehler loeschen-frage" role="alertdialog" aria-label="Löschen bestätigen">
           <p>
-            <strong>{gespeichert?.kuerzel}</strong> und alle Angaben dazu endgültig von diesem Laptop löschen?
+            <strong>{gespeichert?.kuerzel}</strong> samt allen Testungen endgültig von diesem Laptop löschen?
           </p>
           <div className="aktionen">
             <button type="button" className="knopf knopf-gefahr" onClick={loeschen}>

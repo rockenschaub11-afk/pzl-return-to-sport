@@ -7,7 +7,7 @@ Sie ist eine **Dokumentations- und Rechenhilfe – sie ersetzt keine ärztliche 
 - Dieses Repository enthält nur den Programmcode, nie Pat.-Daten.
 - Fachliche Grundlage: [`docs/ENTSCHEIDUNGEN.md`](docs/ENTSCHEIDUNGEN.md), Bauplan: [`docs/ETAPPENPLAN.md`](docs/ETAPPENPLAN.md).
 
-Aktueller Stand: **Etappe 3 – Testkatalog & Rechenkern** (Schwellen, Quellen und Protokolle in `config/`, Rechenregeln mit automatischen Tests, Übersicht unter Einstellungen/Info).
+Aktueller Stand: **Etappe 4 – Endtestung erfassen** (Eingabe je Block mit Protokoll, Versuchen, Live-Ampel und automatischem Speichern).
 
 ## App am eigenen Laptop starten
 

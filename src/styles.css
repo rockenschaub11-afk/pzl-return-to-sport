@@ -614,6 +614,528 @@ a {
   margin-top: 0;
 }
 
+/* ---------- Testung: Liste ---------- */
+
+.inhalt.inhalt-breit {
+  max-width: 1400px;
+}
+
+.feld-inline {
+  margin: 0;
+}
+
+.feld-inline select {
+  min-width: 14rem;
+}
+
+.block-kopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.block-kopf .block-titel {
+  float: none;
+  width: auto;
+  margin: 0;
+}
+
+.testung-liste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.testung-zeile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 0.25rem;
+  border-bottom: 1px solid var(--raster);
+  color: inherit;
+  text-decoration: none;
+}
+
+.testung-zeile:hover {
+  background: var(--hintergrund);
+}
+
+.testung-kuerzel {
+  min-width: 7rem;
+  font-weight: 700;
+  color: var(--nacht);
+}
+
+.testung-fortschritt {
+  margin-left: auto;
+  color: var(--text-leise);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Testung: Erfassen ---------- */
+
+.speicher-status {
+  align-self: center;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: #e6f4ec;
+  color: var(--gruen);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.speicher-laeuft {
+  background: var(--raster);
+  color: var(--text-leise);
+}
+
+.testung-kopf .feld input,
+.testung-kopf .feld select {
+  max-width: 20rem;
+}
+
+.block-sprung {
+  position: sticky;
+  top: 56px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin: 0 0 1rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--rand);
+  border-radius: var(--radius);
+  background: rgb(255 255 255 / 0.96);
+  box-shadow: var(--schatten);
+}
+
+.block-sprung a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.testung-raster {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.testung-block {
+  scroll-margin-top: 120px;
+  margin-bottom: 1.5rem;
+}
+
+.testung-block-titel {
+  margin: 0 0 0.6rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--nacht);
+}
+
+.test-huelle {
+  margin-bottom: 0.9rem;
+}
+
+.test-karte {
+  scroll-margin-top: 120px;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--rand);
+  border-radius: var(--radius);
+  background: var(--flaeche);
+  box-shadow: var(--schatten);
+}
+
+.test-kopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.test-kopf h4 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--nacht);
+}
+
+.test-kopf .chip {
+  margin-left: 0.5rem;
+  font-weight: 500;
+}
+
+.test-protokoll,
+.test-mehr {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.test-protokoll summary,
+.test-mehr summary {
+  width: fit-content;
+  color: var(--pzl-blau);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.test-protokoll[open] {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  background: var(--hintergrund);
+}
+
+.test-protokoll p {
+  margin: 0.4rem 0;
+}
+
+.protokoll-wert {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  font-weight: 500;
+}
+
+.test-eingabe {
+  margin-top: 0.75rem;
+  overflow-x: auto;
+}
+
+.zahl-feld {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.zahl-feld input {
+  width: 5.5rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--rand-stark);
+  border-radius: var(--radius);
+  background: var(--flaeche);
+  font: inherit;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.zahl-feld input:focus {
+  outline: none;
+  border-color: var(--pzl-tuerkis);
+  box-shadow: 0 0 0 3px rgb(0 181 203 / 0.18);
+}
+
+.zahl-einheit {
+  color: var(--text-leise);
+  font-size: 0.88rem;
+}
+
+.seiten-paar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
+}
+
+.einheit-wahl {
+  margin-bottom: 0.5rem;
+}
+
+.einheit-wahl .auswahl-knopf {
+  padding: 0.2rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.eingabe-raster {
+  border-collapse: collapse;
+}
+
+.eingabe-raster th,
+.eingabe-raster td {
+  padding: 0.25rem 0.5rem 0.25rem 0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.eingabe-raster thead th {
+  color: var(--text-leise);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.eingabe-raster tbody th {
+  padding-right: 1rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.raster-seite {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--nacht);
+}
+
+.raster-versuch {
+  color: var(--text-leise);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.bestwert {
+  display: inline-block;
+  min-width: 5.5rem;
+  font-weight: 700;
+  color: var(--nacht);
+  font-variant-numeric: tabular-nums;
+}
+
+.test-ergebnis {
+  margin-top: 0.8rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--raster);
+}
+
+.kriterium-zeile {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1.4fr) minmax(5rem, 0.8fr) minmax(7rem, 1fr) auto;
+  align-items: center;
+  gap: 0.25rem 1rem;
+  padding: 0.3rem 0;
+  font-size: 0.93rem;
+}
+
+.kriterium-nebensache {
+  opacity: 0.75;
+}
+
+.kriterium-name {
+  font-weight: 500;
+}
+
+.kriterium-status {
+  color: var(--text-leise);
+  font-size: 0.82rem;
+  font-weight: 400;
+}
+
+.kriterium-wert {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.kriterium-ziel {
+  color: var(--text-leise);
+  font-size: 0.85rem;
+}
+
+.kriterium-balken {
+  grid-column: 1 / -1;
+}
+
+.test-zusatz {
+  margin: 0.4rem 0 0;
+  color: var(--text-leise);
+  font-size: 0.88rem;
+}
+
+.test-ergebnis .meldung {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+}
+
+.test-hinzu {
+  margin: 0 0.75rem 0.75rem 0;
+  border-style: dashed;
+  color: var(--pzl-blau);
+}
+
+.test-entfernen {
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.testung-ende {
+  margin-top: 1rem;
+}
+
+/* Ampel: gerader Ladebalken, füllt sich in 0,5 s (D4, D14) */
+.ladebalken-spur {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--raster);
+}
+
+.ladebalken-fuellung {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 4px;
+  transition:
+    width 0.5s ease-out,
+    background 0.3s ease;
+}
+
+.ladebalken-ziel {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--nacht);
+}
+
+.ampel-gruen .ladebalken-fuellung,
+.ampel-punkt.ampel-gruen {
+  background: var(--gruen);
+}
+
+.ampel-gelb .ladebalken-fuellung,
+.ampel-punkt.ampel-gelb {
+  background: var(--gelb);
+}
+
+.ampel-rot .ladebalken-fuellung,
+.ampel-punkt.ampel-rot {
+  background: var(--fehler);
+}
+
+.ampel-marke {
+  display: inline-block;
+  padding: 0.05rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ampel-marke.ampel-gruen {
+  background: #e6f4ec;
+  color: #1f6b41;
+}
+
+.ampel-marke.ampel-gelb {
+  background: #fff3d6;
+  color: #7a5200;
+}
+
+.ampel-marke.ampel-rot {
+  background: var(--fehler-hell);
+  color: var(--fehler);
+}
+
+.ampel-marke.ampel-offen {
+  background: var(--raster);
+  color: var(--text-leise);
+}
+
+.ampel-punkt {
+  display: inline-block;
+  flex: none;
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+}
+
+.ampel-punkt.ampel-offen {
+  border: 2px solid var(--rand-stark);
+}
+
+.testung-uebersicht {
+  position: sticky;
+  top: 120px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+  padding: 1rem;
+  border: 1px solid var(--rand);
+  border-radius: var(--radius);
+  background: var(--flaeche);
+  box-shadow: var(--schatten);
+}
+
+.testung-uebersicht h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--nacht);
+}
+
+.uebersicht-block {
+  margin: 0.75rem 0 0.25rem;
+  color: var(--text-leise);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.testung-uebersicht ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.testung-uebersicht li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+  font-size: 0.88rem;
+}
+
+.testung-uebersicht li a {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.testung-uebersicht li a:hover {
+  color: var(--pzl-blau);
+}
+
+.uebersicht-fuss {
+  margin: 0.9rem 0 0;
+  color: var(--text-sehr-leise);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 1100px) {
+  .testung-raster {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* schmal: Übersicht oben statt daneben */
+  .testung-uebersicht {
+    position: static;
+    max-height: none;
+    order: -1;
+  }
+}
+
+@media (max-width: 720px) {
+  /* am Handy ist die Kopfleiste höher – Sprungleiste scrollt mit */
+  .block-sprung {
+    position: static;
+  }
+
+  .kriterium-zeile {
+    grid-template-columns: 1fr auto;
+  }
+
+  .kriterium-ziel {
+    grid-column: 1;
+  }
+}
+
 /* ---------- Konfigurationsfehler (Prüfung beim Start) ---------- */
 
 .konfig-fehler {

@@ -1,10 +1,11 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
 import App from './App'
-import { db } from './db'
+import { db, speicherePatient } from './db'
 import { BEREICHE, HINWEIS } from './navigation'
+import { LEER } from './patienten/stammdaten'
 
 function zeige(pfad: string) {
   render(
@@ -16,6 +17,7 @@ function zeige(pfad: string) {
 
 beforeEach(async () => {
   await db.patienten.clear()
+  await db.testungen.clear()
 })
 
 describe('App-Rahmen', () => {
@@ -63,6 +65,32 @@ describe('App-Rahmen', () => {
   it('leitet unbekannte Adressen auf die Startseite um', () => {
     zeige('/gibt-es-nicht')
     expect(screen.getByRole('heading', { level: 1, name: 'PZL Return-to-Sport' })).toBeInTheDocument()
+  })
+})
+
+describe('Endtestung', () => {
+  it('startet beim Kürzel, rechnet live und speichert automatisch', async () => {
+    const user = userEvent.setup()
+    const patientId = await speicherePatient({ ...LEER, kuerzel: 'TT-1999', seite: 'links', opDatum: '2025-10-01', niveau: 'wettkampf' })
+    zeige(`/patienten/${patientId}`)
+
+    await user.click(await screen.findByRole('button', { name: 'Neue Endtestung' }))
+    expect(await screen.findByRole('heading', { level: 2, name: 'Endtestung TT-1999' })).toBeInTheDocument()
+
+    await user.type(screen.getByPlaceholderText('z. B. 72,5'), '80')
+    const karte = within(document.getElementById('test-hhd_knie_ext')!)
+    await user.type(karte.getByLabelText('Gesund (rechts) Versuch 1'), '70')
+    await user.type(karte.getByLabelText('Betroffen (links) Versuch 1'), '63')
+
+    // 63 kg × 9,81 / 80 kg = 7,7 N/kg; LSI 90,0 %
+    expect(karte.getByText('7,7 N/kg')).toBeInTheDocument()
+    expect(karte.getByText('90,0 %')).toBeInTheDocument()
+    expect(karte.getAllByText('erfüllt').length).toBeGreaterThan(0)
+
+    await waitFor(async () => {
+      const [t] = await db.testungen.toArray()
+      expect(t.eingaben.hhd_knie_ext.b1).toBe('63')
+    })
   })
 })
 

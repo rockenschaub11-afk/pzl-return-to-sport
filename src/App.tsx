@@ -6,12 +6,15 @@ import PatientenListe from './pages/PatientenListe'
 import PatientFormular from './pages/PatientFormular'
 import Platzhalter from './pages/Platzhalter'
 import Start from './pages/Start'
+import TestungErfassen from './pages/TestungErfassen'
+import TestungListe from './pages/TestungListe'
 
 const logoUrl = `${import.meta.env.BASE_URL}logo-pzl.svg`
 
 export default function App() {
   const { pathname } = useLocation()
   const startseite = pathname === '/'
+  const breit = pathname.startsWith('/testung/')
 
   return (
     <div className="app">
@@ -49,13 +52,15 @@ export default function App() {
         </div>
       )}
 
-      <main className={`inhalt${startseite ? ' inhalt-voll' : ''}`}>
+      <main className={`inhalt${startseite ? ' inhalt-voll' : breit ? ' inhalt-breit' : ''}`}>
         <Routes>
           <Route path="/" element={<Start />} />
           <Route path="/patienten" element={<PatientenListe />} />
           <Route path="/patienten/neu" element={<PatientFormular key="neu" />} />
           <Route path="/patienten/:id" element={<PatientFormular />} />
           <Route path="/info" element={<Info />} />
+          <Route path="/testung" element={<TestungListe />} />
+          <Route path="/testung/:id" element={<TestungErfassen />} />
           {BEREICHE.filter((b) => b.etappe).map((b) => (
             <Route key={b.pfad} path={b.pfad} element={<Platzhalter bereich={b} />} />
           ))}

@@ -20,8 +20,7 @@ export const BEREICHE: Bereich[] = [
   {
     pfad: '/testung',
     titel: 'Testung',
-    beschreibung: 'Endtestung und Verlaufstests erfassen, Ampel und RTS-Vorschlag.',
-    etappe: 'Etappen 4–7',
+    beschreibung: 'Endtestung erfassen; Verlaufstests und RTS-Vorschlag folgen.',
   },
   {
     pfad: '/berichte',

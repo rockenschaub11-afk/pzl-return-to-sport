@@ -100,6 +100,24 @@ Phase „Return to Competition“ (> 9 Monate).
 
 Feldtests (5-0-5, Sprint, CMAS) sind **nicht** Teil der App (F19).
 
+## 4a. Erfassung der Endtestung (Nachtrag 26.10.2026, Etappe 4, von Philipp bestätigt)
+
+| Thema | Entscheidung |
+|---|---|
+| Start | Knopf „Neue Endtestung“ auf der Seite des Kürzels; Menü „Testung“ zeigt angefangene Testungen und „Kürzel wählen“ |
+| Phase | Endtestung wird immer mit den Schwellen „> 9 Mo“ bewertet; automatische Phase und Verlaufstests in Etappe 7, 9-Monats-Regel in Etappe 6 |
+| Aufbau | eine Seite, Blöcke untereinander, Sprungleiste oben, Übersicht mit Ampel je Test daneben (schmal: oben) |
+| HHD, Hops | 3 Versuche je Seite, gesundes Bein zuerst, Bestwert automatisch, „Messung wiederholen?“ bei Streuung > 10 % |
+| Platten | bis 3 Versuche; es zählt der Versuch mit der **größten Sprunghöhe** mit allen seinen Werten; Streuung über die Höhe. Nur Werte für die Ampel (weitere Meloq-Metriken: Etappe 5) |
+| Kraftausdauer, Side Hop | ein Wert je Seite |
+| Kraft-Einheit | kg Standard, je Test auf N umschaltbar; Hebelarm (Nm/kg) unter „mehr“ |
+| Optionale Tests | zugeklappt, „+ Test hinzufügen“; leer nicht in der Übersicht |
+| Vorverletzungswert | unter „mehr“, gleiche Einheit wie die Eingabe; zusätzlicher LSI „zur Vorverletzung“ |
+| Speichern | automatisch bei jeder Eingabe; Status „in Arbeit“ bis zum Abschluss (Etappe 6) |
+| Kopf | Datum (heute), Körpergewicht **Pflicht** (sonst keine N/kg, Ns/kg), Tegner aktuell (Auswahlliste) |
+| Protokoll | je Test aufklappbar mit „Warum“; tatsächlicher Winkel/Boxhöhe wird gespeichert |
+| Löschen | Testung einzeln löschbar (Rückfrage); Löschen eines Kürzels löscht seine Testungen mit |
+
 ## 5. Protokolle (F27) – Standard, änderbar; tatsächlicher Wert wird gespeichert
 
 | Test | Position / Winkel | Warum (erscheint in der App) |

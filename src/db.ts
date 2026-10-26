@@ -1,14 +1,38 @@
 import Dexie, { type EntityTable } from 'dexie'
 import { normalisiereKuerzel, type Patient, type Stammdaten } from './patienten/stammdaten'
+import type { TestEingabe } from './testung/erfassung'
+
+export interface Testung {
+  id: string
+  patientId: string
+  art: 'endtestung'
+  /** in_arbeit bis zum Abschluss (Abschluss mit Entscheidung folgt in Etappe 6) */
+  status: 'in_arbeit'
+  datum: string // JJJJ-MM-TT
+  koerpergewichtKg: string
+  tegnerAktuell: string
+  /** Eingaben je Test-id, genau wie getippt */
+  eingaben: Record<string, TestEingabe>
+  /** optionale Tests, die hinzugefügt wurden */
+  optionaleTests: string[]
+  angelegtAm: string
+  geaendertAm: string
+}
 
 // Alle Daten liegen nur in der IndexedDB dieses Browsers – nichts verlässt den Laptop.
 export const db = new Dexie('pzl-return-to-sport') as Dexie & {
   patienten: EntityTable<Patient, 'id'>
+  testungen: EntityTable<Testung, 'id'>
 }
 
 db.version(1).stores({
   // &kuerzelNorm = eindeutig → doppelte Kürzel sind auch in der Datenbank ausgeschlossen
   patienten: 'id, &kuerzelNorm, geaendertAm',
+})
+
+db.version(2).stores({
+  patienten: 'id, &kuerzelNorm, geaendertAm',
+  testungen: 'id, patientId, geaendertAm',
 })
 
 export class KuerzelVergebenFehler extends Error {
@@ -43,8 +67,39 @@ export async function speicherePatient(daten: Stammdaten, id?: string): Promise<
   })
 }
 
+/** Löscht das Kürzel samt allen Testungen dazu. */
 export async function loeschePatient(id: string): Promise<void> {
-  await db.patienten.delete(id)
+  await db.transaction('rw', db.patienten, db.testungen, async () => {
+    await db.testungen.where('patientId').equals(id).delete()
+    await db.patienten.delete(id)
+  })
+}
+
+export async function neueEndtestung(patientId: string, datum: string): Promise<string> {
+  const jetzt = new Date().toISOString()
+  const testung: Testung = {
+    id: crypto.randomUUID(),
+    patientId,
+    art: 'endtestung',
+    status: 'in_arbeit',
+    datum,
+    koerpergewichtKg: '',
+    tegnerAktuell: '',
+    eingaben: {},
+    optionaleTests: [],
+    angelegtAm: jetzt,
+    geaendertAm: jetzt,
+  }
+  await db.testungen.add(testung)
+  return testung.id
+}
+
+export async function speichereTestung(testung: Testung): Promise<void> {
+  await db.testungen.put({ ...testung, geaendertAm: new Date().toISOString() })
+}
+
+export async function loescheTestung(id: string): Promise<void> {
+  await db.testungen.delete(id)
 }
 
 /** Bittet den Browser, die Daten nicht automatisch zu löschen, wenn der Speicher knapp wird. */
