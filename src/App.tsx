@@ -19,8 +19,9 @@ export default function App() {
   const breit = pathname.startsWith('/testung/')
 
   return (
-    <div className="app">
-      <Seitenleiste mitLogo />
+    <div className={`app${startseite ? ' app-start' : ''}`}>
+      {/* Startseite: eigene Kopfzeile statt Seitenleiste */}
+      {!startseite && <Seitenleiste mitLogo />}
 
       {/* Prüfung beim Start: fehlerhafte Konfiguration sofort sichtbar machen */}
       {KATALOG_FEHLER.length > 0 && (

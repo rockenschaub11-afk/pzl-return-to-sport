@@ -3620,3 +3620,202 @@ fieldset:disabled .test-hinzu {
   border-radius: 999px;
   background: var(--feld);
 }
+
+/* ---------- Startseite ohne Seitenleiste: schmale Kopfzeile, Zeichnungen in den Karten ---------- */
+
+.app.app-start {
+  padding-left: 0;
+}
+
+.start-kopf {
+  display: flex;
+  align-items: center;
+  gap: 1rem 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--linie);
+}
+
+.start-marke {
+  flex: none;
+  display: block;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.start-marke img {
+  display: block;
+  height: 40px;
+  width: auto;
+}
+
+.start-marke:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.start-nav {
+  display: flex;
+  gap: 0.25rem 1.5rem;
+  margin-left: auto;
+  overflow-x: auto;
+}
+
+.start-nav a {
+  flex: none;
+  padding: 0.4rem 0;
+  border-bottom: 2px solid transparent;
+  color: var(--text-leise);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.start-nav a:hover {
+  color: var(--text);
+}
+
+.start-nav a.active {
+  border-bottom-color: var(--text);
+  color: var(--text);
+}
+
+.start-nav a:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+/* Hell/Dunkel-Umschalter auf der Seitenfläche (statt auf der dunklen Leiste) */
+.start-kopf .darstellung {
+  flex: none;
+  background: var(--feld);
+}
+
+.start-kopf .darstellung button {
+  color: var(--text-leise);
+}
+
+.start-kopf .darstellung button[aria-pressed='true'] {
+  background: var(--aktion);
+  color: var(--aktion-text);
+}
+
+.start-kopf .darstellung button:focus-visible {
+  outline-color: var(--fokus);
+}
+
+/* Karten mit Strichzeichnung unten rechts */
+.start-karte {
+  min-height: 16rem;
+  overflow: hidden;
+}
+
+.start-karte-text {
+  max-width: 15rem;
+}
+
+.start-karte-zahl {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  max-width: 42%;
+  line-height: 1.3;
+}
+
+.start-zeichnung {
+  position: absolute;
+  right: -0.5rem;
+  bottom: -0.25rem;
+  width: 62%;
+  max-width: 220px;
+  height: auto;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+.start-karte:hover .start-zeichnung {
+  transform: translateY(-3px);
+}
+
+.z-umriss,
+.z-knochen,
+.z-band,
+.z-band-gesund,
+.z-hinweis {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.z-umriss {
+  stroke: var(--text-sehr-leise);
+  stroke-width: 1.4;
+  opacity: 0.8;
+}
+
+.z-knochen {
+  stroke: var(--text-leise);
+  stroke-width: 1.2;
+  opacity: 0.6;
+}
+
+.z-band {
+  stroke: var(--seite-betroffen);
+  stroke-width: 2;
+}
+
+.z-band-gesund {
+  stroke: var(--seite-gesund);
+  stroke-width: 1.6;
+}
+
+.z-hinweis {
+  stroke: var(--seite-betroffen);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: 0.7;
+}
+
+.z-punkt {
+  fill: var(--seite-betroffen);
+}
+
+.z-punkt-gesund {
+  fill: var(--seite-gesund);
+}
+
+.z-punkt-leise {
+  fill: var(--text-sehr-leise);
+}
+
+.z-korridor {
+  fill: var(--korridor);
+}
+
+@media (max-width: 720px) {
+  .app.app-start {
+    padding-bottom: 0;
+  }
+
+  .start-kopf {
+    flex-wrap: wrap;
+  }
+
+  .start-nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .start-kopf .darstellung {
+    margin-left: auto;
+  }
+
+  .start-karte {
+    min-height: 12rem;
+  }
+
+  .start-zeichnung {
+    width: 42%;
+  }
+}

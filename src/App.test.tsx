@@ -30,7 +30,7 @@ describe('App-Rahmen', () => {
   })
 
   it('hat alle Bereiche in der Navigation', () => {
-    zeige('/')
+    zeige('/patienten')
     const nav = screen.getByRole('navigation', { name: 'Hauptnavigation' })
     for (const b of BEREICHE) {
       expect(nav).toHaveTextContent(b.titel)

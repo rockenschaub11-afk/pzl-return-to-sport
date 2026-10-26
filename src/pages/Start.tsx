@@ -4,12 +4,20 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import DarstellungUmschalter from '../Darstellung'
 import { db } from '../db'
 import { phaseNach } from '../katalog'
+import { BEREICHE } from '../navigation'
 import { datumDeutsch } from '../patienten/stammdaten'
 import { nachDatum } from '../patienten/uebersicht'
 import { ausloesen, neuerKanal, planen, vorbereiten, wertImKanal, type Kanal } from '../start/monitor'
+import { BerichtZeichnung, KnieZeichnung, PlattenZeichnung } from '../start/Zeichnungen'
 import { ART_TEXT, phasenStand, statusText } from '../testung/ablauf'
+
+/** Bereiche ohne eigene Karte auf der Startseite */
+const NUR_OBEN = ['/sicherung', '/info']
+
+const logoUrl = `${import.meta.env.BASE_URL}logo-pzl.svg`
 
 // Eine Kurve braucht so lange von rechts nach links über das Messfenster
 const SICHTBAR_S = 4
@@ -180,6 +188,7 @@ export default function Start() {
     {
       ziel: '/patienten',
       symbol: 'patienten' as const,
+      zeichnung: <KnieZeichnung />,
       titel: 'Pat.-Liste',
       text: 'Kürzel anlegen, Stammdaten und Verlauf ansehen.',
       zahl: patienten?.length ?? 0,
@@ -188,6 +197,7 @@ export default function Start() {
     {
       ziel: '/testung',
       symbol: 'testung' as const,
+      zeichnung: <PlattenZeichnung />,
       titel: 'Testung',
       text: 'Testbatterie durchführen und Werte erfassen.',
       zahl: inArbeit,
@@ -196,6 +206,7 @@ export default function Start() {
     {
       ziel: '/berichte',
       symbol: 'berichte' as const,
+      zeichnung: <BerichtZeichnung />,
       titel: 'Berichte',
       text: 'Arztbericht und Pat./Trainer-Bericht drucken.',
       zahl: testungen?.length ?? 0,
@@ -205,6 +216,21 @@ export default function Start() {
 
   return (
     <section className="start" aria-labelledby="start-titel">
+      <header className="start-kopf">
+        <Link to="/" className="start-marke" aria-label="Startseite">
+          <img src={logoUrl} alt="Physio Zentrum Linz" />
+        </Link>
+        {/* Pat.-Liste, Testung, Berichte stehen unten als Karten – oben nur, was sonst nicht erreichbar wäre */}
+        <nav className="start-nav" aria-label="Weitere Bereiche">
+          {BEREICHE.filter((b) => NUR_OBEN.includes(b.pfad)).map((b) => (
+            <Link key={b.pfad} to={b.pfad}>
+              {b.kurz ?? b.titel}
+            </Link>
+          ))}
+        </nav>
+        <DarstellungUmschalter />
+      </header>
+
       <div className="start-buehne">
         <div className="start-text">
           <p className="start-dach">Kraftmessung · Sprungdiagnostik · Return-to-Sport</p>
@@ -244,8 +270,10 @@ export default function Start() {
                 <span className="start-karte-titel">{e.titel}</span>
                 <span className="start-karte-text">{e.text}</span>
                 <span className="start-karte-zahl">
-                  <strong>{e.zahl}</strong> {e.einheit(e.zahl)}
+                  <strong>{e.zahl}</strong>
+                  <span>{e.einheit(e.zahl)}</span>
                 </span>
+                {e.zeichnung}
                 <span className="start-karte-pfeil" aria-hidden="true">
                   →
                 </span>
