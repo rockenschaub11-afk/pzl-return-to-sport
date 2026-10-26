@@ -160,3 +160,64 @@ export default function ErgebnisEntscheidung({ testung, vorschlag: v, setzeEntsc
     </section>
   )
 }
+
+/** Abschluss eines Verlaufstests: ohne RTS-Vorschlag, nur Therapeut:in und Sperre (Etappe 7). */
+export function AbschlussVerlauf({ testung, setzeEntscheidung, abschliessen, wiederOeffnen }: Omit<Props, 'vorschlag'>) {
+  const [versucht, setVersucht] = useState(false)
+  const [oeffnenFragen, setOeffnenFragen] = useState(false)
+  const e: Entscheidung = testung.entscheidung ?? { art: '', begruendung: '', therapeut: '' }
+  const fehlt = !e.therapeut.trim()
+  return (
+    <section id="ergebnis" className="karte ergebnis">
+      <h3 className="testung-block-titel">Abschluss</h3>
+      <p className="hinweis-leise">Verlaufstest – ohne RTS-Vorschlag. Die Ampel je Test gilt mit den Schwellen der Phase.</p>
+      {testung.status === 'abgeschlossen' ? (
+        <div className="entscheidung-fertig">
+          <p className="hinweis-leise">
+            Therapeut:in {e.therapeut} · abgeschlossen am {testung.abgeschlossenAm ? datumDeutsch(testung.abgeschlossenAm.slice(0, 10)) : '–'}
+          </p>
+          {!oeffnenFragen ? (
+            <button type="button" className="knopf" onClick={() => setOeffnenFragen(true)}>
+              <span>Wieder öffnen …</span>
+            </button>
+          ) : (
+            <div className="meldung meldung-warnung" role="alertdialog" aria-label="Wieder öffnen bestätigen">
+              <p>Verlaufstest wieder bearbeitbar machen?</p>
+              <div className="aktionen">
+                <button type="button" className="knopf knopf-haupt" onClick={wiederOeffnen}>
+                  <span>Ja, wieder öffnen</span>
+                </button>
+                <button type="button" className="knopf" onClick={() => setOeffnenFragen(false)}>
+                  <span>Abbrechen</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          <label className={`feld${versucht && fehlt ? ' feld-fehler' : ''}`}>
+            <span className="feld-label">
+              Therapeut:in (Kürzel) <span className="block-marke">Pflicht</span>
+            </span>
+            <input value={e.therapeut} onChange={(x) => setzeEntscheidung({ ...e, therapeut: x.target.value })} placeholder="z. B. PR" maxLength={12} />
+            {versucht && fehlt && <span className="feld-meldung">Bitte das Kürzel der Therapeut:in eintragen.</span>}
+          </label>
+          <div className="aktionen">
+            <button
+              type="button"
+              className="knopf knopf-haupt"
+              onClick={() => {
+                setVersucht(true)
+                if (!fehlt) abschliessen()
+              }}
+            >
+              <span>Testung abschließen</span>
+            </button>
+            <span className="hinweis-leise">Danach ist die Testung schreibgeschützt.</span>
+          </div>
+        </>
+      )}
+    </section>
+  )
+}

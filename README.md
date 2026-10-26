@@ -7,7 +7,7 @@ Sie ist eine **Dokumentations- und Rechenhilfe – sie ersetzt keine ärztliche 
 - Dieses Repository enthält nur den Programmcode, nie Pat.-Daten.
 - Fachliche Grundlage: [`docs/ENTSCHEIDUNGEN.md`](docs/ENTSCHEIDUNGEN.md), Bauplan: [`docs/ETAPPENPLAN.md`](docs/ETAPPENPLAN.md).
 
-Aktueller Stand: **Etappe 6 – RTS-Vorschlag & Entscheidung** („Kriterien erfüllt / nicht erfüllt“, Was fehlt noch?, klinisch anders beurteilt, Entscheidung und Abschluss).
+Aktueller Stand: **Etappe 7 – Phasen & Verlauf** (Phase aus OP-Datum, Verlaufstests je Phase, Verlaufsdiagramme, Normdaten als graue Info).
 
 ## App am eigenen Laptop starten
 

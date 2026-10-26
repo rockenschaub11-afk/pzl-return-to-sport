@@ -22,7 +22,10 @@ export type Erfassung =
   | { typ: 'sl_dj' }
   | { typ: 'imtp' }
   | { typ: 'versuche'; einheit: 'cm' | 's' }
-  | { typ: 'einzeln'; einheit: 'Wdh.' }
+  /** ein Wert je Seite; kriterium = welches Kriterium den Wert der betroffenen Seite bekommt */
+  | { typ: 'einzeln'; einheit: string; kriterium: string }
+  /** Werte direkt wie am Gerät abgelesen, je Feld ein Kriterium (Verlaufstests, Etappe 7) */
+  | { typ: 'direkt'; felder: { kriterium: string; label: string; einheit: string }[] }
   | { typ: 'score' }
   | { typ: 'koos' }
 
@@ -43,10 +46,24 @@ export const ERFASSUNG: Record<string, Erfassung> = {
   triple_hop: { typ: 'versuche', einheit: 'cm' },
   crossover_hop: { typ: 'versuche', einheit: 'cm' },
   timed_hop: { typ: 'versuche', einheit: 's' },
-  side_hop: { typ: 'einzeln', einheit: 'Wdh.' },
-  sl_bridge: { typ: 'einzeln', einheit: 'Wdh.' },
-  sl_calf_raise: { typ: 'einzeln', einheit: 'Wdh.' },
-  sl_sit_to_stand: { typ: 'einzeln', einheit: 'Wdh.' },
+  side_hop: { typ: 'einzeln', einheit: 'Wdh.', kriterium: 'wdh' },
+  sl_bridge: { typ: 'einzeln', einheit: 'Wdh.', kriterium: 'wdh' },
+  sl_calf_raise: { typ: 'einzeln', einheit: 'Wdh.', kriterium: 'wdh' },
+  sl_sit_to_stand: { typ: 'einzeln', einheit: 'Wdh.', kriterium: 'wdh' },
+  // Verlaufstests (Etappe 7)
+  sl_squat: { typ: 'einzeln', einheit: '°', kriterium: 'winkel' },
+  sl_balance: { typ: 'einzeln', einheit: 'mm', kriterium: 'schwankweg' },
+  bridge_beidbeinig: { typ: 'direkt', felder: [{ kriterium: 'wdh', label: 'Wiederholungen', einheit: 'Wdh.' }] },
+  calf_raise_beidbeinig: { typ: 'direkt', felder: [{ kriterium: 'wdh', label: 'Wiederholungen', einheit: 'Wdh.' }] },
+  kniebeuge_asym: { typ: 'direkt', felder: [{ kriterium: 'asymmetrie', label: 'Asymmetrie (Meloq)', einheit: '%' }] },
+  hop_platte: { typ: 'direkt', felder: [{ kriterium: 'impuls_asymmetrie', label: 'Impuls-Asymmetrie (Meloq)', einheit: '%' }] },
+  dj_bilateral: {
+    typ: 'direkt',
+    felder: [
+      { kriterium: 'hoehe', label: 'Sprunghöhe (bester Versuch)', einheit: 'cm' },
+      { kriterium: 'asymmetrie', label: 'Asymmetrie (Meloq)', einheit: '%' },
+    ],
+  },
   acl_rsi: { typ: 'score' },
   ikdc: { typ: 'score' },
   tampa: { typ: 'score' },
@@ -251,13 +268,16 @@ export function berechne(test: TestDef, e: TestEingabe, kontext: Kontext): Berec
       const g = parseZahl(e.g)
       const b = parseZahl(e.b)
       ergebnis.seiten = { gesund: g, betroffen: b, einheit: art.einheit }
-      ergebnis.werte.wdh = b
+      ergebnis.werte[art.kriterium] = b
       ergebnis.werte.lsi = g !== null && b !== null ? lsi(b, g) : null
       vorverletzung(b)
       break
     }
     case 'score':
       ergebnis.werte.score = parseZahl(e.wert)
+      break
+    case 'direkt':
+      for (const f of art.felder) ergebnis.werte[f.kriterium] = parseZahl(e[f.kriterium])
       break
     case 'koos':
       break

@@ -1,11 +1,17 @@
 import Dexie, { type EntityTable } from 'dexie'
 import { normalisiereKuerzel, type Patient, type Stammdaten } from './patienten/stammdaten'
+import type { PhaseId } from './katalog/typen'
 import type { TestEingabe } from './testung/erfassung'
 
 export interface Testung {
   id: string
   patientId: string
-  art: 'endtestung'
+  /** Endtestung (8–9 Mo, > 9 Mo, mit RTS-Vorschlag) oder Verlaufstest (Früh/Mitte/Spät) */
+  art: 'endtestung' | 'verlauf'
+  /** Phase beim Anlegen; bis zum Abschluss aus dem Datum neu bestimmt, danach fix. Fehlt bei Testungen vor Etappe 7 (= „> 9 Mo“). */
+  phase?: PhaseId
+  /** Phase übersteuert – zählt nur mit Begründung */
+  phaseUebersteuert?: { phase: PhaseId | ''; begruendung: string }
   /** in_arbeit bis zum Abschluss; abgeschlossen = schreibgeschützt */
   status: 'in_arbeit' | 'abgeschlossen'
   datum: string // JJJJ-MM-TT
@@ -106,12 +112,14 @@ export async function loeschePatient(id: string): Promise<void> {
   })
 }
 
-export async function neueEndtestung(patientId: string, datum: string): Promise<string> {
+/** Neue Testung – Phase und Art ergeben sich aus OP-Datum und Datum der Testung. */
+export async function neueTestung(patientId: string, datum: string, phase: PhaseId): Promise<string> {
   const jetzt = new Date().toISOString()
   const testung: Testung = {
     id: crypto.randomUUID(),
     patientId,
-    art: 'endtestung',
+    art: phase === 'rtt' || phase === 'rtc' ? 'endtestung' : 'verlauf',
+    phase,
     status: 'in_arbeit',
     datum,
     koerpergewichtKg: '',

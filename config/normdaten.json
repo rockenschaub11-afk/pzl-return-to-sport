@@ -1,0 +1,96 @@
+{
+  "_info": [
+    "Normdaten (VALD Research Normative Data Report – ACL), docs/ENTSCHEIDUNGEN.md 9. Nur graue Zusatzinfo „typisch nach VKB-OP“, ohne Einfluss auf die Ampel (F24).",
+    "Angezeigt nur, wenn Geschlecht und Altersband genau passen und die Testung höchstens toleranzMonate vom Normzeitpunkt entfernt ist (Etappe-7-Frage 7).",
+    "seite: betroffen/gesund bei einbeinigen Werten; von/bis = Mittelwert −1 SD / +1 SD.",
+    "vergleich: true = Vergleichsgruppe ohne Verletzung („Uninjured“, bei beidbeinigen Tests die Person, Report S. 29) – eigene graue Zeile."
+  ],
+  "quelle": "VALD Research Normative Data Report – ACL",
+  "toleranzMonate": 1.5,
+  "altersbaender": [
+    { "id": "16-20", "name": "16–20", "von": 16, "bis": 19 },
+    { "id": "20-30", "name": "20–30", "von": 20, "bis": 29 }
+  ],
+  "gruppen": [
+    {
+      "monate": 6,
+      "geschlecht": "weiblich",
+      "alter": "16-20",
+      "werte": [
+        { "test": "acl_rsi", "name": "ACL-RSI", "mittel": 68.7, "von": 47.8, "bis": 89.6, "einheit": "Punkte" },
+        { "test": "ikdc", "name": "IKDC", "mittel": 83.2, "von": 72, "bis": 94.5, "einheit": "Punkte" },
+        { "test": "single_hop", "name": "LSI", "mittel": 92, "einheit": "%" },
+        { "test": "triple_hop", "name": "LSI", "mittel": 94, "einheit": "%" },
+        { "test": "crossover_hop", "name": "LSI", "mittel": 96, "einheit": "%" }
+      ]
+    },
+    {
+      "monate": 6,
+      "geschlecht": "maennlich",
+      "alter": "16-20",
+      "werte": [
+        { "test": "acl_rsi", "name": "ACL-RSI", "mittel": 74, "von": 55, "bis": 94, "einheit": "Punkte" },
+        { "test": "ikdc", "name": "IKDC", "mittel": 85, "von": 75, "bis": 94, "einheit": "Punkte" },
+        { "test": "single_hop", "name": "LSI", "mittel": 94, "einheit": "%" },
+        { "test": "triple_hop", "name": "LSI", "mittel": 93, "einheit": "%" },
+        { "test": "crossover_hop", "name": "LSI", "mittel": 95, "einheit": "%" }
+      ]
+    },
+    {
+      "monate": 6,
+      "geschlecht": "maennlich",
+      "alter": "20-30",
+      "werte": [
+        { "test": "cmj", "name": "Sprunghöhe", "mittel": 29.7, "von": 24.6, "bis": 34.8, "einheit": "cm" },
+        { "test": "sl_cmj", "name": "Sprunghöhe", "seite": "betroffen", "mittel": 13.1, "einheit": "cm" },
+        { "test": "sl_cmj", "name": "Sprunghöhe", "seite": "gesund", "mittel": 16.7, "einheit": "cm" },
+        { "test": "sl_dj", "name": "Sprunghöhe", "seite": "betroffen", "mittel": 13, "einheit": "cm" },
+        { "test": "sl_dj", "name": "Sprunghöhe", "seite": "gesund", "mittel": 16.5, "einheit": "cm" },
+        { "test": "sl_dj", "name": "RSI", "seite": "betroffen", "mittel": 0.34, "einheit": "" },
+        { "test": "sl_dj", "name": "RSI", "seite": "gesund", "mittel": 0.51, "einheit": "" }
+      ]
+    },
+    {
+      "monate": 9,
+      "geschlecht": "maennlich",
+      "alter": "20-30",
+      "werte": [
+        { "test": "acl_rsi", "name": "ACL-RSI", "mittel": 74.5, "von": 58, "bis": 90.9, "einheit": "Punkte" },
+        { "test": "ikdc", "name": "IKDC", "mittel": 84.9, "von": 75.2, "bis": 94.5, "einheit": "Punkte" },
+        { "test": "cmj", "name": "Sprunghöhe", "mittel": 29.7, "von": 24.3, "bis": 35.1, "einheit": "cm" },
+        { "test": "cmj", "name": "Sprunghöhe", "vergleich": true, "mittel": 36.3, "von": 30.9, "bis": 41.7, "einheit": "cm" },
+        { "test": "sl_dj", "name": "Sprunghöhe", "seite": "betroffen", "mittel": 9.2, "einheit": "cm" },
+        { "test": "sl_dj", "name": "Sprunghöhe", "seite": "gesund", "mittel": 12.5, "einheit": "cm" },
+        { "test": "sl_dj", "name": "RSI", "seite": "betroffen", "mittel": 0.35, "einheit": "" },
+        { "test": "sl_dj", "name": "RSI", "seite": "gesund", "mittel": 0.47, "einheit": "" }
+      ]
+    },
+    {
+      "monate": 12,
+      "geschlecht": "weiblich",
+      "alter": "16-20",
+      "werte": [
+        { "test": "timed_hop", "name": "LSI", "mittel": 103, "einheit": "%" },
+        { "test": "single_hop", "name": "LSI", "mittel": 99, "einheit": "%" },
+        { "test": "triple_hop", "name": "LSI", "mittel": 87, "einheit": "%" },
+        { "test": "crossover_hop", "name": "LSI", "mittel": 95, "einheit": "%" }
+      ]
+    },
+    {
+      "monate": 12,
+      "geschlecht": "maennlich",
+      "alter": "20-30",
+      "werte": [
+        { "test": "cmj", "name": "Sprunghöhe", "mittel": 30.7, "von": 26.1, "bis": 35.3, "einheit": "cm" },
+        { "test": "cmj", "name": "Sprunghöhe", "vergleich": true, "mittel": 34.5, "von": 30.5, "bis": 38.5, "einheit": "cm" },
+        { "test": "sl_dj", "name": "Sprunghöhe", "seite": "betroffen", "mittel": 14, "einheit": "cm" },
+        { "test": "sl_dj", "name": "Sprunghöhe", "seite": "gesund", "mittel": 16, "einheit": "cm" },
+        { "test": "sl_dj", "name": "RSI", "seite": "betroffen", "mittel": 0.37, "einheit": "" },
+        { "test": "sl_dj", "name": "RSI", "seite": "gesund", "mittel": 0.46, "einheit": "" }
+      ]
+    }
+  ],
+  "hinweise": {
+    "sl_dj": "Normdaten mit 15-cm-Box (PZL-Standard 30 cm) – nur eingeschränkt vergleichbar."
+  }
+}

@@ -26,7 +26,7 @@ const patient: Pick<Patient, 'opDatum' | 'niveau' | 'konservativ' | 'geschlecht'
 
 function vorschlag(eingaben: Testung['eingaben'], extra: Partial<Testung> = {}, p = patient) {
   const testung = { datum: '2026-08-01', optionaleTests: [], koerpergewichtKg: '70', eingaben, ...extra }
-  return rtsVorschlag(testung, p, werteAus(testung, p.geschlecht))
+  return rtsVorschlag(testung, p, werteAus(testung, 'rtc', p.geschlecht))
 }
 
 describe('RTS-Vorschlag', () => {

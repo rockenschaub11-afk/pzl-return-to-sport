@@ -1,10 +1,11 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Link, useNavigate } from 'react-router-dom'
-import { db, neueEndtestung } from '../db'
+import { db, neueTestung } from '../db'
+import { KATALOG } from '../katalog'
 import { datumDeutsch, isoDatum } from '../patienten/stammdaten'
-import { fortschritt, statusText } from './ablauf'
+import { ART_TEXT, fortschritt, monateBisTestung, phaseAusMonaten, phasenStand, statusText } from './ablauf'
 
-/** Testungen eines Kürzels und Knopf „Neue Endtestung“ (auf der Seite des Kürzels). */
+/** Testungen eines Kürzels und Knopf „Neue Testung“ (auf der Seite des Kürzels). */
 export default function PatientTestungen({ patientId }: { patientId: string }) {
   const navigate = useNavigate()
   const testungen = useLiveQuery(
@@ -12,8 +13,13 @@ export default function PatientTestungen({ patientId }: { patientId: string }) {
     [patientId],
   )
 
+  const patient = useLiveQuery(() => db.patienten.get(patientId), [patientId])
+
   async function starten() {
-    navigate(`/testung/${await neueEndtestung(patientId, isoDatum(new Date()))}`)
+    if (!patient) return
+    const heute = isoDatum(new Date())
+    const phase = phaseAusMonaten(monateBisTestung(patient.opDatum, heute) ?? 0)
+    navigate(`/testung/${await neueTestung(patientId, heute, phase)}`)
   }
 
   return (
@@ -21,17 +27,20 @@ export default function PatientTestungen({ patientId }: { patientId: string }) {
       <div className="block-kopf">
         <h3 className="block-titel">Testungen</h3>
         <button type="button" className="knopf knopf-haupt" onClick={starten}>
-          <span>Neue Endtestung</span>
+          <span>Neue Testung</span>
         </button>
       </div>
       {testungen && testungen.length > 0 ? (
         <ul className="testung-liste">
           {testungen.map((t) => {
-            const f = fortschritt(t)
+            const ph = phasenStand(t, patient?.opDatum ?? '')
+            const f = fortschritt(t, ph.phase)
             return (
               <li key={t.id}>
                 <Link to={`/testung/${t.id}`} className="testung-zeile">
-                  <span>Endtestung · {datumDeutsch(t.datum)}</span>
+                  <span>
+                    {ART_TEXT[ph.art]} · {KATALOG.phasen.find((x) => x.id === ph.phase)?.name} · {datumDeutsch(t.datum)}
+                  </span>
                   <span className={`chip${t.status === 'abgeschlossen' ? ' chip-wettkampf' : ''}`}>{statusText(t)}</span>
                   <span className="testung-fortschritt">
                     {f.erfasst} / {f.gesamt} Tests

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { db, findeKuerzel, KuerzelVergebenFehler, loeschePatient, neueEndtestung, speicherePatient } from './db'
+import { db, findeKuerzel, KuerzelVergebenFehler, loeschePatient, neueTestung, speicherePatient } from './db'
 import { LEER, type Stammdaten } from './patienten/stammdaten'
 
 const daten: Stammdaten = { ...LEER, kuerzel: 'mh-1998', seite: 'rechts', opDatum: '2025-12-01', niveau: 'freizeit' }
@@ -24,7 +24,7 @@ describe('Speicher', () => {
 
   it('legt eine Endtestung an und löscht sie mit dem Kürzel', async () => {
     const id = await speicherePatient(daten)
-    const testungId = await neueEndtestung(id, '2026-10-26')
+    const testungId = await neueTestung(id, '2026-10-26', 'rtc')
     expect((await db.testungen.get(testungId))?.status).toBe('in_arbeit')
     await loeschePatient(id)
     expect(await db.testungen.count()).toBe(0)

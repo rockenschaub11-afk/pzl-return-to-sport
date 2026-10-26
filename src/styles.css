@@ -1136,6 +1136,152 @@ a {
   }
 }
 
+/* ---------- Phasen und Verlauf (Etappe 7) ---------- */
+
+.phase-zeile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.phase-marke {
+  padding: 0.15rem 0.7rem;
+  border-radius: 4px;
+  background: var(--nacht);
+  color: #fff;
+  font-weight: 600;
+}
+
+.phase-zeile .hinweis-leise {
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.weitere-tests {
+  margin: 0.5rem 0 1.5rem;
+}
+
+.weitere-tests select {
+  max-width: 24rem;
+}
+
+.test-hinweis {
+  margin: 0.5rem 0 0;
+  font-size: 0.88rem;
+}
+
+.normdaten {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--rand-stark);
+  background: var(--hintergrund);
+  color: var(--text-sehr-leise);
+  font-size: 0.85rem;
+}
+
+.normdaten p {
+  margin: 0.1rem 0;
+}
+
+.normdaten-kopf {
+  font-weight: 600;
+  color: var(--text-leise);
+}
+
+.verlauf-diagramme {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.diagramm {
+  margin: 0;
+}
+
+.diagramm figcaption {
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--nacht);
+}
+
+.diagramm svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.diagramm-band-0 {
+  fill: rgb(29 113 184 / 0.04);
+}
+
+.diagramm-band-1 {
+  fill: rgb(0 181 203 / 0.07);
+}
+
+.diagramm-band-text {
+  fill: var(--text-sehr-leise);
+  font-family: var(--schrift);
+  font-size: 11px;
+  font-weight: 600;
+  text-anchor: middle;
+}
+
+.diagramm-raster {
+  stroke: var(--raster);
+}
+
+.diagramm-achse {
+  fill: var(--text-sehr-leise);
+  font-family: var(--schrift);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.diagramm-achse-y {
+  text-anchor: end;
+}
+
+.diagramm-achse-x {
+  text-anchor: middle;
+}
+
+.diagramm-ziel {
+  stroke: var(--gruen);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.diagramm-ziel-text {
+  fill: var(--gruen);
+  font-family: var(--schrift);
+  font-size: 11px;
+  font-weight: 600;
+  text-anchor: end;
+}
+
+.diagramm-legende {
+  display: flex;
+  gap: 1rem;
+  margin: 0.2rem 0 0;
+  color: var(--text-leise);
+  font-size: 0.82rem;
+}
+
+.diagramm-legende i {
+  display: inline-block;
+  width: 1rem;
+  height: 3px;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+
+.verlauf-tabelle td {
+  padding-right: 1.25rem;
+}
+
 /* ---------- RTS-Vorschlag und Entscheidung (Etappe 6) ---------- */
 
 .ohne-rahmen {

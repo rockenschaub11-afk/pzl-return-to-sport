@@ -4,7 +4,7 @@
 
 import type { Testung } from '../db'
 import { KATALOG } from '../katalog'
-import type { Kriterium, TestDef } from '../katalog/typen'
+import type { Kriterium, PhaseId, TestDef } from '../katalog/typen'
 import { monateSeit, type Patient } from '../patienten/stammdaten'
 import type { KriteriumErgebnis } from '../rechnen/bewertung'
 import { sichtbareTests, type TestAuswertung } from './ablauf'
@@ -77,9 +77,10 @@ export function rtsVorschlag(
   testung: Pick<Testung, 'datum' | 'optionaleTests' | 'klinischAnders'>,
   patient: Pick<Patient, 'opDatum' | 'niveau' | 'konservativ'>,
   auswertung: Map<string, TestAuswertung>,
+  phase: PhaseId = 'rtc',
 ): RtsVorschlag {
   const regel = KATALOG.regeln.rts
-  const tests = sichtbareTests(testung)
+  const tests = sichtbareTests(testung, phase)
 
   const pflicht: PflichtTest[] = []
   for (const t of tests) {

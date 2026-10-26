@@ -7,6 +7,7 @@ import { istMeloqTest } from '../katalog/meloq'
 import Ladebalken, { AMPEL_TEXT, AmpelMarke } from './Ladebalken'
 import MeloqBereich, { KernStrategie } from './MeloqBereich'
 import type { MeloqAuswahl } from './meloqAuswahl'
+import type { NormAnzeige } from './normdaten'
 
 export interface Seitennamen {
   gesund: string
@@ -26,6 +27,10 @@ interface Props {
   koerpergewichtKg: number | null
   /** z. B. „klinisch anders beurteilen“ – unten in der Karte */
   fuss?: ReactNode
+  /** Hinweise oben in der Karte, z. B. „HHD erst ab 8 Wochen“ */
+  hinweise?: string[]
+  /** Normdaten als graue Zusatzinfo (ohne Einfluss auf die Ampel) */
+  normdaten?: NormAnzeige | null
 }
 
 const zahl = (v: number, nachkomma = 1) =>
@@ -131,6 +136,14 @@ function Eingaben({ test, eingabe: e, setze, seiten, berechnung }: Props) {
         </div>
       )
     }
+    case 'direkt':
+      return (
+        <div className="seiten-paar">
+          {art.felder.map((f) => (
+            <Zahl key={f.kriterium} wert={e[f.kriterium]} onChange={(v) => setze(f.kriterium, v)} label={f.label} einheit={`${f.einheit} · ${f.label}`} breit />
+          ))}
+        </div>
+      )
     case 'koos':
       return (
         <div className="seiten-paar">
@@ -240,6 +253,12 @@ export default function TestKarte(props: Props) {
         <AmpelMarke ampel={ergebnis.ampel} text={ergebnis.ampel ? `${AMPEL_TEXT[ergebnis.ampel]}${ergebnis.vollstaendig ? '' : ' (unvollständig)'}` : undefined} />
       </header>
 
+      {props.hinweise?.map((h) => (
+        <p key={h} className="meldung meldung-warnung test-hinweis">
+          {h}
+        </p>
+      ))}
+
       {(protokoll || test.hinweise?.length) && (
         <details className="test-protokoll">
           <summary>Protokoll & Warum</summary>
@@ -318,6 +337,21 @@ export default function TestKarte(props: Props) {
             streuen um {zahl(s.cv, 1)} % (mehr als 10 %).
           </p>
         ))}
+        {props.normdaten && (
+          <div className="normdaten">
+            {props.normdaten.keine ? (
+              <p>{props.normdaten.keine}</p>
+            ) : (
+              <>
+                <p className="normdaten-kopf">{props.normdaten.kopf} – nur Info, ohne Einfluss auf die Ampel</p>
+                {props.normdaten.zeilen.map((z) => (
+                  <p key={z}>{z}</p>
+                ))}
+              </>
+            )}
+            {props.normdaten.hinweis && <p>{props.normdaten.hinweis}</p>}
+          </div>
+        )}
         {ergebnis.hinweise.map((h) => (
           <p key={h} className="meldung meldung-info">
             {h}

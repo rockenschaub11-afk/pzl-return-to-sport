@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it } from 'vitest'
 import App from './App'
-import { db, neueEndtestung, speicherePatient } from './db'
+import { db, neueTestung, speicherePatient } from './db'
 import { BEREICHE, HINWEIS } from './navigation'
 import { LEER } from './patienten/stammdaten'
 
@@ -75,7 +75,7 @@ describe('Endtestung', () => {
     const patientId = await speicherePatient({ ...LEER, kuerzel: 'TT-1999', seite: 'links', opDatum: '2025-10-01', niveau: 'wettkampf' })
     zeige(`/patienten/${patientId}`)
 
-    await user.click(await screen.findByRole('button', { name: 'Neue Endtestung' }))
+    await user.click(await screen.findByRole('button', { name: 'Neue Testung' }))
     expect(await screen.findByRole('heading', { level: 2, name: 'Endtestung TT-1999' })).toBeInTheDocument()
 
     await user.type(screen.getByPlaceholderText('z. B. 72,5'), '80')
@@ -99,7 +99,7 @@ describe('RTS-Vorschlag und Abschluss', () => {
   it('zeigt den Vorschlag, schließt mit Entscheidung ab und lässt sich wieder öffnen', async () => {
     const user = userEvent.setup()
     const patientId = await speicherePatient({ ...LEER, kuerzel: 'TT-1999', seite: 'links', opDatum: '2025-10-01', niveau: 'wettkampf', geschlecht: 'maennlich' })
-    const testungId = await neueEndtestung(patientId, '2026-08-01')
+    const testungId = await neueTestung(patientId, '2026-08-01', 'rtc')
     await db.testungen.update(testungId, {
       koerpergewichtKg: '70',
       eingaben: {
@@ -135,12 +135,33 @@ describe('RTS-Vorschlag und Abschluss', () => {
   })
 })
 
+describe('Verlaufstest (Etappe 7)', () => {
+  it('bestimmt die Phase aus dem OP-Datum und zeigt das Testset ohne RTS-Vorschlag', async () => {
+    const user = userEvent.setup()
+    const op = new Date()
+    op.setMonth(op.getMonth() - 4)
+    const patientId = await speicherePatient({ ...LEER, kuerzel: 'TT-1999', seite: 'links', opDatum: op.toISOString().slice(0, 10), niveau: 'wettkampf' })
+    zeige(`/patienten/${patientId}`)
+
+    await user.click(await screen.findByRole('button', { name: 'Neue Testung' }))
+    expect(await screen.findByRole('heading', { level: 2, name: 'Verlaufstest TT-1999' })).toBeInTheDocument()
+    expect(screen.getByText('Phase: Mitte (3–5 Monate)')).toBeInTheDocument()
+    expect(screen.getByRole('article', { name: /^SL-CMJ/ })).toBeInTheDocument()
+    expect(screen.queryByRole('article', { name: /^SL-Drop-Jump/ })).not.toBeInTheDocument()
+    expect(screen.queryByText('RTS-Vorschlag')).not.toBeInTheDocument()
+
+    // weiteren Test aus dem Katalog hinzufügen
+    await user.selectOptions(screen.getByLabelText('+ weiteren Test hinzufügen'), 'sl_dj')
+    expect(await screen.findByRole('article', { name: /^SL-Drop-Jump/ })).toHaveTextContent('Nicht im Testset der Phase „Mitte“')
+  })
+})
+
 describe('Meloq-Metriken', () => {
   it('bietet den Standard an und merkt sich eine geänderte Auswahl', async () => {
     const user = userEvent.setup()
     await db.einstellungen.clear()
     const patientId = await speicherePatient({ ...LEER, kuerzel: 'TT-1999', seite: 'rechts', opDatum: '2025-10-01', niveau: 'freizeit' })
-    const testungId = await neueEndtestung(patientId, '2026-10-26')
+    const testungId = await neueTestung(patientId, '2026-10-26', 'rtc')
     zeige(`/testung/${testungId}`)
 
     const cmj = within(await screen.findByRole('article', { name: /^CMJ/ }))

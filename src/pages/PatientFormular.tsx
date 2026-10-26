@@ -20,6 +20,7 @@ import {
   type Stammdaten,
 } from '../patienten/stammdaten'
 import PatientTestungen from '../testung/PatientTestungen'
+import VerlaufBereich from '../testung/VerlaufBereich'
 
 export default function PatientFormular() {
   const { id } = useParams()
@@ -101,6 +102,7 @@ export default function PatientFormular() {
       </div>
 
       {id && <PatientTestungen patientId={id} />}
+      {id && gespeichert && <VerlaufBereich patient={gespeichert} />}
 
       <fieldset className="karte block">
         <legend className="block-titel">

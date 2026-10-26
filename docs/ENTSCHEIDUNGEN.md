@@ -197,6 +197,16 @@ Anzeige in kg/N, Peak Force, Zeit bis Peak, RFD. Hinweis: Die DynaMo-App verlang
 - Teil-Testungen erlaubt, Zwischenspeichern möglich.
 - Je Phase gilt die Read-Spalte; wo Read nichts angibt → nur LSI, keine absolute Ampel.
 
+**Umsetzung (Nachtrag 26.10.2026, Etappe 7, von Philipp bestätigt):**
+- Ein Knopf „Neue Testung“: Phase aus vollen Monaten zwischen OP-Datum und **Datum der Testung** (< 3 Früh, 3–< 5 Mitte, 5–< 8 Spät, 8–< 9 „8–9 Mo“, ab 9 „> 9 Mo“). Früh/Mitte/Spät = **Verlaufstest** (Testset der Phase, Ampel mit Read-Spalte, kein RTS-Vorschlag); 8–9 Mo / > 9 Mo = **Endtestung** mit RTS-Vorschlag.
+- Phase übersteuerbar mit Pflicht-Begründung (wird markiert). Werte außerhalb des Testsets bleiben gespeichert, nur ausgeblendet.
+- HHD-Tests vor 8 Wochen: sichtbar mit Hinweis „Read: erst ab ca. 8 Wochen“.
+- „+ weiteren Test hinzufügen“ aus dem ganzen Katalog (markiert „nicht im Testset dieser Phase“).
+- Phase wird gespeichert; solange in Arbeit passt sie sich dem Datum an, beim Abschluss wird sie festgeschrieben. Testungen vor Etappe 7 bleiben fix „> 9 Mo“.
+- Verlaufstest-Abschluss: nur Therapeut:in-Kürzel, danach schreibgeschützt.
+- Verlauf auf der Seite des Kürzels: Auswahl einer Größe, zwei Diagramme (Bestwerte gesund/betroffen bzw. Wert; LSI mit Ziellinie bzw. CMJ-Asymmetrie), Phasen als Bänder, Strategy-Werte wählbar, Werte auch als Tabelle.
+- Verlaufstests ohne eigene Maske bisher: SL-Squat und Einbeinstand je Seite; Kniebeuge-Asymmetrie, Hop auf der Platte, Drop Jump beidbeinig, Bridge/Calf Raise beidbeinig als direkt abgelesene Werte.
+
 ### 7.1 Read-Benchmarks (Practitioner's Guide S. 59, visuell geprüft)
 
 | Test | Früh 0–3 Mo | Mitte 3–5 Mo | Spät 5–8 Mo | RTT 8–9 Mo | RTC > 9 Mo |
@@ -256,11 +266,13 @@ Mittelwert (−1 SD / +1 SD), nur für die freigegebenen Bereiche (F24):
 | 6 Mo, w 16–20 | ACL-RSI 68,7 (47,8–89,6); IKDC 83,2 (72–94,5); Hop-LSI Single 92 %, Triple 94 %, Crossover 96 % |
 | 6 Mo, m 16–20 | ACL-RSI 74 (55–94); IKDC 85 (75–94); Hop-LSI Single 94 %, Triple 93 %, Crossover 95 % |
 | 6 Mo, m 20–30 | CMJ-Höhe 29,7 cm (24,6–34,8); SL-CMJ 13,1 / 16,7 cm (betr./gesund); SL-DJ 15 cm: 13 / 16,5 cm, RSI 0,34 / 0,51 |
-| 9 Mo, m 20–30 | ACL-RSI 74,5 (58–90,9); IKDC 84,9 (75,2–94,5); CMJ 29,7 cm; SL-DJ 15 cm: 9,2 / 12,5 cm, RSI 0,35 / 0,47 |
+| 9 Mo, m 20–30 | ACL-RSI 74,5 (58–90,9); IKDC 84,9 (75,2–94,5); CMJ 29,7 cm (24,3–35,1), ohne Verletzung 36,3 (30,9–41,7); SL-DJ 15 cm: 9,2 / 12,5 cm, RSI 0,35 / 0,47 |
 | 12 Mo, w 16–20 | Hop-LSI 6 m 103 %, Single 99 %, Triple 87 %, Crossover 95 % |
-| 12 Mo, m 20–30 | CMJ 30,7 / 34,5 cm; SL-DJ 14 / 16 cm, RSI 0,37 / 0,46 |
+| 12 Mo, m 20–30 | CMJ 30,7 cm (26,1–35,3), ohne Verletzung 34,5 (30,5–38,5); SL-DJ 14 / 16 cm, RSI 0,37 / 0,46 |
 
 Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nur obige, plausible Werte verwenden. SL-DJ im Report mit 15 cm Box (PZL-Standard 30 cm) → Hinweis.
+
+**Umsetzung (Nachtrag 26.10.2026, Etappe 7):** Werte in `config/normdaten.json`. Angezeigt nur, wenn **Geschlecht und Altersband genau passen** (16–20 = 16–19 Jahre, 20–30 = 20–29 Jahre, aus dem Geburtsjahr) und die Testung höchstens **1,5 Monate** vom Normzeitpunkt (6/9/12 Mo) entfernt ist – sonst „keine passenden Normdaten“ mit Grund. **Geklärt (Report S. 37, Fußnote S. 29):** „CMJ 30,7 / 34,5 cm“ bei 12 Mo, m 20–30 = Mittelwert nach VKB-OP („Injured“) bzw. Vergleichsgruppe ohne Verletzung („Uninjured“, beim beidbeinigen Sprung die Person). Beide werden angezeigt, die Vergleichsgruppe als eigene graue Zeile (Philipp, 26.10.2026).
 
 ## 10. Ausgaben (F5, F30, F41)
 
