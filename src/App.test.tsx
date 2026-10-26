@@ -156,6 +156,22 @@ describe('Verlaufstest (Etappe 7)', () => {
   })
 })
 
+describe('Fragebogen-Rechner (Etappe 8)', () => {
+  it('rechnet den Tampa-Score aus den Items und übernimmt ihn', async () => {
+    const user = userEvent.setup()
+    const patientId = await speicherePatient({ ...LEER, kuerzel: 'TT-1999', seite: 'links', opDatum: '2025-10-01', niveau: 'wettkampf' })
+    const testungId = await neueTestung(patientId, '2026-10-26', 'rtc')
+    await db.testungen.update(testungId, { optionaleTests: ['tampa'] })
+    zeige(`/testung/${testungId}`)
+
+    const karte = within(await screen.findByRole('article', { name: /^Tampa/ }))
+    for (let i = 1; i <= 11; i++) await user.type(karte.getByLabelText(`Item ${i}`), '2')
+    expect(karte.getByText('22')).toBeInTheDocument()
+    await user.click(karte.getByRole('button', { name: 'Ergebnis übernehmen' }))
+    expect(karte.getByLabelText('Score')).toHaveValue('22')
+  })
+})
+
 describe('Meloq-Metriken', () => {
   it('bietet den Standard an und merkt sich eine geänderte Auswahl', async () => {
     const user = userEvent.setup()

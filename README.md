@@ -7,7 +7,7 @@ Sie ist eine **Dokumentations- und Rechenhilfe – sie ersetzt keine ärztliche 
 - Dieses Repository enthält nur den Programmcode, nie Pat.-Daten.
 - Fachliche Grundlage: [`docs/ENTSCHEIDUNGEN.md`](docs/ENTSCHEIDUNGEN.md), Bauplan: [`docs/ETAPPENPLAN.md`](docs/ETAPPENPLAN.md).
 
-Aktueller Stand: **Etappe 7 – Phasen & Verlauf** (Phase aus OP-Datum, Verlaufstests je Phase, Verlaufsdiagramme, Normdaten als graue Info).
+Aktueller Stand: **Etappe 8 – Fragebogen-Rechner** (ACL-RSI, IKDC, KOOS, Tampa – Antworten abtippen, App rechnet den Score).
 
 ## App am eigenen Laptop starten
 

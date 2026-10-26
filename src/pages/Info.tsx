@@ -3,6 +3,7 @@ import { KATALOG, protokollNach } from '../katalog'
 import { BLOCK_NAMEN, BLOECKE, PHASEN_IDS, STATUS_NAMEN, type Kriterium, type PhaseId, type TestDef } from '../katalog/typen'
 import { MELOQ, MELOQ_TESTS } from '../katalog/meloq'
 import { schwelleFuer } from '../rechnen/bewertung'
+import BeispielKarte from './BeispielKarte'
 import { useMeloqAuswahl } from '../testung/meloqAuswahl'
 import MetrikWahl, { OdsErklaerung } from '../testung/MetrikWahl'
 
@@ -43,7 +44,9 @@ export default function Info() {
         </div>
       </div>
 
-      <div className="karte kat-regeln">
+      <BeispielKarte />
+
+      <div className="karte kat-regeln kat-block">
         <h3>Meloq-Metriken (persönlicher Standard)</h3>
         <p>
           Welche weiteren Meloq-Werte in der Testung zum Eintragen angeboten werden. Der Kern-Satz ist immer dabei. Die Auswahl gilt für diesen

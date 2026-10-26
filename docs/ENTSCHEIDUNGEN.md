@@ -257,6 +257,8 @@ Hinweis Read: Bereiche sind 95 %-KI, teils unveröffentlichte Daten, „for guid
 | KOOS | immer Erlaubnis via Mapi ePROVIDE | ja (Kessler 2003) | 5 Subskalen, je 100 − (Mittel × 100/4); ≥ 50 % Items je Subskala; kein Gesamtscore |
 | Tampa (TSK-11) | meist als frei angeführt, keine Rechte-Erklärung | TSK-GV (Rusu 2014) | 11 Items à 1–4, Summe 11–44 |
 
+**Umsetzung (Nachtrag 26.10.2026, Etappe 8):** Score-Rechner je Fragebogen-Karte („Antworten vom Papier abtippen“), nur Item-Nummern und Wertebereich, kein Fragebogentext; „Ergebnis übernehmen“ trägt den Score ein (manuelle Score-Eingabe bleibt möglich). Regeln: ACL-RSI = Mittelwert, alle 12 Items nötig; IKDC = Rohsumme / Maximum der beantworteten Items × 100 (max. 87), Items 2/3 als angekreuzte Zahl (App rechnet 10 − Wert), Item 6 Ja = 0 / Nein = 1, max. 2 fehlend; KOOS = je Subskala 100 − Mittelwert × 25, Items 0–4 (linke Antwort = 0), ≥ 50 % je Subskala; Tampa TSK-11 = Summe 1–4, alle 11 nötig. Werte außerhalb des Bereichs werden gemeldet und nicht gezählt.
+
 ## 9. Normdaten (Zusatzinfo, grau) – Auszug Research Normative Data Report (VALD)
 
 Mittelwert (−1 SD / +1 SD), nur für die freigegebenen Bereiche (F24):

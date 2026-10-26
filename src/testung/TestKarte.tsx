@@ -5,6 +5,7 @@ import type { KriteriumErgebnis, TestErgebnis } from '../rechnen/bewertung'
 import { ERFASSUNG, KOOS_SUBSKALEN, VERSUCHE, type Berechnung, type TestEingabe } from './erfassung'
 import { istMeloqTest } from '../katalog/meloq'
 import Ladebalken, { AMPEL_TEXT, AmpelMarke } from './Ladebalken'
+import FragebogenRechner from './FragebogenRechner'
 import MeloqBereich, { KernStrategie } from './MeloqBereich'
 import type { MeloqAuswahl } from './meloqAuswahl'
 import type { NormAnzeige } from './normdaten'
@@ -293,6 +294,8 @@ export default function TestKarte(props: Props) {
       <div className="test-eingabe">
         <Eingaben {...props} />
       </div>
+
+      <FragebogenRechner testId={test.id} eingabe={e} setze={setze} />
 
       {istMeloqTest(test.id) && props.meloqAuswahl && (
         <MeloqBereich

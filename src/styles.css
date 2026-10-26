@@ -1136,6 +1136,47 @@ a {
   }
 }
 
+/* ---------- Fragebogen-Rechner (Etappe 8) ---------- */
+
+.fragebogen-gruppe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.8rem;
+  margin: 0.5rem 0;
+}
+
+.fragebogen-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.fragebogen-nr {
+  min-width: 1.8rem;
+  color: var(--text-leise);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+.fragebogen-item input {
+  width: 3.6rem;
+  padding: 0.3rem 0.4rem;
+  border: 1px solid var(--rand-stark);
+  border-radius: var(--radius);
+  font: inherit;
+  text-align: right;
+}
+
+.fragebogen-item .auswahl-knopf {
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.fragebogen-ergebnis {
+  margin-top: 0.5rem;
+}
+
 /* ---------- Phasen und Verlauf (Etappe 7) ---------- */
 
 .phase-zeile {
