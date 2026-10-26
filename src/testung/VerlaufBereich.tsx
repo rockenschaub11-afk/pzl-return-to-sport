@@ -6,8 +6,9 @@ import { datumDeutsch, type Patient } from '../patienten/stammdaten'
 import LinienDiagramm from './LinienDiagramm'
 import { phasenBaender, verfuegbareOptionen, verlaufsDaten } from './verlauf'
 
-const BLAU = '#1d71b8'
-const TUERKIS = '#00a3b8'
+// Farben aus dem Designsystem: Blau = betroffen, Türkis = gesund (gestrichelt)
+const BLAU = 'var(--seite-betroffen)'
+const TUERKIS = 'var(--seite-gesund)'
 const zahl = (v: number | null) => (v === null ? '–' : v.toLocaleString('de-AT', { maximumFractionDigits: 1 }))
 
 /** Verlauf über alle Testungen eines Kürzels (Etappe-7-Frage 6). */
@@ -30,7 +31,7 @@ export default function VerlaufBereich({ patient }: { patient: Patient }) {
   const baender = phasenBaender(patient.opDatum)
   const reihen = option.seiten
     ? [
-        { name: 'gesund', farbe: TUERKIS },
+        { name: 'gesund', farbe: TUERKIS, gestrichelt: true },
         { name: 'betroffen', farbe: BLAU },
       ]
     : [{ name: option.name, farbe: BLAU }]

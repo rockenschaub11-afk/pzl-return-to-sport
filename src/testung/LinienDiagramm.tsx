@@ -102,9 +102,9 @@ export default function LinienDiagramm({ titel, punkte, reihen, einheit, ziel, b
           const pts = punkte.map((p, i) => ({ t: zeiten[i], v: p.werte[ri], datum: p.datum })).filter((p): p is { t: number; v: number; datum: string } => p.v !== null)
           return (
             <g key={r.name}>
-              <polyline points={pts.map((p) => `${x(p.t)},${y(p.v)}`).join(' ')} fill="none" stroke={r.farbe} strokeWidth={2.5} strokeDasharray={r.gestrichelt ? '7 4' : undefined} />
+              <polyline points={pts.map((p) => `${x(p.t)},${y(p.v)}`).join(' ')} fill="none" style={{ stroke: r.farbe }} strokeWidth={2.5} strokeDasharray={r.gestrichelt ? '7 4' : undefined} />
               {pts.map((p) => (
-                <circle key={p.datum} cx={x(p.t)} cy={y(p.v)} r={4.5} fill="#fff" stroke={r.farbe} strokeWidth={2.5}>
+                <circle key={p.datum} cx={x(p.t)} cy={y(p.v)} r={4.5} style={{ fill: 'var(--flaeche)', stroke: r.farbe }} strokeWidth={2.5}>
                   <title>{`${r.name} ${datumDeutsch(p.datum)}: ${zahl(p.v)} ${einheit}`}</title>
                 </circle>
               ))}

@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="de" data-theme="dunkel">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Musterseite Designkonzept – PZL Return-to-Sport</title>
+<!-- Nur zum Ansehen im Entwicklungsserver (/docs/muster.html). Fantasiewerte, keine Pat.-Daten. Gehört nicht zur App. 3. Fassung mit Designsystem. -->
+<link rel="stylesheet" href="/node_modules/@fontsource/montserrat/600.css" />
+<link rel="stylesheet" href="/node_modules/@fontsource/barlow/400.css" />
+<link rel="stylesheet" href="/node_modules/@fontsource/barlow/500.css" />
+<link rel="stylesheet" href="/node_modules/@fontsource/barlow/600.css" />
+<style>
+  :root,
+  [data-theme='dunkel'] {
+    --grund: #22252b; --flaeche: #2d3138; --feld: #25292f; --tief: #191b20; --linie: #3b4048;
+    --text: #eef1f4; --leise: #a4adb8; --sehr-leise: #8e97a3;
+    --betroffen: #5ea8ea; --gesund: #36c5d6;
+    --gruen: #4fc48d; --gelb: #e9b23f; --rot: #f7765f;
+    --korridor: rgb(238 241 244 / 0.11); --karten-rand: transparent;
+    --pille-aktiv: #eef1f4; --pille-aktiv-text: #191b20; --flaeche-hoch: #353a42; --linie-stark: #4a505a; --fehler: #ff8fb1; --fokus: #eef1f4; color-scheme: dark;
+  }
+  [data-theme='hell'] {
+    --grund: #eceff3; --flaeche: #ffffff; --feld: #f3f5f8; --tief: #1f2329; --linie: #d9dee5;
+    --text: #1c222b; --leise: #56606d; --sehr-leise: #6c7683;
+    --betroffen: #1d71b8; --gesund: #00808f;
+    --gruen: #2a7f50; --gelb: #9a6400; --rot: #c62828;
+    --korridor: rgb(28 34 43 / 0.08); --karten-rand: #d9dee5;
+    --pille-aktiv: #1f2329; --pille-aktiv-text: #ffffff; --flaeche-hoch: #f7f8fa; --linie-stark: #c2cad4; --fehler: #b3124e; --fokus: #1c222b; color-scheme: light;
+  }
+
+  /* Typo-Skala: 34 / 28 / 22 / 17 / 15 / 13 / 12 */
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--grund); color: var(--text); font: 400 15px/1.45 'Barlow', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+  h1, h2, h3 { font-family: 'Montserrat', 'Barlow', sans-serif; font-weight: 600; margin: 0; }
+  h1 { font-size: 28px; } h2 { font-size: 17px; } h3.gross { font-size: 22px; }
+  button, input, select { font: inherit; color: inherit; }
+  a { color: var(--betroffen); }
+  :focus-visible { outline: 2px solid var(--fokus); outline-offset: 2px; }
+  .leise { color: var(--leise); } .klein { font-size: 13px; } .mini-text { font-size: 12px; color: var(--sehr-leise); }
+
+  /* ---------- Seitenleiste ---------- */
+  .leiste { position: fixed; inset: 0 auto 0 0; width: 88px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 0; background: var(--tief); color: #a4adb8; z-index: 20; }
+  .leiste-logo { width: 64px; padding: 6px; border-radius: 10px; background: #fff; margin-bottom: 16px; }
+  .leiste-logo img { display: block; width: 100%; }
+  .leiste a, .leiste .mehr-knopf { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 76px; padding: 10px 0; border: 0; border-radius: 10px; background: none; color: inherit; text-decoration: none; font-size: 13px; font-weight: 500; cursor: pointer; }
+  .leiste svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .leiste a:hover, .leiste .mehr-knopf:hover { color: #eef1f4; }
+  .leiste a[aria-current='page'] { color: #eef1f4; background: rgb(255 255 255 / 0.06); }
+  .leiste a[aria-current='page']::before { content: ''; position: absolute; left: -6px; top: 12px; bottom: 12px; width: 3px; border-radius: 3px; background: #36c5d6; }
+  .leiste .mehr-knopf { display: none; }
+  .leiste-unten { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .modus { display: flex; padding: 3px; border-radius: 999px; background: rgb(255 255 255 / 0.08); }
+  .modus button { display: grid; place-items: center; border: 0; background: none; padding: 5px 7px; border-radius: 999px; cursor: pointer; color: #a4adb8; }
+  .modus button[aria-pressed='true'] { background: #eef1f4; color: #191b20; }
+  .modus svg { width: 16px; height: 16px; stroke-width: 1.8; }
+  .info-punkt { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #8e97a3; display: grid; place-items: center; font-size: 13px; font-weight: 600; cursor: help; background: none; color: #a4adb8; }
+  .mehr-menue { display: none; }
+
+  main { margin-left: 88px; padding: 0 36px 64px; max-width: 1300px; }
+
+  /* ---------- Seitenkopf (bleibt stehen) ---------- */
+  .seitenkopf { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 0 -36px 0; padding: 18px 36px 14px; background: var(--grund); }
+  .seitenkopf.gescrollt { box-shadow: 0 1px 0 var(--linie); }
+  .zurueck { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: var(--leise); text-decoration: none; font-size: 22px; }
+  .kontext { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .seitenkopf .rechts { margin-left: auto; display: flex; gap: 10px; }
+  .knopf { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 0 18px; border-radius: 10px; border: 1px solid var(--linie-stark); transition: background 0.15s, border-color 0.15s; background: transparent; font-weight: 600; cursor: pointer; text-decoration: none; color: var(--text); }
+  .knopf:hover { border-color: var(--leise); background: var(--flaeche-hoch); }
+  .knopf-haupt { border-color: var(--pille-aktiv); background: var(--pille-aktiv); color: var(--pille-aktiv-text); }
+  .knopf-haupt:hover { opacity: 0.9; }
+  .knopf-gefahr { border-color: var(--fehler); color: var(--fehler); }
+
+  .reiter { display: flex; gap: 6px; margin: 6px 0 22px; }
+  .reiter button { border: 0; background: none; padding: 8px 18px; border-radius: 999px; color: var(--leise); font-weight: 500; font-size: 15px; cursor: pointer; }
+  .reiter button:hover { color: var(--text); }
+  .reiter button[aria-selected='true'] { background: var(--pille-aktiv); color: var(--pille-aktiv-text); font-weight: 600; }
+
+  /* ---------- Karten ---------- */
+  .karte { background: var(--flaeche); border: 1px solid var(--karten-rand); border-radius: 14px; padding: 18px 20px; }
+  .karte.laut { border-left: 4px solid var(--pille-aktiv); }
+  .karte-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 12px; }
+  .karte-kopf .rechts { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .raster { display: grid; grid-template-columns: minmax(250px, 1fr) minmax(0, 2.4fr); gap: 20px; }
+  .stapel { display: grid; gap: 20px; align-content: start; }
+
+  /* ---------- Chips: genau drei Arten ---------- */
+  .ampel { display: inline-flex; align-items: center; gap: 5px; padding: 1px 10px; border-radius: 999px; border: 1px solid currentColor; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .ampel-gruen { color: var(--gruen); background: color-mix(in srgb, var(--gruen) 12%, transparent); }
+  .ampel-gelb { color: var(--gelb); background: color-mix(in srgb, var(--gelb) 12%, transparent); }
+  .ampel-rot { color: var(--rot); background: color-mix(in srgb, var(--rot) 12%, transparent); }
+  .ampel-offen { color: var(--leise); border-style: dashed; }
+  .status { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--leise); white-space: nowrap; }
+  .status::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--sehr-leise); }
+  .status-arbeit { color: var(--text); }
+  .status-arbeit::before { background: var(--betroffen); }
+  .merkmal { display: inline-block; padding: 1px 10px; border-radius: 999px; border: 1px solid var(--linie); font-size: 13px; font-weight: 500; white-space: nowrap; }
+
+  /* ---------- Mini-Umschalter, Auswahl ---------- */
+  .mini { display: inline-flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--feld); }
+  .mini button { border: 0; background: none; padding: 3px 12px; border-radius: 999px; font-size: 13px; color: var(--leise); cursor: pointer; }
+  .mini button[aria-pressed='true'] { background: var(--pille-aktiv); color: var(--pille-aktiv-text); font-weight: 600; }
+  .auswahl { border: 1px solid var(--linie); background: var(--feld); color: var(--text); border-radius: 10px; padding: 6px 10px; font-size: 15px; }
+
+  /* ---------- Status der letzten Testung ---------- */
+  .status-karte { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 16px 32px; margin-bottom: 20px; }
+  .status-karte .aussage { display: grid; gap: 6px; align-content: start; }
+  .status-karte ul { margin: 6px 0 12px; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .status-karte li { display: flex; gap: 10px; align-items: baseline; }
+  .warnzeile { display: flex; gap: 8px; align-items: baseline; color: var(--gelb); font-weight: 600; font-size: 15px; }
+
+  /* ---------- Kopfkarte ---------- */
+  .kopf-zeile { display: flex; gap: 14px; align-items: center; }
+  .bein { width: 46px; height: 64px; flex: none; }
+  .fakten { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 0; }
+  .fakten dt { color: var(--leise); font-size: 13px; }
+  .fakten dd { margin: 0; font-weight: 600; }
+
+  /* ---------- Kennzahl + Ladebalken (0–120 %) ---------- */
+  .kennzahlen { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .zahl { font-family: 'Montserrat'; font-weight: 600; font-size: 34px; line-height: 1.1; }
+  .zahl small { font-family: 'Barlow'; font-size: 15px; font-weight: 500; color: var(--leise); margin-left: 3px; }
+  .kennzahl-kopf { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .balken { position: relative; height: 6px; border-radius: 6px; background: var(--feld); margin: 18px 0 18px; }
+  .balken i { position: absolute; inset: 0 auto 0 0; border-radius: 6px; background: currentColor; animation: fuellen 0.6s ease-out; }
+  .balken .marke { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--text); }
+  .balken .marke-100 { width: 1px; background: var(--sehr-leise); }
+  @keyframes fuellen { from { width: 0; } }
+
+  /* ---------- Diagramm ---------- */
+  .diagramm { position: relative; }
+  .diagramm svg { display: block; width: 100%; overflow: visible; }
+  .d-text { fill: var(--sehr-leise); font: 500 12px 'Barlow'; }
+  .d-phase-text { fill: var(--leise); font: 500 12px 'Barlow'; text-anchor: middle; }
+  .d-phase { stroke: var(--linie); stroke-width: 1; }
+  .d-raster { stroke: var(--linie); stroke-width: 1; opacity: 0.6; }
+  .d-betroffen { fill: none; stroke: var(--betroffen); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+  .d-gesund { fill: none; stroke: var(--gesund); stroke-width: 2; stroke-dasharray: 6 5; }
+  .d-betroffen.d-zeichnen { stroke-dasharray: 1; animation: zeichnen 0.8s ease-out both; }
+  @keyframes zeichnen { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  .d-symbol { font: 700 13px 'Barlow'; }
+  .d-fehlt { fill: none; stroke: var(--sehr-leise); stroke-width: 1.5; stroke-dasharray: 3 3; }
+  .d-ziel { fill: var(--leise); font: 500 12px 'Barlow'; }
+  .d-zone:focus { outline: none; }
+  .d-zone:focus-visible + .d-fokus, .d-zone:hover + .d-fokus { opacity: 1; }
+  .d-fokus { fill: none; stroke: var(--fokus); stroke-width: 2; opacity: 0; pointer-events: none; }
+  .legende { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; color: var(--leise); font-size: 13px; }
+  .legende i { display: inline-block; width: 18px; vertical-align: middle; margin-right: 6px; }
+  .hinweis-satz { margin: 6px 0 0; color: var(--leise); font-size: 13px; }
+
+  .fenster { position: absolute; pointer-events: none; min-width: 240px; padding: 12px 14px; border-radius: 12px; background: #191b20; color: #eef1f4; box-shadow: 0 10px 30px rgb(0 0 0 / 0.35); font-size: 15px; display: none; z-index: 5; }
+  .fenster .datum { display: block; width: max-content; margin: 0 auto 8px; padding: 2px 12px; border-radius: 999px; background: #eef1f4; color: #191b20; font-weight: 600; font-size: 13px; }
+  .fenster table { width: 100%; border-collapse: collapse; }
+  .fenster th { text-align: left; color: #a4adb8; font-weight: 500; padding: 2px 12px 2px 0; }
+  .fenster td { text-align: right; font-weight: 600; padding: 2px 0; }
+  .fenster .chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; margin-top: 8px; }
+  .fenster .ampel-gruen { color: #4fc48d; } .fenster .ampel-gelb { color: #e9b23f; } .fenster .ampel-rot { color: #f7765f; }
+
+  /* ---------- Testungen ---------- */
+  .kaertchen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .kaertchen a { display: grid; gap: 4px; padding: 14px; border-radius: 10px; background: var(--feld); color: inherit; text-decoration: none; border: 1px solid transparent; }
+  .kaertchen a:hover { border-color: var(--linie-stark); background: var(--flaeche-hoch); }
+  .kaertchen strong { font-family: 'Montserrat'; font-weight: 600; font-size: 15px; }
+
+  /* ---------- Testkarte in drei Lautstärken ---------- */
+  .testkarte .ergebnis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 12px 0 16px; border-bottom: 1px solid var(--linie); margin-bottom: 14px; }
+  .testkarte .ergebnis b { display: block; font-family: 'Montserrat'; font-size: 22px; font-weight: 600; }
+  table.versuche { border-collapse: collapse; }
+  table.versuche th, table.versuche td { padding: 5px 12px 5px 0; text-align: left; }
+  table.versuche thead th { color: var(--leise); font-weight: 500; font-size: 13px; }
+  table.versuche tbody th { font-weight: 500; }
+  .zahl-feld { display: flex; align-items: center; border-radius: 10px; background: var(--feld); border: 1px solid var(--linie-stark); padding: 0 10px; width: 104px; }
+  .zahl-feld input { width: 100%; border: 0; background: none; color: var(--text); font-size: 15px; padding: 8px 0; }
+  .zahl-feld input:focus { outline: none; }
+  .zahl-feld:focus-within { border-color: var(--fokus); }
+  .zahl-feld.fehler { border-color: var(--fehler); }
+  .feld-fehler { display: flex; gap: 6px; align-items: baseline; margin-top: 6px; color: var(--fehler); font-size: 13px; font-weight: 500; }
+  .feld-fehler b { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--fehler); color: var(--grund); font-size: 11px; }
+  .zahl-feld span { color: var(--sehr-leise); font-size: 13px; }
+  details.leise-zu { margin-top: 12px; border-top: 1px solid var(--linie); padding-top: 8px; }
+  details.leise-zu summary { cursor: pointer; color: var(--leise); font-size: 13px; padding: 4px 0; }
+  details.leise-zu p { margin: 6px 0; color: var(--leise); font-size: 13px; max-width: 70ch; }
+
+  /* ---------- Listen, Leer- und Ladezustand ---------- */
+  table.liste { width: 100%; border-collapse: collapse; }
+  table.liste th { text-align: left; color: var(--leise); font-weight: 500; font-size: 13px; padding: 8px 10px; border-bottom: 1px solid var(--linie); }
+  table.liste td { padding: 12px 10px; border-bottom: 1px solid var(--linie); }
+  table.liste tbody tr { cursor: pointer; }
+  table.liste tbody tr:hover td, table.liste tbody tr:focus-visible td { background: var(--flaeche-hoch); }
+  table.liste tbody tr:focus-visible { outline: 2px solid var(--fokus); outline-offset: -2px; }
+  .kreis { width: 32px; height: 32px; border-radius: 50%; display: inline-grid; place-items: center; border: 1.5px solid var(--gesund); font-family: 'Montserrat'; font-weight: 600; font-size: 12px; vertical-align: middle; margin-right: 10px; }
+  .leer { display: grid; justify-items: start; gap: 10px; padding: 8px 0; }
+  .platzhalter { display: grid; gap: 10px; }
+  .platzhalter i { display: block; height: 14px; border-radius: 7px; background: var(--feld); }
+  .farbfeld { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+  .farbfeld div { border-radius: 10px; overflow: hidden; background: var(--feld); font-size: 13px; }
+  .farbfeld i { display: block; height: 36px; }
+  .farbfeld span { display: block; padding: 6px 8px; color: var(--leise); }
+  .abschnitt { margin: 48px 0 6px; }
+  .abschnitt-text { margin: 0 0 18px; color: var(--leise); max-width: 70ch; }
+  .reihe { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .fuss { margin-top: 40px; color: var(--sehr-leise); font-size: 13px; }
+
+  @media (max-width: 1060px) {
+    .raster, .status-karte { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .leiste { inset: auto 0 0 0; width: auto; height: 66px; flex-direction: row; justify-content: space-around; padding: 0 4px; }
+    .leiste-logo, .leiste-unten, .leiste .nur-breit { display: none; }
+    .leiste a, .leiste .mehr-knopf { width: auto; min-width: 56px; padding: 8px 4px; font-size: 12px; }
+    .leiste .mehr-knopf { display: flex; }
+    .leiste a[aria-current='page']::before { left: 10px; right: 10px; top: -1px; bottom: auto; width: auto; height: 3px; }
+    .mehr-menue.offen { display: grid; gap: 4px; position: fixed; right: 8px; bottom: 74px; z-index: 30; padding: 8px; border-radius: 14px; background: var(--tief); min-width: 200px; box-shadow: 0 10px 30px rgb(0 0 0 / 0.35); }
+    .mehr-menue a { color: #eef1f4; text-decoration: none; padding: 10px 12px; border-radius: 10px; }
+    .mehr-menue .modus { margin: 6px 12px; width: max-content; }
+    main { margin-left: 0; padding: 0 16px 96px; }
+    .seitenkopf { margin: 0 -16px; padding: 12px 16px; }
+    .seitenkopf .rechts { margin-left: 0; width: 100%; }
+    .kennzahlen, .kaertchen, .testkarte .ergebnis { grid-template-columns: 1fr; }
+    .reiter { overflow-x: auto; }
+    table.versuche { display: block; overflow-x: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<nav class="leiste" aria-label="Hauptnavigation">
+  <span class="leiste-logo"><img src="/logo-pzl.svg" alt="Physio Zentrum Linz" /></span>
+  <a href="#"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z" /></svg>Start</a>
+  <a href="#" aria-current="page"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2" /><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6" /><circle cx="17" cy="9" r="2.5" /><path d="M16 14.2c2.9.2 5 2.4 5 5.8" /></svg>Pat.-Liste</a>
+  <a href="#"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="7.5" /><path d="M12 13V9M10 2.5h4M18.5 6.5l1.5-1.5" /></svg>Testung</a>
+  <a href="#"><svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z" /><path d="M14 3v4h4M9 12h6M9 16h6" /></svg>Berichte</a>
+  <a href="#" class="nur-breit"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6z" /><path d="m9 12 2 2 4-4" /></svg>Sicherung</a>
+  <a href="#" class="nur-breit"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" /></svg>Info</a>
+  <button type="button" class="mehr-knopf" aria-expanded="false" aria-controls="mehr"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3" /><circle cx="12" cy="12" r="1.3" /><circle cx="19" cy="12" r="1.3" /></svg>Mehr</button>
+  <div class="leiste-unten">
+    <div class="modus" role="group" aria-label="Darstellung">
+      <button type="button" data-modus="dunkel" aria-pressed="true" aria-label="Dunkel" title="Dunkel"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /></svg></button>
+      <button type="button" data-modus="hell" aria-pressed="false" aria-label="Hell" title="Hell"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" /></svg></button>
+    </div>
+    <button type="button" class="info-punkt" title="Dokumentations- und Rechenhilfe – ersetzt keine ärztliche Freigabe" aria-label="Hinweis: Dokumentations- und Rechenhilfe – ersetzt keine ärztliche Freigabe">i</button>
+  </div>
+</nav>
+<div class="mehr-menue" id="mehr">
+  <a href="#">Sicherung</a>
+  <a href="#">Einstellungen/Info</a>
+  <div class="modus" role="group" aria-label="Darstellung">
+    <button type="button" data-modus="dunkel" aria-pressed="true" aria-label="Dunkel"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /></svg></button>
+    <button type="button" data-modus="hell" aria-pressed="false" aria-label="Hell"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4" /><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22" /></svg></button>
+  </div>
+  <span class="mini-text" style="padding:4px 12px">Rechenhilfe – ersetzt keine ärztliche Freigabe</span>
+</div>
+
+<main>
+  <header class="seitenkopf" id="seitenkopf">
+    <a class="zurueck" href="#" aria-label="Zur Pat.-Liste">‹</a>
+    <h1>DEMO-1990</h1>
+    <div class="kontext">
+      <span class="merkmal">Endtestung</span>
+      <span class="merkmal">&gt; 9 Monate</span>
+      <span class="status status-arbeit">in Arbeit</span>
+    </div>
+    <div class="rechts">
+      <a class="knopf" href="#">Bericht</a>
+      <a class="knopf knopf-haupt" href="#">Neue Testung</a>
+    </div>
+  </header>
+
+  <div class="reiter" role="tablist" aria-label="Bereiche des Kürzels">
+    <button type="button" role="tab" aria-selected="true">Übersicht</button>
+    <button type="button" role="tab" aria-selected="false">Testungen</button>
+    <button type="button" role="tab" aria-selected="false">Stammdaten</button>
+  </div>
+
+  <!-- Punkt 2: Status der letzten Testung zuerst – nur Texte, die die App schon erzeugt -->
+  <section class="karte laut status-karte" aria-label="Status der letzten Testung">
+    <div class="aussage">
+      <span class="leise klein">Vorschlag der App, Endtestung vom 24.10.2026</span>
+      <h3 class="gross">Kriterien (noch) nicht erfüllt</h3>
+      <span class="leise klein">Ersetzt keine ärztliche Freigabe. Entscheidung der Therapeut:in noch offen.</span>
+      <div class="warnzeile" style="margin-top:8px"><span aria-hidden="true">⚠</span><span>ACL-RSI 52 Punkte – unter 55, psychologische Bereitschaft prüfen (blockiert nicht)</span></div>
+    </div>
+    <div>
+      <h2>Was fehlt noch?</h2>
+      <ul>
+        <li><span class="ampel ampel-gelb">~ knapp</span><span>SL-Drop-Jump: LSI Sprunghöhe 89,7 % – Ziel ≥ 90 %</span></li>
+      </ul>
+      <div class="reihe"><a class="knopf" href="#">Zur Testung</a></div>
+    </div>
+  </section>
+
+  <div class="raster">
+    <div class="stapel">
+      <section class="karte" aria-label="Kopfdaten">
+        <div class="kopf-zeile">
+          <!-- Punkt 2: Knie als kleines Symbol statt eigener Karte. Ansicht von vorne: linkes Bein der Pat. ist rechts im Bild -->
+          <svg class="bein" viewBox="0 0 46 64" role="img" aria-label="Betroffen: linkes Knie">
+            <path d="M8 2 C7 14 9 24 11 31 C10 35 10 38 11 41 C8 50 10 56 12 61 L19 61 C20 55 21 48 20 41 C21 37 21 34 20 31 C22 24 22 14 21 2 Z" fill="var(--feld)" stroke="var(--sehr-leise)" />
+            <path d="M38 2 C39 14 37 24 35 31 C36 35 36 38 35 41 C38 50 36 56 34 61 L27 61 C26 55 25 48 26 41 C25 37 25 34 26 31 C24 24 24 14 25 2 Z" fill="var(--feld)" stroke="var(--sehr-leise)" />
+            <circle cx="30.5" cy="35.5" r="6.5" fill="none" stroke="var(--betroffen)" stroke-width="2.5" />
+            <circle cx="30.5" cy="35.5" r="2.4" fill="var(--betroffen)" />
+          </svg>
+          <div>
+            <div style="font-weight:600; font-size:17px">Betroffen: links</div>
+            <div class="leise">Fußball, Wettkampf</div>
+          </div>
+        </div>
+        <dl class="fakten">
+          <div><dt>Seit OP</dt><dd>12 Monate</dd></div>
+          <div><dt>Phase</dt><dd>&gt; 9 Monate</dd></div>
+          <div><dt>Graft</dt><dd>Hamstring</dd></div>
+          <div><dt>Begleit-OP</dt><dd>Meniskus</dd></div>
+          <div><dt>Tegner</dt><dd>9 → aktuell 7</dd></div>
+          <div><dt>Gewicht</dt><dd>78 kg</dd></div>
+        </dl>
+      </section>
+
+      <div class="kennzahlen" style="grid-template-columns:1fr">
+        <!-- Punkt 9: Ladebalken 0–120 %, Ziel 90 %, feiner Strich bei 100 % -->
+        <section class="karte">
+          <div class="kennzahl-kopf"><span class="leise klein">LSI Knie-Extension</span><span class="ampel ampel-gruen">✓ erfüllt</span></div>
+          <div class="zahl">93,9<small>%</small></div>
+          <div class="balken" style="color:var(--gruen)" data-wert="93.9"></div>
+          <span class="mini-text">Endtestung 24.10.2026, Ziel ≥ 90 %</span>
+        </section>
+        <section class="karte">
+          <div class="kennzahl-kopf"><span class="leise klein">LSI Single Hop</span><span class="ampel ampel-gruen">✓ erfüllt</span></div>
+          <div class="zahl">92,1<small>%</small></div>
+          <div class="balken" style="color:var(--gruen)" data-wert="92.1"></div>
+          <span class="mini-text">Endtestung 24.10.2026, Ziel ≥ 90 %</span>
+        </section>
+      </div>
+    </div>
+
+    <div class="stapel">
+      <!-- Punkte 1, 5, 6: Korridor-Diagramm -->
+      <section class="karte diagramm" id="verlauf-karte">
+        <div class="karte-kopf">
+          <h2 id="verlauf-titel">Verlauf</h2>
+          <div class="rechts">
+            <select class="auswahl" id="test-wahl" aria-label="Test für den Verlauf">
+              <option value="knie">Knie-Extension (HHD)</option>
+              <option value="triple">Triple Hop</option>
+              <option value="sldj">SL-Drop-Jump</option>
+            </select>
+            <div class="mini" role="group" aria-label="Anzeige">
+              <button type="button" data-ansicht="werte" aria-pressed="true">Werte</button>
+              <button type="button" data-ansicht="lsi" aria-pressed="false">LSI</button>
+            </div>
+          </div>
+        </div>
+        <svg id="verlauf" role="img" aria-labelledby="verlauf-titel"></svg>
+        <p class="hinweis-satz" id="verlauf-satz" hidden></p>
+        <div class="legende" id="legende"></div>
+        <div class="fenster" id="fenster" role="status"></div>
+      </section>
+
+      <section class="karte">
+        <div class="karte-kopf"><h2>Testungen</h2><span class="rechts leise klein">3 Testungen</span></div>
+        <div class="kaertchen">
+          <a href="#"><strong>Mitte</strong><span class="leise klein">Verlaufstest, 31.01.2026</span><span class="klein">13 von 20 Tests</span><span class="status">abgeschlossen</span></a>
+          <a href="#"><strong>Spät</strong><span class="leise klein">Verlaufstest, 01.05.2026</span><span class="klein">18 von 20 Tests</span><span class="status">abgeschlossen</span></a>
+          <a href="#"><strong>&gt; 9 Monate</strong><span class="leise klein">Endtestung, 24.10.2026</span><span class="klein">21 von 21 Tests</span><span class="status status-arbeit">in Arbeit</span></a>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <h2 class="abschnitt" style="font-size:22px">Bausteine</h2>
+  <p class="abschnitt-text">Drei Chip-Arten, drei Lautstärken einer Testkarte, Leer- und Ladezustand. Farbe heißt genau eines: Blau/Türkis = Seite, Grün/Gelb/Rot = Bewertung, Rosa-Rot mit „!“ = Eingabefehler, Hauptknopf neutral.</p>
+
+  <div class="raster" style="grid-template-columns:minmax(0,1fr) minmax(0,1.6fr)">
+    <div class="stapel">
+      <section class="karte">
+        <div class="karte-kopf"><h2>Chips</h2></div>
+        <p class="leise klein" style="margin:0 0 6px">Bewertung (Zeichen + Wort)</p>
+        <div class="reihe"><span class="ampel ampel-gruen">✓ erfüllt</span><span class="ampel ampel-gelb">~ knapp</span><span class="ampel ampel-rot">✗ nicht erfüllt</span><span class="ampel ampel-offen">○ offen</span></div>
+        <p class="leise klein" style="margin:14px 0 6px">Status (nie Ampelfarbe)</p>
+        <div class="reihe"><span class="status status-arbeit">in Arbeit</span><span class="status">abgeschlossen</span></div>
+        <p class="leise klein" style="margin:14px 0 6px">Merkmal</p>
+        <div class="reihe"><span class="merkmal">Endtestung</span><span class="merkmal">Spät</span><span class="merkmal">links</span><span class="merkmal">Output</span></div>
+        <p class="leise klein" style="margin:14px 0 6px">Ladebalken 0–120 %</p>
+        <div style="color:var(--rot)"><div class="balken" data-wert="69.1"></div></div>
+        <div style="color:var(--gelb)"><div class="balken" data-wert="83.3"></div></div>
+        <div style="color:var(--gruen)"><div class="balken" data-wert="126"></div></div>
+        <p class="mini-text" style="margin:0">Werte über 120 % stehen am Rand mit „›“.</p>
+      </section>
+
+      <section class="karte">
+        <div class="karte-kopf"><h2>Farben</h2></div>
+        <div class="farbfeld">
+          <div><i style="background:var(--betroffen)"></i><span>betroffen</span></div>
+          <div><i style="background:var(--gesund)"></i><span>gesund</span></div>
+          <div><i style="background:var(--gruen)"></i><span>✓ erfüllt</span></div>
+          <div><i style="background:var(--gelb)"></i><span>~ knapp</span></div>
+          <div><i style="background:var(--rot)"></i><span>✗ nicht erfüllt</span></div>
+          <div><i style="background:var(--korridor)"></i><span>Korridor</span></div>
+          <div><i style="background:var(--fehler)"></i><span>! Eingabefehler</span></div>
+          <div><i style="background:var(--pille-aktiv)"></i><span>Aktion</span></div>
+        </div>
+      </section>
+
+      <section class="karte">
+        <div class="karte-kopf"><h2>Eingabefehler und Knöpfe</h2></div>
+        <label class="leise klein" for="kg-beispiel">Körpergewicht</label>
+        <span class="zahl-feld fehler" style="margin-top:4px"><input id="kg-beispiel" value="7,85,0" aria-invalid="true" aria-describedby="kg-fehler" /><span>kg</span></span>
+        <div class="feld-fehler" id="kg-fehler"><b aria-hidden="true">!</b><span>Bitte eine Zahl eingeben, z. B. 72,5.</span></div>
+        <div class="reihe" style="margin-top:16px"><button class="knopf knopf-haupt" type="button">Testung abschließen</button><button class="knopf" type="button">Bericht</button><button class="knopf knopf-gefahr" type="button">Löschen …</button></div>
+      </section>
+
+      <section class="karte">
+        <div class="karte-kopf"><h2>Leerzustand</h2></div>
+        <div class="leer"><span>Noch keine Testung für dieses Kürzel.</span><a class="knopf knopf-haupt" href="#">Neue Testung</a></div>
+      </section>
+
+      <section class="karte" aria-busy="true" aria-label="Lädt">
+        <div class="karte-kopf"><h2>Ladezustand</h2></div>
+        <div class="platzhalter"><i style="width:60%"></i><i style="width:90%"></i><i style="width:75%"></i></div>
+      </section>
+    </div>
+
+    <!-- Punkt 7: Testkarte in drei Lautstärken -->
+    <section class="karte testkarte">
+      <div class="karte-kopf">
+        <h2>Knie-Extension (HHD)</h2>
+        <span class="merkmal">Pflicht</span>
+        <span class="rechts"><span class="ampel ampel-gruen">✓ erfüllt</span></span>
+      </div>
+      <div class="ergebnis">
+        <div><span class="leise klein">Bestwert gesund / betroffen</span><b>66 / 62 kg</b></div>
+        <div><span class="leise klein">LSI, Ziel ≥ 90 %</span><b style="color:var(--gruen)">93,9 % ✓</b><div style="color:var(--gruen)"><div class="balken" data-wert="93.9" style="margin:10px 0 14px"></div></div></div>
+        <div><span class="leise klein">Kraft relativ, Ziel &gt; 7,5 N/kg</span><b style="color:var(--gruen)">7,8 N/kg ✓</b></div>
+      </div>
+      <table class="versuche">
+        <thead><tr><th></th><th>Versuch 1</th><th>Versuch 2</th><th>Versuch 3</th></tr></thead>
+        <tbody>
+          <tr><th>Gesund (rechts)</th>
+            <td><span class="zahl-feld"><input value="64" aria-label="Gesund Versuch 1" /><span>kg</span></span></td>
+            <td><span class="zahl-feld"><input value="66" aria-label="Gesund Versuch 2" /><span>kg</span></span></td>
+            <td><span class="zahl-feld"><input value="65" aria-label="Gesund Versuch 3" /><span>kg</span></span></td></tr>
+          <tr><th>Betroffen (links)</th>
+            <td><span class="zahl-feld"><input value="60" aria-label="Betroffen Versuch 1" /><span>kg</span></span></td>
+            <td><span class="zahl-feld"><input value="62" aria-label="Betroffen Versuch 2" /><span>kg</span></span></td>
+            <td><span class="zahl-feld"><input value="" placeholder="–" aria-label="Betroffen Versuch 3" /><span>kg</span></span></td></tr>
+        </tbody>
+      </table>
+      <details class="leise-zu"><summary>Protokoll und Warum</summary><p>Sitzend, 60° Knieflexion, Dynamometer distal am Unterschenkel, mit Gurt, isometrisch 3–5 s. Gesundes Bein zuerst.</p></details>
+      <details class="leise-zu"><summary>Mehr: Einheit, Hebelarm, Vorverletzung</summary><p>Eingabe in kg oder N; Hebelarm für Nm/kg; Wert vor der Verletzung.</p></details>
+      <details class="leise-zu"><summary>Klinisch anders beurteilt</summary><p>Nur mit Begründung; wird im Bericht markiert.</p></details>
+    </section>
+  </div>
+
+  <section class="karte" style="margin-top:20px">
+    <div class="karte-kopf">
+      <h2>Pat.-Liste</h2>
+      <span class="rechts"><input class="auswahl" type="search" placeholder="Kürzel suchen" aria-label="Kürzel suchen" /></span>
+    </div>
+    <table class="liste">
+      <thead><tr><th>Kürzel</th><th>Phase</th><th>Letzte Testung</th><th>Stand</th></tr></thead>
+      <tbody>
+        <tr tabindex="0"><td><span class="kreis">DE</span>DEMO-1990</td><td>&gt; 9 Monate</td><td>24.10.2026</td><td><span class="status status-arbeit">in Arbeit</span></td></tr>
+        <tr tabindex="0"><td><span class="kreis">AB</span>AB-1995</td><td>Spät</td><td>12.10.2026</td><td><span class="status">abgeschlossen</span></td></tr>
+        <tr tabindex="0"><td><span class="kreis">KL</span>KL-2003</td><td>&gt; 9 Monate</td><td>02.10.2026</td><td><span class="status">abgeschlossen</span> <span class="ampel ampel-gruen">✓ Kriterien erfüllt</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <p class="fuss">Musterseite zum Designkonzept, Fantasiewerte. Dokumentations- und Rechenhilfe – ersetzt keine ärztliche Freigabe.</p>
+</main>
+
+<script>
+  // ---------- Fantasiewerte (angelehnt an DEMO-1990). m = Monate seit OP; fehlt = im Testset, aber nicht gemessen ----------
+  const DATEN = {
+    knie: {
+      name: 'Knie-Extension (HHD)', einheit: 'N/kg',
+      // Read-Schwelle Kraft relativ je Phase (config: frueh 5,5 · mitte 7 · spaet 7,5, danach übernommen)
+      schwelle: (m) => (m < 3 ? 5.5 : m < 5 ? 7.0 : 7.5), stufen: [[0, 5.5], [3, 7.0], [5, 7.5]],
+      punkte: [
+        { m: 3.2, datum: '31.01.2026', phase: 'Mitte', g: 7.10, b: 4.90, lsi: 69.1 },
+        { m: 6.2, datum: '01.05.2026', phase: 'Spät', g: 7.64, b: 6.37, lsi: 83.3 },
+        { m: 11.9, datum: '24.10.2026', phase: '> 9 Monate', g: 8.30, b: 7.80, lsi: 93.9 },
+      ],
+    },
+    triple: {
+      name: 'Triple Hop', einheit: 'cm', schwelle: null,
+      punkte: [
+        { m: 3.2, datum: '31.01.2026', phase: 'Mitte', fehlt: true },
+        { m: 6.2, datum: '01.05.2026', phase: 'Spät', g: 470, b: 400, lsi: 85.1 },
+        { m: 11.9, datum: '24.10.2026', phase: '> 9 Monate', g: 480, b: 445, lsi: 92.7 },
+      ],
+    },
+    sldj: {
+      name: 'SL-Drop-Jump, Sprunghöhe', einheit: 'cm',
+      schwelle: (m) => (m < 8 ? null : m < 9 ? 14 : 17), stufen: [[8, 14], [9, 17]],
+      punkte: [{ m: 11.9, datum: '24.10.2026', phase: '> 9 Monate', g: 19.5, b: 17.5, lsi: 89.7 }],
+    },
+  }
+  const PHASEN = [['Früh', 0, 3], ['Mitte', 3, 5], ['Spät', 5, 8], ['8–9', 8, 9], ['> 9 Mo', 9, 13]]
+  const SYMBOL = { gruen: '✓', gelb: '~', rot: '✗' }
+  const WORT = { gruen: 'erfüllt', gelb: 'knapp', rot: 'nicht erfüllt' }
+  const lsiAmpel = (v) => (v >= 90 ? 'gruen' : v >= 80 ? 'gelb' : 'rot')
+  const zahl = (v, n = 1) => v.toLocaleString('de-AT', { minimumFractionDigits: n, maximumFractionDigits: n })
+  let test = 'knie', ansicht = 'werte'
+
+  function schoeneTeilung(max) {
+    const roh = max / 4, z = Math.pow(10, Math.floor(Math.log10(roh)))
+    const s = [1, 2, 2.5, 5, 10].map((f) => f * z).find((x) => x >= roh)
+    const t = [0]; while (t[t.length - 1] < max) t.push(t[t.length - 1] + s); return t
+  }
+
+  function zeichne() {
+    const d = DATEN[test], lsi = ansicht === 'lsi'
+    const svg = document.getElementById('verlauf')
+    const B = svg.parentElement.clientWidth - 40, H = 270, R = { l: 46, r: 16, o: 30, u: 40 }
+    svg.setAttribute('viewBox', `0 0 ${B} ${H}`); svg.style.height = H + 'px'
+    const werte = d.punkte.filter((p) => !p.fehlt)
+    let striche
+    if (lsi) striche = [50, 70, 90, 110]
+    else {
+      const top = Math.max(...werte.flatMap((p) => [p.g, p.b]), ...(d.stufen || []).map((s) => s[1])) * 1.15
+      striche = schoeneTeilung(top)
+    }
+    const yMin = striche[0], yMax = striche[striche.length - 1]
+    const x = (m) => R.l + (m / 13) * (B - R.l - R.r)
+    const y = (v) => R.o + (1 - (v - yMin) / (yMax - yMin)) * (H - R.o - R.u)
+    const unten = H - R.u
+    let s = ''
+
+    // Raster waagrecht, leise; Einheit steht in der Überschrift
+    striche.forEach((v) => (s += `<line x1="${R.l}" x2="${B - R.r}" y1="${y(v)}" y2="${y(v)}" class="d-raster"/><text x="${R.l - 8}" y="${y(v) + 4}" class="d-text" text-anchor="end">${zahl(v, v % 1 ? 1 : 0)}</text>`))
+
+    // Korridor = Zielbereich (einziges Grau). LSI 90–110 %, sonst ab der Read-Schwelle der Phase nach oben auslaufend
+    s += `<defs><linearGradient id="kv" x1="0" y1="1" x2="0" y2="0"><stop offset="0" style="stop-color:var(--text);stop-opacity:.14"/><stop offset="1" style="stop-color:var(--text);stop-opacity:.02"/></linearGradient></defs>`
+    if (lsi) {
+      s += `<rect x="${R.l}" y="${y(110)}" width="${B - R.l - R.r}" height="${y(90) - y(110)}" rx="8" fill="var(--korridor)"/>`
+      s += `<text x="${R.l + 8}" y="${y(90) - 7}" class="d-ziel">Ziel ≥ 90 %</text>`
+    } else if (d.stufen) {
+      const st = d.stufen
+      let p = `M${x(st[0][0])},${y(yMax)} `
+      st.forEach(([m, v], i) => { const bis = i + 1 < st.length ? st[i + 1][0] : 13; p += `L${x(m)},${y(v)} L${x(bis)},${y(v)} ` })
+      p += `L${x(13)},${y(yMax)} Z`
+      s += `<path d="${p}" fill="url(#kv)"/>`
+    }
+
+    // Phasen nur als dünne senkrechte Linien mit Namen
+    PHASEN.forEach(([n, a, b]) => {
+      if (a > 0) s += `<line x1="${x(a)}" x2="${x(a)}" y1="${R.o - 6}" y2="${unten}" class="d-phase"/>`
+      if (x(b) - x(a) > 34) s += `<text x="${(x(a) + x(b)) / 2}" y="${R.o - 12}" class="d-phase-text">${n}</text>`
+    })
+    // Zeitachse in Monaten seit OP
+    ;[0, 3, 6, 9, 12].forEach((m) => (s += `<text x="${x(m)}" y="${unten + 18}" class="d-text" text-anchor="middle">${m}</text>`))
+    s += `<text x="${B - R.r}" y="${unten + 34}" class="d-text" text-anchor="end">Monate seit OP</text>`
+
+    // Linien = Seite; bei fehlenden Werten unterbrochen
+    const linie = (feld, klasse) => {
+      const teile = []; let akt = []
+      d.punkte.forEach((p) => { if (p.fehlt) { if (akt.length) teile.push(akt); akt = [] } else akt.push(p) })
+      if (akt.length) teile.push(akt)
+      teile.filter((t) => t.length > 1).forEach((t) => (s += `<polyline points="${t.map((p) => `${x(p.m)},${y(p[feld])}`).join(' ')}" class="${klasse} d-zeichnen"${klasse === 'd-betroffen' ? ' pathLength="1"' : ''}/>`))
+    }
+    if (!lsi) linie('g', 'd-gesund')
+    linie(lsi ? 'lsi' : 'b', 'd-betroffen')
+
+    // Punkte = Bewertung (tatsächliche Ampel des Kriteriums)
+    d.punkte.forEach((p, i) => {
+      const cx = x(p.m)
+      if (p.fehlt) {
+        s += `<circle cx="${cx}" cy="${unten - 16}" r="7" class="d-fehlt"/><text x="${cx}" y="${unten - 30}" class="d-text" text-anchor="middle">nicht gemessen</text>`
+      } else {
+        const v = lsi ? p.lsi : p.b
+        let ampel = null
+        if (lsi) ampel = lsiAmpel(p.lsi)
+        else if (d.schwelle && d.schwelle(p.m) !== null) ampel = p.b > d.schwelle(p.m) ? 'gruen' : 'rot'
+        if (!lsi) s += `<circle cx="${cx}" cy="${y(p.g)}" r="3.5" fill="var(--flaeche)" stroke="var(--gesund)" stroke-width="2"/>`
+        const farbe = ampel ? `var(--${ampel})` : 'var(--betroffen)'
+        s += `<circle cx="${cx}" cy="${y(v)}" r="6.5" fill="${farbe}" stroke="var(--flaeche)" stroke-width="2.5"/>`
+        if (ampel) s += `<text x="${cx}" y="${y(v) + 24}" class="d-symbol" text-anchor="middle" style="fill:${farbe}">${SYMBOL[ampel]}</text>`
+      }
+      // Fokus- und Hover-Zone je Testung (auch per Tastatur erreichbar)
+      s += `<rect x="${cx - 24}" y="${R.o}" width="48" height="${unten - R.o}" fill="transparent" class="d-zone" data-i="${i}" tabindex="0" role="button" aria-label="Werte vom ${p.datum}"/>`
+      s += `<rect x="${cx - 22}" y="${R.o + 2}" width="44" height="${unten - R.o - 4}" rx="8" class="d-fokus"/>`
+    })
+    svg.innerHTML = s
+
+    svg.querySelectorAll('.d-zone').forEach((el) => {
+      const zeige = () => fenster(+el.dataset.i, el)
+      const weg = () => (document.getElementById('fenster').style.display = 'none')
+      el.addEventListener('mouseenter', zeige); el.addEventListener('focus', zeige)
+      el.addEventListener('mouseleave', weg); el.addEventListener('blur', weg)
+    })
+
+    document.getElementById('verlauf-titel').textContent = `Verlauf: ${d.name}, ${lsi ? 'LSI in %' : d.einheit}`
+    const satz = document.getElementById('verlauf-satz')
+    const saetze = []
+    if (werte.length < 2) saetze.push('Erst eine Messung – der Verlauf erscheint ab zwei Testungen.')
+    if (!lsi && !d.stufen) saetze.push('Für diesen Test gibt es nur ein LSI-Ziel, daher hier kein Korridor und keine Ampel an den Punkten.')
+    satz.hidden = saetze.length === 0; satz.textContent = saetze.join(' ')
+
+    document.getElementById('legende').innerHTML =
+      (lsi ? '' : `<span><i style="border-top:2px dashed var(--gesund)"></i>gesund</span>`) +
+      `<span><i style="border-top:2.5px solid var(--betroffen)"></i>${lsi ? 'LSI (betroffen zu gesund)' : 'betroffen'}</span>` +
+      (lsi || d.stufen ? `<span><i style="height:10px;border-radius:4px;background:var(--korridor)"></i>${lsi ? 'Ziel ≥ 90 %' : 'Ziel: über der Read-Schwelle der Phase'}</span>` : '') +
+      `<span>Bewertung: <b style="color:var(--gruen)">✓</b> erfüllt, <b style="color:var(--gelb)">~</b> knapp, <b style="color:var(--rot)">✗</b> nicht erfüllt</span>` +
+      `<span>○ nicht gemessen</span>`
+  }
+
+  function fenster(i, el) {
+    const d = DATEN[test], p = d.punkte[i]
+    const f = document.getElementById('fenster')
+    if (p.fehlt) {
+      f.innerHTML = `<span class="datum">${p.datum}</span><table><tr><th>Phase</th><td>${p.phase}</td></tr><tr><th>Monate seit OP</th><td>${zahl(p.m, 0)}</td></tr></table><div class="chips"><span class="ampel ampel-offen" style="color:#a4adb8">○ nicht gemessen</span></div>`
+    } else {
+      const chips = []
+      if (d.schwelle && d.schwelle(p.m) !== null) { const a = p.b > d.schwelle(p.m) ? 'gruen' : 'rot'; chips.push(`<span class="ampel ampel-${a}">${SYMBOL[a]} ${d.einheit} ${WORT[a]}</span>`) }
+      const la = lsiAmpel(p.lsi); chips.push(`<span class="ampel ampel-${la}">${SYMBOL[la]} LSI ${WORT[la]}</span>`)
+      const n = d.einheit === 'N/kg' ? 2 : 1
+      f.innerHTML = `<span class="datum">${p.datum}</span><table>
+        <tr><th>Phase</th><td>${p.phase}</td></tr><tr><th>Monate seit OP</th><td>${zahl(p.m, 0)}</td></tr>
+        <tr><th>gesund</th><td>${zahl(p.g, n)} ${d.einheit}</td></tr><tr><th>betroffen</th><td>${zahl(p.b, n)} ${d.einheit}</td></tr>
+        <tr><th>LSI</th><td>${zahl(p.lsi)} %</td></tr></table><div class="chips">${chips.join('')}</div>`
+    }
+    const karte = el.closest('.karte').getBoundingClientRect(), r = el.getBoundingClientRect()
+    f.style.display = 'block'
+    let links = r.left - karte.left + r.width + 4
+    if (links + 250 > karte.width) links = r.left - karte.left - 254
+    f.style.left = `${Math.max(8, links)}px`; f.style.top = `${r.top - karte.top + 8}px`
+  }
+
+  // Ladebalken 0–120 %: Ziel 90 %, feiner Strich bei 100 %
+  document.querySelectorAll('.balken[data-wert]').forEach((b) => {
+    const v = +b.dataset.wert, pos = (w) => `${(w / 120) * 100}%`
+    b.innerHTML = `<i style="width:${pos(Math.min(v, 120))}"></i><span class="marke" style="left:${pos(90)}"></span><span class="marke marke-100" style="left:${pos(100)}"></span>` + (v > 120 ? `<em style="position:absolute;right:-12px;top:-8px;font-style:normal;font-weight:700">›</em>` : '')
+    b.setAttribute('role', 'img'); b.setAttribute('aria-label', `${zahl(v)} %, Ziel 90 %`)
+  })
+
+  document.querySelectorAll('[data-ansicht]').forEach((b) => b.addEventListener('click', () => {
+    ansicht = b.dataset.ansicht
+    document.querySelectorAll('[data-ansicht]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)))
+    zeichne()
+  }))
+  document.getElementById('test-wahl').addEventListener('change', (e) => { test = e.target.value; zeichne() })
+  document.querySelectorAll('[data-modus]').forEach((b) => b.addEventListener('click', () => {
+    document.documentElement.dataset.theme = b.dataset.modus
+    document.querySelectorAll('[data-modus]').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.modus === b.dataset.modus)))
+  }))
+  document.querySelectorAll('[role=tab]').forEach((t) => t.addEventListener('click', () => document.querySelectorAll('[role=tab]').forEach((x) => x.setAttribute('aria-selected', String(x === t)))))
+  const mehr = document.querySelector('.mehr-knopf')
+  mehr.addEventListener('click', () => { const offen = document.getElementById('mehr').classList.toggle('offen'); mehr.setAttribute('aria-expanded', String(offen)) })
+  addEventListener('scroll', () => document.getElementById('seitenkopf').classList.toggle('gescrollt', scrollY > 4))
+  // nur bei geänderter Breite neu zeichnen (sonst Endlosschleife über die Höhe)
+  let breite = 0
+  new ResizeObserver(([e]) => { const w = Math.round(e.contentRect.width); if (w !== breite) { breite = w; zeichne() } }).observe(document.getElementById('verlauf-karte'))
+</script>
+</body>
+</html>

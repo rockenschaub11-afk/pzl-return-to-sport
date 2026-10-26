@@ -1,30 +1,101 @@
 /* Design Richtung B „Sportwissenschaft-Dashboard“ (docs/ENTSCHEIDUNGEN.md 10a)
    Farben aus dem Praxis-Logo, ruhige Flächen, Bewegung nur bei Daten */
-:root {
+/* Farben: Designsystem (docs/DESIGNKONZEPT.md 10.1). Standard dunkel, umschaltbar auf hell.
+   Die alten Namen (--pzl-blau, --rand, --fehler = „nicht erfüllt“ …) bleiben als Übersetzung, bis die Bausteine umgestellt sind (Etappe 9b, Schritt 3). */
+:root,
+:root[data-theme='dunkel'] {
+  color-scheme: dark;
+  --grund: #22252b;
+  --flaeche: #2d3138;
+  --flaeche-hoch: #353a42;
+  --feld: #25292f;
+  --tief: #191b20;
+  --linie: #3b4048;
+  --linie-stark: #4a505a;
+  --text: #eef1f4;
+  --text-leise: #a4adb8;
+  --text-sehr-leise: #8e97a3;
+  --aktion: #eef1f4;
+  --aktion-hover: #d3d8de;
+  --aktion-text: #191b20;
+  --auf-akzent: #10233a;
+  --seite-betroffen: #5ea8ea;
+  --seite-gesund: #36c5d6;
+  --erfuellt: #4fc48d;
+  --knapp: #e9b23f;
+  --nicht-erfuellt: #f7765f;
+  --korridor: rgb(238 241 244 / 0.11);
+  --fokus: #eef1f4;
+
+  --pzl-blau: #5ea8ea;
+  --pzl-blau-dunkel: #8cc2f0;
+  --pzl-tuerkis: #36c5d6;
+  --pzl-tuerkis-dunkel: #36c5d6;
+  --pzl-tuerkis-hell: rgb(54 197 214 / 0.14);
+  --nacht: #f5f7f9;
+  --hintergrund: #22252b;
+  --rand: #3b4048;
+  --rand-stark: #4a505a;
+  --raster: #343940;
+  --gruen: #4fc48d;
+  --gelb: #e9b23f;
+  --warnung: #e9b23f;
+  --warnung-hell: rgb(233 178 63 / 0.12);
+  --fehler: #f7765f;
+  --fehler-hell: rgb(247 118 95 / 0.12);
+  --schatten: none;
+  --schatten-hoch: 0 8px 24px rgb(0 0 0 / 0.35);
+}
+
+:root[data-theme='hell'],
+.bericht {
+  color-scheme: light;
+  --grund: #eceff3;
+  --flaeche: #ffffff;
+  --flaeche-hoch: #f7f8fa;
+  --feld: #f3f5f8;
+  --tief: #1f2329;
+  --linie: #d9dee5;
+  --linie-stark: #c2cad4;
+  --text: #1c222b;
+  --text-leise: #56606d;
+  --text-sehr-leise: #6c7683;
+  --aktion: #1f2329;
+  --aktion-hover: #3a414b;
+  --aktion-text: #ffffff;
+  --auf-akzent: #ffffff;
+  --seite-betroffen: #1d71b8;
+  --seite-gesund: #00808f;
+  --erfuellt: #2a7f50;
+  --knapp: #9a6400;
+  --nicht-erfuellt: #c62828;
+  --korridor: rgb(28 34 43 / 0.08);
+  --fokus: #1c222b;
+
   --pzl-blau: #1d71b8;
   --pzl-blau-dunkel: #155a94;
   --pzl-tuerkis: #00b5cb;
   --pzl-tuerkis-dunkel: #008a9c;
   --pzl-tuerkis-hell: #e3f6f9;
   --nacht: #0a1f3c;
-  --text: #13233a;
-  --text-leise: #52627a;
-  --text-sehr-leise: #7a889b;
-  --hintergrund: #f3f6f9;
-  --flaeche: #ffffff;
-  --rand: #d9e1ea;
-  --rand-stark: #c2cdd9;
+  --hintergrund: #eceff3;
+  --rand: #d9dee5;
+  --rand-stark: #c2cad4;
   --raster: #e6ebf1;
-  --gruen: #2e8b57;
-  --gelb: #c98a00;
+  --gruen: #2a7f50;
+  --gelb: #9a6400;
   --warnung: #9a6200;
   --warnung-hell: #fff5e0;
   --fehler: #c62828;
   --fehler-hell: #fdecec;
   --schatten: 0 1px 2px rgb(10 31 60 / 0.06);
   --schatten-hoch: 0 4px 16px rgb(10 31 60 / 0.1);
+}
+
+:root {
   --radius: 6px;
 
+  --schrift-titel: 'Montserrat', 'Barlow', system-ui, sans-serif;
   --schrift: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 
   font-family: var(--schrift);
@@ -44,6 +115,13 @@ body {
 
 a {
   color: var(--pzl-blau);
+}
+
+/* Titel in Montserrat (DESIGNKONZEPT 10.2) */
+h1,
+h2,
+h3 {
+  font-family: var(--schrift-titel);
 }
 
 .sr-only {
@@ -73,7 +151,7 @@ a {
   gap: 0.5rem 2rem;
   min-height: 56px;
   padding: 0 1.5rem;
-  background: var(--nacht);
+  background: var(--tief);
   color: #fff;
 }
 
@@ -129,6 +207,46 @@ a {
   transition:
     color 0.15s ease,
     border-color 0.15s ease;
+}
+
+/* Hell/Dunkel-Umschalter in der Kopfleiste (immer dunkel) */
+.darstellung {
+  display: flex;
+  margin-left: auto;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.08);
+}
+
+.darstellung button {
+  display: grid;
+  place-items: center;
+  padding: 5px 7px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: #a4adb8;
+  cursor: pointer;
+}
+
+.darstellung button[aria-pressed='true'] {
+  background: #eef1f4;
+  color: #191b20;
+}
+
+.darstellung button:focus-visible {
+  outline: 2px solid #eef1f4;
+  outline-offset: 2px;
+}
+
+.darstellung svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .nav-link:hover {
@@ -228,23 +346,23 @@ a {
 }
 
 .knopf:hover {
-  border-color: var(--pzl-blau);
+  border-color: var(--text-leise);
 }
 
 .knopf:focus-visible {
-  outline: 3px solid rgb(0 181 203 / 0.45);
+  outline: 2px solid var(--fokus);
   outline-offset: 1px;
 }
 
 .knopf-haupt {
-  border-color: var(--pzl-blau);
-  background: var(--pzl-blau);
-  color: #fff;
+  border-color: var(--aktion);
+  background: var(--aktion);
+  color: var(--aktion-text);
 }
 
 .knopf-haupt:hover {
-  background: var(--pzl-blau-dunkel);
-  border-color: var(--pzl-blau-dunkel);
+  background: var(--aktion-hover);
+  border-color: var(--aktion-hover);
 }
 
 .knopf-gefahr {
@@ -287,7 +405,7 @@ a {
 .suche input:focus {
   outline: none;
   border-color: var(--pzl-tuerkis);
-  box-shadow: 0 0 0 3px rgb(0 181 203 / 0.18);
+  box-shadow: 0 0 0 2px var(--fokus);
 }
 
 .pat-raster {
@@ -342,7 +460,7 @@ a {
   width: 2rem;
   height: 2rem;
   border-radius: 4px;
-  color: #fff;
+  color: var(--auf-akzent);
   font-weight: 700;
 }
 
@@ -385,7 +503,7 @@ a {
 
 .chip-wettkampf {
   border-color: var(--pzl-blau);
-  background: #e8f1fa;
+  background: color-mix(in srgb, var(--pzl-blau) 14%, transparent);
   color: var(--pzl-blau-dunkel);
 }
 
@@ -434,11 +552,9 @@ a {
   padding: 0 0.5rem;
   border-radius: 4px;
   background: var(--pzl-blau);
-  color: #fff;
+  color: var(--auf-akzent);
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   vertical-align: middle;
 }
 
@@ -501,7 +617,7 @@ a {
 .feld select:focus {
   outline: none;
   border-color: var(--pzl-tuerkis);
-  box-shadow: 0 0 0 3px rgb(0 181 203 / 0.18);
+  box-shadow: 0 0 0 2px var(--fokus);
 }
 
 .feld-fehler input:not([type='checkbox']) {
@@ -536,17 +652,17 @@ a {
 }
 
 .auswahl-knopf:hover {
-  border-color: var(--pzl-blau);
+  border-color: var(--text-leise);
 }
 
 .auswahl-knopf[aria-pressed='true'] {
-  border-color: var(--pzl-blau);
-  background: var(--pzl-blau);
-  color: #fff;
+  border-color: var(--aktion);
+  background: var(--aktion);
+  color: var(--aktion-text);
 }
 
 .auswahl-knopf:focus-visible {
-  outline: 3px solid rgb(0 181 203 / 0.45);
+  outline: 2px solid var(--fokus);
   outline-offset: 1px;
 }
 
@@ -580,18 +696,18 @@ a {
 }
 
 .meldung-info {
-  border-color: #b3e6ee;
+  border-color: color-mix(in srgb, var(--pzl-tuerkis) 45%, transparent);
   background: var(--pzl-tuerkis-hell);
 }
 
 .meldung-warnung {
-  border-color: #f0d49a;
+  border-color: color-mix(in srgb, var(--warnung) 45%, transparent);
   background: var(--warnung-hell);
 }
 
 .meldung-fehler {
   margin-top: 0;
-  border-color: #f3b9b9;
+  border-color: color-mix(in srgb, var(--fehler) 45%, transparent);
   background: var(--fehler-hell);
 }
 
@@ -683,7 +799,7 @@ a {
   align-self: center;
   padding: 0.2rem 0.7rem;
   border-radius: 999px;
-  background: #e6f4ec;
+  background: color-mix(in srgb, var(--gruen) 14%, transparent);
   color: var(--gruen);
   font-size: 0.85rem;
   font-weight: 600;
@@ -710,7 +826,7 @@ a {
   padding: 0.55rem 1rem;
   border: 1px solid var(--rand);
   border-radius: var(--radius);
-  background: rgb(255 255 255 / 0.96);
+  background: color-mix(in srgb, var(--flaeche) 96%, transparent);
   box-shadow: var(--schatten);
 }
 
@@ -829,7 +945,7 @@ a {
 .zahl-feld input:focus {
   outline: none;
   border-color: var(--pzl-tuerkis);
-  box-shadow: 0 0 0 3px rgb(0 181 203 / 0.18);
+  box-shadow: 0 0 0 2px var(--fokus);
 }
 
 .zahl-einheit {
@@ -988,7 +1104,7 @@ a {
   bottom: -4px;
   width: 2px;
   margin-left: -1px;
-  background: var(--nacht);
+  background: var(--text);
 }
 
 .ampel-gruen .ladebalken-fuellung,
@@ -1016,13 +1132,13 @@ a {
 }
 
 .ampel-marke.ampel-gruen {
-  background: #e6f4ec;
-  color: #1f6b41;
+  background: color-mix(in srgb, var(--gruen) 14%, transparent);
+  color: var(--gruen);
 }
 
 .ampel-marke.ampel-gelb {
-  background: #fff3d6;
-  color: #7a5200;
+  background: color-mix(in srgb, var(--gelb) 14%, transparent);
+  color: var(--gelb);
 }
 
 .ampel-marke.ampel-rot {
@@ -1071,8 +1187,6 @@ a {
   color: var(--text-leise);
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .testung-uebersicht ul {
@@ -1190,8 +1304,8 @@ a {
 .phase-marke {
   padding: 0.15rem 0.7rem;
   border-radius: 4px;
-  background: var(--nacht);
-  color: #fff;
+  background: var(--aktion);
+  color: var(--aktion-text);
   font-weight: 600;
 }
 
@@ -1255,11 +1369,11 @@ a {
 }
 
 .diagramm-band-0 {
-  fill: rgb(29 113 184 / 0.04);
+  fill: color-mix(in srgb, var(--text) 3%, transparent);
 }
 
 .diagramm-band-1 {
-  fill: rgb(0 181 203 / 0.07);
+  fill: color-mix(in srgb, var(--text) 6%, transparent);
 }
 
 .diagramm-band-text {
@@ -1347,7 +1461,7 @@ a {
 .feld textarea:focus {
   outline: none;
   border-color: var(--pzl-tuerkis);
-  box-shadow: 0 0 0 3px rgb(0 181 203 / 0.18);
+  box-shadow: 0 0 0 2px var(--fokus);
 }
 
 .feld-fehler textarea {
@@ -1363,7 +1477,7 @@ a {
 
 .rts-erfuellt {
   border-color: var(--gruen);
-  background: #eef8f2;
+  background: color-mix(in srgb, var(--gruen) 12%, transparent);
 }
 
 .rts-offen {
@@ -1376,8 +1490,6 @@ a {
   color: var(--text-leise);
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .rts-ergebnis {
@@ -1389,7 +1501,7 @@ a {
 
 .rts-erfuellt .rts-ergebnis,
 .ergebnis-vorschlag.rts-erfuellt strong {
-  color: #1f6b41;
+  color: var(--gruen);
 }
 
 .rts-punkte {
@@ -1499,7 +1611,7 @@ a {
 
 .entscheidung-option.gewaehlt {
   border-color: var(--pzl-blau);
-  background: #e8f1fa;
+  background: color-mix(in srgb, var(--pzl-blau) 14%, transparent);
   font-weight: 600;
 }
 
@@ -1549,7 +1661,7 @@ fieldset:disabled .test-hinzu {
   width: 1.2rem;
   height: 1.2rem;
   border-radius: 4px;
-  color: #fff;
+  color: var(--auf-akzent);
   font-size: 0.7rem;
   font-weight: 700;
   vertical-align: 0.05rem;
@@ -1565,7 +1677,7 @@ fieldset:disabled .test-hinzu {
 }
 
 .ods-strategy {
-  background: #6b7a8f;
+  background: var(--text-sehr-leise);
 }
 
 .ods-erklaerung {
@@ -1752,8 +1864,6 @@ fieldset:disabled .test-hinzu {
   color: var(--text-leise);
   font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   white-space: nowrap;
 }
 
@@ -1829,11 +1939,11 @@ fieldset:disabled .test-hinzu {
 
 .kat-status-pflicht {
   background: var(--pzl-blau);
-  color: #fff;
+  color: var(--auf-akzent);
 }
 
 .kat-status-wuenschenswert {
-  background: #e8f1fa;
+  background: color-mix(in srgb, var(--pzl-blau) 14%, transparent);
   color: var(--pzl-blau-dunkel);
 }
 
@@ -2058,8 +2168,8 @@ fieldset:disabled .test-hinzu {
 }
 
 .umschalter-knopf.active {
-  background: var(--pzl-blau);
-  color: #fff;
+  background: var(--aktion);
+  color: var(--aktion-text);
 }
 
 .bericht {
@@ -2118,8 +2228,6 @@ fieldset:disabled .test-hinzu {
   color: var(--pzl-blau);
   font-size: 8.5pt;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .bericht-titel {
@@ -2232,8 +2340,6 @@ fieldset:disabled .test-hinzu {
   color: var(--text-leise);
   font-size: 8.5pt;
   font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .bericht-hinweis-stark {

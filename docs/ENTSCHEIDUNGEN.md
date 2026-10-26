@@ -297,9 +297,9 @@ Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); a
 
 | Thema | Entscheidung | Frage |
 |---|---|---|
-| Stil | Richtung B: schmale nachtblaue Kopfleiste mit Logo und Navigation, hellgrauer Grund, weiße Karten mit feinem Rand; Farben Blau/Türkis aus dem Logo; keine Schrägen, kein Leuchten | D1, B |
-| Schrift | Barlow (in der App eingebaut, offline), **aufrecht**, Überschriften halbfett; Großbuchstaben nur bei kleinen Beschriftungen | S8 |
-| Dunkler Modus | nein, nur hell | D3 |
+| Stil | **Ab 26.10.2026 ersetzt durch `docs/DESIGNKONZEPT.md` (Etappe 9b): Graphit, Seitenleiste, Designsystem Abschnitt 10.** Bisher: Richtung B: schmale nachtblaue Kopfleiste mit Logo und Navigation, hellgrauer Grund, weiße Karten mit feinem Rand; Farben Blau/Türkis aus dem Logo; keine Schrägen, kein Leuchten | D1, B |
+| Schrift | **Ab 26.10.2026:** Montserrat 600 für Titel/Kennzahlen, Barlow für Text/Tabellen (beide offline), **keine Großbuchstaben-Etiketten**. Bisher: Barlow, aufrecht, Überschriften halbfett; Großbuchstaben nur bei kleinen Beschriftungen | S8 |
+| Dunkler Modus | **Ab 26.10.2026: dunkel als Standard, Umschalter auf hell** (merkt sich der Browser); Berichte und Druck immer hell. Bisher: nein, nur hell | D3 |
 | Kopf | immer schmale Leiste (kein Schrumpfen nötig); Startseite ohne Logo/Titel in der Leiste, nur Navigation | D18, B |
 | Ampel | gerader, leicht abgerundeter **Ladebalken** mit 90-%-Zielmarke, Farbe **und** Text „erfüllt / knapp / nicht erfüllt“ | D4, B |
 | Animation | nur bei Daten: Balken füllt sich (~0,5 s), Kurven bauen sich auf, Spinnennetz baut sich auf; bei „weniger Bewegung“ (Systemeinstellung) aus | D7, D14, B |

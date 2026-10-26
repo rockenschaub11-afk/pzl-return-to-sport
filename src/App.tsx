@@ -1,4 +1,5 @@
 import { Link, Navigate, NavLink, Route, Routes, useLocation } from 'react-router-dom'
+import DarstellungUmschalter from './Darstellung'
 import { KATALOG_FEHLER } from './katalog'
 import { BEREICHE, HINWEIS } from './navigation'
 import Bericht from './pages/Bericht'
@@ -40,6 +41,7 @@ export default function App() {
             </NavLink>
           ))}
         </nav>
+        <DarstellungUmschalter />
       </header>
 
       {/* Prüfung beim Start: fehlerhafte Konfiguration sofort sichtbar machen */}
