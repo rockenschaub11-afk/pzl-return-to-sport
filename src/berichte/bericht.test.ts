@@ -3,7 +3,7 @@ import { beispielAnlegen } from '../beispiel'
 import { db, type Testung } from '../db'
 import type { Patient } from '../patienten/stammdaten'
 import { auswahlBereinigen } from '../testung/meloqAuswahl'
-import { arztBericht, bewertungText, kriteriumAlltag, patBericht, verlaufTabelle } from './bericht'
+import { arztBericht, bewertungText, kriteriumAlltag, patBericht, verlaufTabelle, zeitVergleich } from './bericht'
 
 let patient: Patient
 let testungen: Testung[]
@@ -92,10 +92,44 @@ describe('Arztbericht', () => {
     expect(v.spalten.map((s) => s.phase)).toEqual(['Mitte', 'Spät', '> 9 Mo'])
     const ext = v.zeilen.find((z) => z.name === 'Knie-Extension (HHD)')!
     expect(ext.kriterium).toBe('LSI')
-    expect(ext.werte[2]).toMatch(/✓$/)
-    expect(ext.werte[0]).toMatch(/✗$/)
+    expect(ext.werte[2].wert).toMatch(/✓$/)
+    expect(ext.werte[0].wert).toMatch(/✗$/)
     // Spätere Testungen gehören nicht in einen früheren Bericht
     expect(verlaufTabelle(patient, testungen, testungen[0]).spalten).toHaveLength(1)
+  })
+
+  it('Verlaufstabelle: Ziel je Zelle nur, wenn es sich zwischen den Phasen ändert; Kriterium nicht doppelt', () => {
+    const v = verlaufTabelle(patient, testungen, ende)
+    const cmj = v.zeilen.find((z) => z.name === 'CMJ')!
+    expect(cmj.werte.map((w) => w.ziel)).toEqual(['< 13,4 %', '< 13,4 %', '< 10 %'])
+    expect(cmj.werte[1].wert).toBe('11,7 % ✓')
+    const ext = v.zeilen.find((z) => z.name === 'Knie-Extension (HHD)')!
+    expect(ext.werte.every((w) => w.ziel === null)).toBe(true)
+    expect(v.zeilen.find((z) => z.name === 'Erguss (Stroke-Test)')?.kriterium).toBe('')
+  })
+
+  it('Verlaufstabelle: bei mehr als 6 Testungen bleibt die erste, dazu die letzten 5', () => {
+    const viele = Array.from({ length: 8 }, (_, i) => ({ ...testungen[0], id: `x${i}`, datum: `2026-0${i + 1}-01` }))
+    const v = verlaufTabelle(patient, viele, viele[7])
+    expect(v.spalten.map((s) => s.datum)).toEqual(['01.01.2026', '01.04.2026', '01.05.2026', '01.06.2026', '01.07.2026', '01.08.2026'])
+  })
+
+  it('Zeiten in Worten statt LSI; H/Q aus Kraft mit Hinweis auf den Hebelarm', () => {
+    expect(zeitVergleich(113.3)).toBe('betroffen 13,3 % länger')
+    expect(zeitVergleich(94)).toBe('betroffen 6 % kürzer')
+    expect(zeitVergleich(100.02)).toBe('betroffen gleich lang')
+    const tests = arztBericht(patient, ende, auswahlBereinigen(undefined)).bloecke.flatMap((x) => x.tests)
+    expect(tests.find((t) => t.test.id === 'sl_dj')!.meloq.find((m) => m.name === 'Kontaktzeit')?.vergleich).toBe('betroffen 13,3 % länger')
+    expect(tests.find((t) => t.test.id === 'hhd_knie_flex')!.zusatz.join(' ')).toMatch(/aus Kraft – gleicher Hebelarm angenommen/)
+  })
+
+  it('fehlendes Körpergewicht heißt nicht „nicht gemessen“', () => {
+    const ohne = { ...ende, koerpergewichtKg: '' }
+    const b = arztBericht(patient, ohne)
+    const ext = b.bloecke.flatMap((x) => x.tests).find((t) => t.test.id === 'hhd_knie_ext')!
+    expect(ext.kriterien.find((k) => k.bezeichnung === 'Kraft relativ')?.bewertung).toEqual({ ampel: null, text: 'Körpergewicht fehlt – keine N/kg' })
+    expect(b.rts?.wasFehlt).toContain('Knie-Extension (HHD): Körpergewicht fehlt – keine N/kg bzw. Ns/kg')
+    expect(patBericht(patient, ohne).wasFehlt).toContain('Kraft Oberschenkel vorne (Knie strecken): Körpergewicht fehlt noch für die Auswertung')
   })
 })
 
@@ -119,7 +153,19 @@ describe('Pat./Trainer-Bericht', () => {
     const b = patBericht(patient, ende)
     expect(b.netz.length).toBeGreaterThanOrEqual(3)
     expect(b.netz.map((a) => a.name)).not.toContain('Sprung beidbeinig')
-    expect(b.netz.find((a) => a.name === 'Niedersprung')?.lsi).toBe(89.7)
+    expect(b.netz.find((a) => a.name === 'Niedersprung')).toEqual({ name: 'Niedersprung', lsi: 89.7, ampel: 'gelb' })
+  })
+
+  it('Unterschied zwischen den Beinen als eigene Zeile, auch unter „Was fehlt noch?“; keine leeren Zeilen', () => {
+    const cmj = patBericht(patient, ende).zeilen.find((z) => z.id === 'cmj:verteilung')!
+    expect(cmj).toMatchObject({ name: 'Sprung beidbeinig – Verteilung auf beide Beine', wert: '7,7 %', wertArt: 'unterschied', bewertung: { ampel: 'gruen' } })
+    const mitte = patBericht(patient, testungen[0])
+    expect(mitte.zeilen.find((z) => z.id === 'hop_platte:verteilung')?.wert).toMatch(/^14/)
+    expect(mitte.zeilen.some((z) => z.id === 'hop_platte')).toBe(false)
+    expect(mitte.zeilen.every((z) => z.wert !== '')).toBe(true)
+    expect(mitte.wasFehlt).toContain('Sprung beidbeinig – Verteilung auf beide Beine: 19,2 % Unterschied zwischen den Beinen – Ziel: unter 13,4 %')
+    // SL-CMJ: Impuls-Asymmetrie bleibt als Driver-Wert draußen
+    expect(patBericht(patient, ende).zeilen.some((z) => z.id === 'sl_cmj:verteilung')).toBe(false)
   })
 
   it('„Was fehlt noch?“ in Alltagssprache; Ergebnis erst nach Abschluss', () => {

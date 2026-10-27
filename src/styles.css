@@ -3137,6 +3137,28 @@ fieldset:disabled .test-hinzu {
   font-weight: 700;
 }
 
+/* Ampel an den Achsen – dieselben druckfesten Töne wie .bericht-ampel */
+.netz-punkt.netz-gruen,
+.netz-wert.netz-gruen {
+  fill: #1f6b41;
+}
+
+.netz-punkt.netz-gelb,
+.netz-wert.netz-gelb {
+  fill: #7a5200;
+}
+
+.netz-punkt.netz-rot,
+.netz-wert.netz-rot {
+  fill: var(--nicht-erfuellt);
+}
+
+.netz-punkt.netz-gruen,
+.netz-punkt.netz-gelb,
+.netz-punkt.netz-rot {
+  stroke: var(--flaeche);
+}
+
 .netz-ring-text {
   fill: var(--text-sehr-leise);
   font-family: var(--schrift);

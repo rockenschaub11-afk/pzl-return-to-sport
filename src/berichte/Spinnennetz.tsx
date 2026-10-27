@@ -1,5 +1,16 @@
 // Spinnennetz L/R als eigenes SVG (ENTSCHEIDUNGEN Technik; Etappe-9-Frage 1):
 // je Test mit Seitenvergleich eine Achse; gesundes Bein = 100-%-Ring, betroffenes Bein als Fläche in % (LSI), Ziel 90 % gestrichelt.
+// Werte mit einer Nachkommastelle wie in der Tabelle, Punkt und Zeichen ✓ ~ ✗ nach der LSI-Ampel (Bericht-Audit Punkt 1).
+
+import type { Ampel } from '../rechnen/bewertung'
+import { AMPEL_ZEICHEN } from './bericht'
+
+export interface NetzAchse {
+  name: string
+  lsi: number
+  /** Ampel des LSI-Kriteriums (null = ohne Ampel) */
+  ampel: Ampel | null
+}
 
 const B = 460
 const H = 370
@@ -9,7 +20,9 @@ const RADIUS = 120
 const MAX = 120
 const RINGE = [50, 80, 100, 120]
 
-const zahl = (v: number) => v.toLocaleString('de-AT', { maximumFractionDigits: 0 })
+const zahl = (v: number) => v.toLocaleString('de-AT', { maximumFractionDigits: 1 })
+const mitZeichen = (a: NetzAchse) => `${zahl(a.lsi)} %${a.ampel ? ` ${AMPEL_ZEICHEN[a.ampel]}` : ''}`
+const ampelKlasse = (a: NetzAchse) => (a.ampel ? ` netz-${a.ampel}` : '')
 
 function punkt(i: number, n: number, prozent: number) {
   const winkel = -Math.PI / 2 + (2 * Math.PI * i) / n
@@ -19,14 +32,14 @@ function punkt(i: number, n: number, prozent: number) {
 
 const linie = (pts: { x: number; y: number }[]) => pts.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')
 
-export default function Spinnennetz({ achsen, ziel = 90 }: { achsen: { name: string; lsi: number }[]; ziel?: number }) {
+export default function Spinnennetz({ achsen, ziel = 90 }: { achsen: NetzAchse[]; ziel?: number }) {
   const n = achsen.length
   if (n < 3) return <p className="hinweis-leise">Für das Spinnennetz braucht es mindestens 3 Tests mit Seitenvergleich.</p>
   const ring = (prozent: number) => linie(achsen.map((_, i) => punkt(i, n, prozent)))
 
   return (
     <figure className="netz">
-      <svg viewBox={`0 0 ${B} ${H}`} role="img" aria-label={`Spinnennetz: betroffenes Bein in Prozent des gesunden, ${achsen.map((a) => `${a.name} ${zahl(a.lsi)} %`).join(', ')}`}>
+      <svg viewBox={`0 0 ${B} ${H}`} role="img" aria-label={`Spinnennetz: betroffenes Bein in Prozent des gesunden, ${achsen.map((a) => `${a.name} ${mitZeichen(a)}`).join(', ')}`}>
         {RINGE.map((r) => (
           <polygon key={r} points={ring(r)} className="netz-ring" />
         ))}
@@ -39,7 +52,7 @@ export default function Spinnennetz({ achsen, ziel = 90 }: { achsen: { name: str
         <polygon points={linie(achsen.map((a, i) => punkt(i, n, a.lsi)))} className="netz-flaeche" style={{ transformOrigin: `${MITTE.x}px ${MITTE.y}px` }} />
         {achsen.map((a, i) => {
           const p = punkt(i, n, a.lsi)
-          return <circle key={i} cx={p.x} cy={p.y} r={3.5} className="netz-punkt" />
+          return <circle key={i} cx={p.x} cy={p.y} r={a.ampel ? 4.5 : 3.5} className={`netz-punkt${ampelKlasse(a)}`} />
         })}
         {achsen.map((a, i) => {
           const p = punkt(i, n, MAX)
@@ -49,8 +62,8 @@ export default function Spinnennetz({ achsen, ziel = 90 }: { achsen: { name: str
           return (
             <text key={i} x={x} y={y} textAnchor={anker} className="netz-text">
               <tspan>{a.name}</tspan>
-              <tspan x={x} dy="1.15em" className="netz-wert">
-                {zahl(a.lsi)} %
+              <tspan x={x} dy="1.15em" className={`netz-wert${ampelKlasse(a)}`}>
+                {mitZeichen(a)}
               </tspan>
             </text>
           )

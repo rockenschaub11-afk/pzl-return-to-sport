@@ -405,17 +405,27 @@ function VerlaufAbschnitt({ patient, testungen, tabelle, wahl }: { patient: Pati
             {tabelle.zeilen.map((z) => (
               <tr key={z.name}>
                 <td>
-                  {z.name} <span className="bericht-leise">({z.kriterium})</span>
+                  {z.name}
+                  {z.kriterium && <span className="bericht-leise"> ({z.kriterium})</span>}
                 </td>
                 {z.werte.map((w, i) => (
                   <td key={i} className="bericht-zahl">
-                    {w}
+                    {w.wert}
+                    {w.ziel && (
+                      <>
+                        <br />
+                        <span className="bericht-leise">Ziel {w.ziel}</span>
+                      </>
+                    )}
                   </td>
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
+      )}
+      {tabelle.zeilen.length > 0 && (
+        <p className="bericht-leise">✓ ~ ✗ jeweils nach dem Ziel der Phase dieser Testung – ändert sich das Ziel, steht es unter dem Wert.</p>
       )}
       {v && v.punkte.length > 1 && (
         <div className="bericht-diagramme">
@@ -465,7 +475,7 @@ function PatAnsicht({ patient, testung, name }: { patient: Patient; testung: Tes
                 <td>{z.name}</td>
                 {z.wert !== null ? (
                   <td colSpan={2} className="bericht-zahl">
-                    beidbeinig: {z.wert}
+                    {z.wertArt === 'unterschied' ? 'Unterschied zwischen den Beinen' : 'beidbeinig'}: {z.wert}
                   </td>
                 ) : (
                   <>
