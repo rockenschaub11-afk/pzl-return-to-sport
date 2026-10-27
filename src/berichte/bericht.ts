@@ -569,6 +569,8 @@ export interface PatZeile {
   lsiAmpel: Ampel | null
   /** betroffen in % des Werts vor der Verletzung (nur wenn eingetragen; Audit Punkt 13) */
   vorverletzung: number | null
+  /** betroffen in % von gesund bei der vorigen Testung (Audit Punkt 16) */
+  vorige: number | null
   bewertung: Bewertung
 }
 
@@ -581,7 +583,13 @@ export interface PatBericht {
   klinik: string | null
   zeilen: PatZeile[]
   netz: NetzAchse[]
+  /** Verlaufstest: „Ziele dieser Phase – noch offen“, Endtestung: „Was fehlt noch?“ (Audit Punkt 15) */
+  wasFehltTitel: string
+  /** z. B. „Schon erreicht: 3 von 12 Zielen dieser Phase“ */
+  erreicht: string | null
   wasFehlt: string[]
+  /** Datum der vorigen Testung für „letzte Testung“, null wenn es keine gibt */
+  vorigeDatum: string | null
   hinweise: string[]
   /** nur bei abgeschlossener Endtestung: Ergebnis nach Beurteilung der Therapeut:in */
   ergebnis: string | null
@@ -624,6 +632,7 @@ function patZeilen(test: TestDef, a: TestAuswertung, eingabe: TestEingabe, seite
       lsi: typeof lsiWert === 'number' && Number.isFinite(lsiWert) ? Math.round(lsiWert * 10) / 10 : null,
       lsiAmpel: lsiE?.ampel ?? null,
       vorverletzung: a.berechnung.lsiVorverletzung === null ? null : Math.round(a.berechnung.lsiVorverletzung * 10) / 10,
+      vorige: null,
       bewertung: zeilenBewertung(haupt),
     })
   }
@@ -646,13 +655,28 @@ function patZeilen(test: TestDef, a: TestAuswertung, eingabe: TestEingabe, seite
       lsi: null,
       lsiAmpel: null,
       vorverletzung: null,
+      vorige: null,
       bewertung: zeilenBewertung(asym),
     })
   }
   return zeilen
 }
 
-export function patBericht(patient: Patient, testung: Testung): PatBericht {
+const lsiGerundet = (a: TestAuswertung | undefined) => {
+  const w = a?.berechnung.werte.lsi
+  return typeof w === 'number' && Number.isFinite(w) ? Math.round(w * 10) / 10 : null
+}
+
+/** Die Testung direkt vor dieser (nach Datum, bei gleichem Datum nach Anlage). */
+function vorigeTestung(alle: readonly Testung[], testung: Testung): Testung | null {
+  const davor = alle
+    .filter((t) => t.id !== testung.id && (t.datum < testung.datum || (t.datum === testung.datum && t.angelegtAm < testung.angelegtAm)))
+    .sort((x, y) => x.datum.localeCompare(y.datum) || x.angelegtAm.localeCompare(y.angelegtAm))
+  return davor.at(-1) ?? null
+}
+
+/** `alle`: alle Testungen der Person – für den Vergleich mit der vorigen Testung (Audit Punkt 16). */
+export function patBericht(patient: Patient, testung: Testung, alle: readonly Testung[] = []): PatBericht {
   const p = phaseText(testung, patient)
   const phase = p.ph.phase
   const auswertung = werteAus(testung, phase, patient.geschlecht)
@@ -673,14 +697,26 @@ export function patBericht(patient: Patient, testung: Testung): PatBericht {
           ? 'Kniebefund (Schwellung, Beweglichkeit, Bein heben): in Ordnung'
           : 'Kniebefund: noch nicht vollständig untersucht'
 
+  // Vorige Testung: LSI von damals neben dem heutigen, nur wo es beide gibt
+  const vorige = vorigeTestung(alle, testung)
+  if (vorige) {
+    const vorAuswertung = werteAus(vorige, phasenStand(vorige, patient.opDatum).phase, patient.geschlecht)
+    for (const z of zeilen) {
+      if (z.lsi === null || !hatEingabe(vorige.eingaben[z.id])) continue
+      z.vorige = lsiGerundet(vorAuswertung.get(z.id))
+    }
+  }
+
   const wasFehlt: string[] = []
+  const nichtGetestet: string[] = []
   if (endtestung && !v.zeitErfuellt) wasFehlt.push(`Zeit seit der ${patient.konservativ ? 'Verletzung' : 'OP'}: ${v.monate ?? '?'} Monate – empfohlen sind mindestens ${KATALOG.regeln.rts.mindestMonate} Monate`)
   for (const pt of v.pflicht) {
     if (pt.status === 'erfuellt') continue
     const name = alltag(pt.test).lang
     if (pt.klinischAnders) wasFehlt.push(`${name}: aus therapeutischer Sicht noch nicht so weit`)
     else if (pt.status === 'fehlt') {
-      wasFehlt.push(wartetAufGewicht(testung, auswertung.get(pt.test.id)) ? `${name}: Körpergewicht fehlt noch für die Auswertung` : `${name}: noch nicht (vollständig) getestet`)
+      if (wartetAufGewicht(testung, auswertung.get(pt.test.id))) wasFehlt.push(`${name}: Körpergewicht fehlt noch für die Auswertung`)
+      else nichtGetestet.push(name)
     } else {
       // Unterschied zwischen den Beinen unter dem Namen der Verteilungs-Zeile (Audit Punkt 2)
       const verfehlt = pflichtVerfehlt(auswertung.get(pt.test.id)!)
@@ -690,6 +726,11 @@ export function patBericht(patient: Patient, testung: Testung): PatBericht {
       if (asym.length > 0) wasFehlt.push(`${verteilungName(pt.test)}: ${asym.map(kriteriumAlltag).join('; ')}`)
     }
   }
+
+  // Nicht Getestetes in einer Zeile am Ende (Audit Punkt 15)
+  if (nichtGetestet.length > 0) wasFehlt.push(`Noch nicht (vollständig) getestet: ${nichtGetestet.join(', ')}`)
+  const erfuellt = v.pflicht.filter((pt) => pt.status === 'erfuellt').length
+  const erreicht = v.pflicht.length === 0 ? null : `Schon erreicht: ${erfuellt} von ${v.pflicht.length} ${endtestung ? 'Pflicht-Zielen' : 'Zielen dieser Phase'}`
 
   const hinweise: string[] = []
   if (v.aclRsiWarnung) hinweise.push('Vertrauen ins Knie: Der Fragebogen zeigt noch Unsicherheit oder Sorge vor einer neuen Verletzung – das ist normal und wird in der Therapie besprochen.')
@@ -709,7 +750,10 @@ export function patBericht(patient: Patient, testung: Testung): PatBericht {
     klinik: klinikText,
     zeilen,
     netz: zeilen.filter((z) => z.lsi !== null).map((z) => ({ name: z.kurz, lsi: z.lsi!, ampel: z.lsiAmpel })),
+    wasFehltTitel: endtestung ? 'Was fehlt noch?' : 'Ziele dieser Phase – noch offen',
+    erreicht,
     wasFehlt,
+    vorigeDatum: vorige ? datumDeutsch(vorige.datum) : null,
     hinweise,
     ergebnis,
   }

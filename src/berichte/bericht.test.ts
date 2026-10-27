@@ -234,6 +234,32 @@ describe('Pat./Trainer-Bericht', () => {
     expect(b.wasFehlt.some((w) => w.startsWith('Kraft Oberschenkel vorne'))).toBe(true)
     expect(b.ergebnis).toBeNull()
   })
+
+  it('Verlaufstest: Phasenziele statt Mängelliste, nicht Getestetes in einer Zeile (Audit Punkt 15)', () => {
+    const mitte = patBericht(patient, testungen[0])
+    expect(mitte.wasFehltTitel).toBe('Ziele dieser Phase – noch offen')
+    expect(mitte.erreicht).toBe('Schon erreicht: 3 von 12 Zielen dieser Phase')
+    expect(mitte.wasFehlt).toHaveLength(7)
+    expect(mitte.wasFehlt.at(-1)).toBe('Noch nicht (vollständig) getestet: 3 Sprünge einbeinig, 3 Sprünge einbeinig über eine Linie, 6 m einbeinig hüpfen (Zeit)')
+    const b = patBericht(patient, ende)
+    expect(b.wasFehltTitel).toBe('Was fehlt noch?')
+    expect(b.erreicht).toBe('Schon erreicht: 12 von 13 Pflicht-Zielen')
+  })
+
+  it('Fortschritt: LSI der vorigen Testung, nur wo es beide gibt (Audit Punkt 16)', () => {
+    const b = patBericht(patient, ende, testungen)
+    expect(b.vorigeDatum).toBe('02.05.2026')
+    expect(b.zeilen.find((z) => z.id === 'hhd_knie_ext')?.vorige).toBe(83.3)
+    // SL-Drop-Jump gab es bei „Spät“ nicht
+    expect(b.zeilen.find((z) => z.id === 'sl_dj')?.vorige).toBeNull()
+    expect(b.zeilen.find((z) => z.id === 'cmj:verteilung')?.vorige).toBeNull()
+    // erste Testung: kein Vergleich
+    const erste = patBericht(patient, testungen[0], testungen)
+    expect(erste.vorigeDatum).toBeNull()
+    expect(erste.zeilen.every((z) => z.vorige === null)).toBe(true)
+    // ohne Liste wie bisher
+    expect(patBericht(patient, ende).zeilen.every((z) => z.vorige === null)).toBe(true)
+  })
 })
 
 describe('Bausteine', () => {

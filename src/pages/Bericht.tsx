@@ -97,7 +97,7 @@ export default function Bericht() {
       {arzt ? (
         <ArztAnsicht patient={patient} testung={testung} alle={alle} name={name} verlaufWahl={verlaufWahl} meloqAuswahl={meloqAuswahl} />
       ) : (
-        <PatAnsicht patient={patient} testung={testung} name={name} />
+        <PatAnsicht patient={patient} testung={testung} alle={alle} name={name} />
       )}
     </section>
   )
@@ -677,8 +677,8 @@ function VerlaufAbschnitt({ patient, testungen, tabelle, wahl }: { patient: Pati
 
 // ---------- Pat./Trainer-Bericht ----------
 
-function PatAnsicht({ patient, testung, name }: { patient: Patient; testung: Testung; name: string }) {
-  const b: PatBericht = useMemo(() => patBericht(patient, testung), [patient, testung])
+function PatAnsicht({ patient, testung, alle, name }: { patient: Patient; testung: Testung; alle: Testung[]; name: string }) {
+  const b: PatBericht = useMemo(() => patBericht(patient, testung, alle), [patient, testung, alle])
   return (
     <article className="bericht bericht-pat" aria-label="Pat./Trainer-Bericht">
       <Kopf titel="Bericht für Pat. und Trainer:in" kuerzel={b.kuerzel} name={name} datum={b.datum} unter={`${b.artText} · ${b.phase}`} />
@@ -728,6 +728,7 @@ function PatAnsicht({ patient, testung, name }: { patient: Patient; testung: Tes
                       <span className="bericht-leise">vor der Verletzung: {z.vorverletzung.toLocaleString('de-AT')} %</span>
                     </>
                   )}
+                  {z.vorige !== null && <span className="bericht-leise"> (zuvor {z.vorige.toLocaleString('de-AT')} %)</span>}
                 </td>
                 <td>
                   <BewertungMarke b={z.bewertung} />
@@ -737,6 +738,7 @@ function PatAnsicht({ patient, testung, name }: { patient: Patient; testung: Tes
           </tbody>
         </table>
         {b.zeilen.length === 0 && <p className="bericht-leise">Noch keine Leistungstests erfasst.</p>}
+        {b.vorigeDatum && b.zeilen.some((z) => z.vorige !== null) && <p className="bericht-leise">„zuvor“ = letzte Testung vom {b.vorigeDatum}.</p>}
       </section>
 
       <div className="bericht-pat-unten">
@@ -745,7 +747,8 @@ function PatAnsicht({ patient, testung, name }: { patient: Patient; testung: Tes
           <Spinnennetz achsen={b.netz} />
         </section>
         <section className="bericht-abschnitt">
-          <h2>Was fehlt noch?</h2>
+          <h2>{b.wasFehltTitel}</h2>
+          {b.erreicht && <p className="bericht-stand-zeile">{b.erreicht}</p>}
           {b.wasFehlt.length > 0 ? (
             <ul>
               {b.wasFehlt.map((w) => (

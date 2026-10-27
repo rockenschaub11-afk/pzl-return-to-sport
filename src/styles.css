@@ -3376,7 +3376,7 @@ fieldset:disabled .test-hinzu {
 
   /* Netz etwas kleiner, damit auch mit Verteilungs-Zeilen alles auf eine Seite passt */
   .bericht-pat .netz svg {
-    max-height: 72mm;
+    max-height: 64mm;
   }
 }
 
