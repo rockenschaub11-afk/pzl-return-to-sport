@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Musterseite Berichte – PZL Return-to-Sport</title>
+<!-- Nur zum Ansehen im Entwicklungsserver (/docs/muster-berichte.html). Werte von DEMO-1990 (Beispiel-Person, Endtestung 25.10.2026, Entwurf), abgeschrieben aus dem aktuellen Bericht. Keine Pat.-Daten. Gehört nicht zur App. -->
+<link rel="stylesheet" href="/node_modules/@fontsource/montserrat/600.css" />
+<link rel="stylesheet" href="/node_modules/@fontsource/barlow/400.css" />
+<link rel="stylesheet" href="/node_modules/@fontsource/barlow/500.css" />
+<link rel="stylesheet" href="/node_modules/@fontsource/barlow/600.css" />
+<style>
+  /* Nur vorhandene Tokens: helles Bericht-Set aus src/styles.css (.bericht) */
+  :root {
+    color-scheme: light;
+    --grund: #eceff3; --flaeche: #ffffff; --feld: #f3f5f8; --tief: #1f2329;
+    --linie: #d9dee5; --linie-stark: #c2cad4;
+    --text: #1c222b; --text-leise: #56606d; --text-sehr-leise: #6c7683;
+    --seite-betroffen: #1d71b8; --seite-gesund: #00808f;
+    --erfuellt: #2a7f50; --knapp: #9a6400; --nicht-erfuellt: #c62828;
+    --korridor: rgb(28 34 43 / 0.08);
+    /* druckfeste Ampel-Texttöne, wie heute in .bericht-ampel / .netz-* */
+    --a-gruen: #1f6b41; --a-gelb: #7a5200; --a-rot: #c62828;
+    --schrift: 'Barlow', system-ui, sans-serif;
+    --titel: 'Montserrat', 'Barlow', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--grund); color: var(--text); font: 400 15px/1.45 var(--schrift); font-variant-numeric: tabular-nums; }
+  h1, h2, h3 { margin: 0; font-family: var(--titel); font-weight: 600; }
+  p { margin: 0; }
+
+  /* ---------- Bildschirm: Erklärung, Umschalter ---------- */
+  .steuerung { max-width: 210mm; margin: 24px auto 0; padding: 16px 20px; border: 1px solid var(--linie); border-radius: 14px; background: var(--flaeche); }
+  .steuerung h1 { font-size: 22px; }
+  .steuerung p { margin-top: 6px; color: var(--text-leise); font-size: 13px; }
+  .pillen { display: inline-flex; gap: 4px; margin-top: 12px; padding: 3px; border-radius: 999px; background: var(--feld); }
+  .pillen button { border: 0; border-radius: 999px; padding: 6px 14px; background: none; font: 500 13px var(--schrift); color: var(--text); cursor: pointer; }
+  .pillen button[aria-pressed='true'] { background: var(--tief); color: #fff; }
+  .marke-muster { display: block; max-width: 210mm; margin: 28px auto 8px; color: var(--text-leise); font: 500 13px var(--schrift); }
+  [hidden] { display: none !important; }
+
+  /* ---------- Blatt ---------- */
+  .blatt { width: 210mm; margin: 0 auto 24px; padding: 13mm 12mm 10mm; background: #fff; box-shadow: 0 4px 16px rgb(10 31 60 / 0.1); font-size: 9pt; line-height: 1.38; }
+  .zahl { text-align: right; white-space: nowrap; }
+  .leise { color: var(--text-leise); }
+  .sehr-leise { color: var(--text-sehr-leise); }
+  .klein { font-size: 7.5pt; }
+  .gruen { color: var(--a-gruen); } .gelb { color: var(--a-gelb); } .rot { color: var(--a-rot); }
+  .bew { font-weight: 600; white-space: nowrap; }
+  .mess .krit td:last-child { white-space: nowrap; }
+  table.ergebnis { table-layout: fixed; }
+
+  /* Kopf (gemeinsam) */
+  .kopfzeile { display: flex; align-items: center; justify-content: space-between; gap: 6mm; padding-bottom: 2.5mm; border-bottom: 0.5pt solid var(--linie-stark); }
+  .kopf-marke { display: flex; align-items: center; gap: 3mm; }
+  .kopf-marke img { height: 9mm; }
+  .kopf-marke span { color: var(--text-leise); font-size: 8pt; font-weight: 500; }
+  .kopf-art { text-align: right; font: 600 8.5pt var(--titel); }
+  .entwurf { display: inline-block; margin-left: 3mm; padding: 0.4mm 2mm; border: 0.75pt dashed var(--text); font: 600 7.5pt var(--schrift); letter-spacing: 0.04em; vertical-align: 1px; }
+  .titelzeile { display: flex; align-items: baseline; gap: 4mm; margin-top: 5mm; }
+  .titelzeile h1 { font-size: 20pt; letter-spacing: -0.01em; }
+  .titelzeile span { color: var(--text-leise); font-size: 10pt; }
+  .kontext { display: flex; flex-wrap: wrap; gap: 1.5mm 7mm; margin: 3mm 0 0; }
+  .kontext div { display: grid; grid-template-columns: auto auto; column-gap: 1.8mm; align-items: center; }
+  .kontext svg { grid-row: span 2; width: 4mm; height: 4mm; color: var(--text-leise); }
+  .kontext dt { color: var(--text-sehr-leise); font-size: 7pt; line-height: 1.2; }
+  .kontext dd { margin: 0; font-weight: 600; font-size: 9pt; line-height: 1.25; }
+
+  /* Abschnitte (Arzt): Titelzeile über die volle Breite, Nummer zum Verweisen („siehe 4“) */
+  .abschnitt { margin-top: 5.5mm; break-inside: avoid-page; }
+  .abschnitt.lang { break-inside: auto; }
+  .rand { display: flex; align-items: baseline; gap: 2.5mm; margin-bottom: 3mm; padding-bottom: 1.6mm; border-bottom: 0.75pt solid var(--text); break-after: avoid; }
+  .rand .nr { min-width: 3.5mm; color: var(--text-sehr-leise); font: 600 10.5pt var(--titel); }
+  .rand h2 { flex: none; font-size: 10.5pt; line-height: 1.25; }
+  .rand p { margin-left: auto; max-width: 105mm; color: var(--text-leise); font-size: 7pt; line-height: 1.3; text-align: right; }
+
+  /* Tafel: einzige Box-Art im Bericht – feine Linie, kleine Rundung, kein Schatten */
+  .tafel { border: 0.75pt solid var(--linie); border-radius: 10px; overflow: hidden; break-inside: avoid; }
+  .tafel-innen { padding: 3mm 4mm; }
+  .tafel-lang { break-inside: auto; overflow: visible; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  .tafel-lang thead th:first-child { border-top-left-radius: 10px; } .tafel-lang thead th:last-child { border-top-right-radius: 10px; }
+  .tafel-titel { display: flex; align-items: center; gap: 1.8mm; margin-bottom: 1.5mm; font: 600 8.5pt var(--schrift); }
+  .tafel-titel svg, .kontext svg { flex: none; width: 3.4mm; height: 3.4mm; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Beurteilung = Einschätzung, auf Fläche "Feld" */
+  .beurteilung { background: var(--feld); border-color: transparent; }
+  .beurteilung-label { color: var(--text-sehr-leise); font-size: 7pt; font-weight: 600; }
+  .stand { display: grid; grid-template-columns: 1.15fr 1fr 1fr; }
+  .stand > div { padding: 3mm 4.5mm; }
+  .stand > div + div { border-left: 0.75pt solid var(--linie-stark); }
+  .stand strong { display: block; margin-top: 0.8mm; font: 600 11pt/1.25 var(--titel); }
+  .stand .gross { font-size: 19pt; line-height: 1.1; letter-spacing: -0.01em; }
+  .stand .gross small { font-size: 10pt; color: var(--text-leise); letter-spacing: 0; }
+  .stand span.leise { display: block; margin-top: 0.8mm; font-size: 8pt; }
+  .fehlt { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin-top: 3mm; }
+  .fehlt ul { margin: 0; padding: 0; list-style: none; }
+  .fehlt li { padding: 0.5mm 0; }
+  .warnung { margin-top: 3mm; padding: 1.2mm 0 1.2mm 3mm; border-left: 2pt solid var(--knapp); font-weight: 600; }
+  .freigabe { margin-top: 2.5mm; font-weight: 600; }
+
+  /* LSI-Übersicht */
+  figure { margin: 0; }
+  figure svg { display: block; width: 100%; height: auto; }
+  figcaption { margin-top: 1.5mm; color: var(--text-leise); font-size: 7.5pt; }
+  .legende { display: flex; flex-wrap: wrap; gap: 1mm 5mm; margin-top: 1.5mm; color: var(--text-leise); font-size: 7.5pt; }
+  .legende i { display: inline-block; width: 5mm; height: 2.4mm; margin-right: 1.2mm; vertical-align: -0.3mm; }
+
+  /* Stammdaten */
+  .stamm { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 5mm; margin: 0; }
+  .stamm .breit { grid-column: span 2; }
+  .stamm div { padding: 1mm 0; border-bottom: 0.5pt solid var(--linie); }
+  .stamm dt { color: var(--text-sehr-leise); font-size: 7pt; }
+  .stamm dd { margin: 0; }
+
+  /* Tabellen */
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 1mm 1.5mm; text-align: left; vertical-align: baseline; }
+  thead th { padding-top: 1.6mm; padding-bottom: 1.4mm; background: var(--feld); border-bottom: 0.75pt solid var(--linie-stark); color: var(--text-leise); font-size: 7.5pt; font-weight: 600; }
+  .tafel table th:first-child, .tafel table td:first-child { padding-left: 3mm; }
+  .tafel table th:last-child, .tafel table td:last-child { padding-right: 3mm; }
+  .tafel tbody tr:last-child td, .tafel tbody tr:last-child th { border-bottom: 0; }
+  /* Ampel-Chip wie im Designsystem: Zeichen + Wort, Ampelfarbe, Fläche 12 % */
+  .chip { display: inline-block; padding: 0.3mm 2mm; border-radius: 999px; background: color-mix(in srgb, currentColor 12%, transparent); font-size: 7.5pt; font-weight: 600; white-space: nowrap; }
+  .chip.offen { color: var(--text-leise); background: var(--feld); font-weight: 500; }
+  thead th small { display: block; color: var(--text-sehr-leise); font-weight: 400; }
+  .mess td, .mess th { border-bottom: 0.5pt solid var(--linie); }
+  .mess .block td { padding-top: 1.8mm; padding-bottom: 1.4mm; background: var(--feld); border-top: 0.75pt solid var(--linie-stark); border-bottom: 0.75pt solid var(--linie-stark); font: 600 9pt var(--titel); }
+  .mess .test th { padding-top: 2mm; border-bottom: 0; font-weight: 600; }
+  .mess .test td { padding-top: 2mm; border-bottom: 0; font-weight: 600; }
+  .mess .test .protokoll { display: block; color: var(--text-sehr-leise); font-size: 7.5pt; font-weight: 400; }
+  .mess .krit td:first-child { padding-left: 4mm; }
+  .tag { margin-left: 1.5mm; color: var(--text-sehr-leise); font-size: 7pt; }
+  .fn { color: var(--text-sehr-leise); font-size: 6.5pt; vertical-align: 2.5pt; margin-left: 0.4mm; }
+  .unter td { padding-left: 4mm; color: var(--text-leise); font-size: 7.5pt; }
+  .meloq td { padding-top: 0.6mm; padding-bottom: 0.6mm; color: var(--text-leise); font-size: 8pt; }
+  .meloq td:first-child { padding-left: 4mm; box-shadow: inset 4mm 0 0 #fff, inset calc(4mm + 0.75pt) 0 0 var(--linie-stark); padding-left: 6mm; }
+  .ods { display: inline-block; width: 3.6mm; margin-right: 1mm; border: 0.5pt solid var(--text-sehr-leise); border-radius: 0.6mm; font-size: 6.5pt; font-weight: 600; text-align: center; color: var(--text); }
+  .norm td { font-style: italic; }
+  .spalte-g { color: var(--seite-gesund); }
+  .spalte-b { color: var(--seite-betroffen); }
+  .schwach { font-weight: 400; }
+
+  /* Verlauf */
+  .verlauf td, .verlauf th { border-bottom: 0.5pt solid var(--linie); }
+  .verlauf td.zahl b { font-weight: 600; }
+  .verlauf .bg { display: block; color: var(--text-sehr-leise); font-size: 7pt; }
+  .verlauf .delta { font-weight: 600; }
+  .diagramme { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin-top: 4mm; }
+  .diagramme figure { padding: 3mm 3.5mm; }
+  .diagramme h3 { font: 600 8.5pt var(--titel); margin-bottom: 1mm; }
+  .diagramme h3 span { color: var(--text-leise); font-family: var(--schrift); font-weight: 500; }
+
+  .unterschrift { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10mm; }
+  .unterschrift div { color: var(--text-leise); font-size: 8pt; }
+  .unterschrift div::before { content: ''; display: block; height: 10mm; border-bottom: 0.75pt solid var(--text); margin-bottom: 1mm; }
+
+  .methodik { columns: 2; column-gap: 7mm; font-size: 7.5pt; }
+  .methodik dt { font-weight: 600; break-after: avoid; }
+  .methodik dd { margin: 0 0 2mm; break-inside: avoid; color: var(--text-leise); }
+
+  .fuss { margin-top: 8mm; padding-top: 2mm; border-top: 0.5pt solid var(--linie); color: var(--text-leise); font-size: 7.5pt; text-align: center; }
+  .pat .fuss { margin-top: 3mm; }
+  .seitenwechsel { break-before: page; }
+  .seitenmarke { margin: 8mm -12mm 0; padding: 1mm 12mm; border-top: 1px dashed var(--linie-stark); color: var(--text-sehr-leise); font-size: 7pt; text-align: right; }
+
+  /* ---------- Pat./Trainer ---------- */
+  .pat { padding-top: 10mm; padding-bottom: 7mm; font-size: 10pt; line-height: 1.42; }
+  .pat .titelzeile h1 { font-size: 17pt; }
+  /* Kopfband: das eine laute Element des Pat.-Berichts – hell, druckt auch schwarz-weiß */
+  .kern { display: grid; grid-template-columns: auto 1fr; align-items: center; margin-top: 4mm; border-radius: 14px; background: var(--feld); }
+  .kern > div { padding: 3mm 6mm; }
+  .kern > div + div { border-left: 0.75pt solid var(--linie-stark); }
+  .kern .label { color: var(--text-leise); font-size: 8.5pt; font-weight: 600; }
+  .kern .zahlwort { display: flex; align-items: baseline; gap: 2.5mm; margin-top: 0.5mm; }
+  .kern .zahlwort b { font: 600 30pt/1 var(--titel); letter-spacing: -0.02em; }
+  .kern .zahlwort span { font: 600 11pt var(--titel); }
+  .kern .klinik { margin-top: 1mm; font: 600 13pt/1.2 var(--titel); }
+  .pat-mitte { display: grid; grid-template-columns: 1.1fr 1fr; gap: 6mm; margin-top: 3.5mm; }
+  .pat h2 { font-size: 11pt; margin-bottom: 1.5mm; }
+  .pat-rechts { display: grid; gap: 3mm; align-content: start; }
+  .pat-fehlt { padding: 2mm 0 0 3mm; border-left: 2pt solid var(--knapp); }
+  .pat-fehlt b { display: block; font-weight: 600; }
+  .pat-hinweis { color: var(--text-leise); font-size: 9pt; }
+  .einschaetzung { background: var(--feld); border-color: transparent; font-size: 9pt; }
+  .einschaetzung .beurteilung-label { display: block; margin-bottom: 0.5mm; }
+  .werte { margin-top: 4mm; }
+  .werte .werte-kopf { padding-bottom: 1.2mm; border-bottom: 0.75pt solid var(--text); }
+  .werte-kopf { display: flex; align-items: baseline; justify-content: space-between; }
+  .werte-kopf p { color: var(--text-leise); font-size: 8.5pt; }
+  .werte-raster { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8mm; margin-top: 1mm; }
+  .gruppe h3 { margin-top: 2.5mm; padding-bottom: 0.8mm; border-bottom: 0.5pt solid var(--linie-stark); color: var(--text-leise); font: 600 8pt var(--schrift); }
+  .wert { display: grid; grid-template-columns: 1fr auto 17mm; column-gap: 3mm; align-items: baseline; padding: 0.75mm 0; border-bottom: 0.5pt solid var(--linie); break-inside: avoid; }
+  .wert .name { font-weight: 500; line-height: 1.25; }
+  .wert .name small { display: block; color: var(--text-sehr-leise); font-size: 7.5pt; font-weight: 400; }
+  .wert .prozent { font: 600 12pt var(--titel); text-align: right; }
+  .wert .prozent.ohne { font: 500 9pt var(--schrift); color: var(--text); }
+  .wert .rechts { text-align: right; font-size: 8.5pt; }
+  .wert .rechts small { display: block; color: var(--text-sehr-leise); font-size: 7.5pt; font-weight: 400; }
+  .lesehilfe { display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 4mm; margin-top: 3mm; padding: 2mm 4mm; border-radius: 10px; background: var(--feld); color: var(--text-leise); font-size: 8pt; }
+  .lesehilfe b { display: block; color: var(--text); font-weight: 600; }
+
+  /* Netz */
+  .n-ring { fill: none; stroke: var(--linie); stroke-width: 0.8; }
+  .n-ring-90 { fill: none; stroke: var(--erfuellt); stroke-width: 1; stroke-dasharray: 2 3; }
+  .n-gesund { fill: none; stroke: var(--seite-gesund); stroke-width: 1.5; stroke-dasharray: 6 4; }
+  .n-flaeche { fill: rgb(29 113 184 / 0.14); stroke: var(--seite-betroffen); stroke-width: 2; }
+  .n-vorige { fill: #fff; stroke: var(--text-sehr-leise); stroke-width: 1.2; }
+  .n-text { fill: var(--text); font: 500 11px var(--schrift); }
+  .n-ringtext { fill: var(--text-sehr-leise); font: 500 8.5px var(--schrift); }
+
+  /* Diagrammtexte */
+  .d-text { fill: var(--text-leise); font: 500 10.5px var(--schrift); }
+  .d-text-stark { fill: var(--text); font: 500 11.5px var(--schrift); }
+  .d-raster { stroke: var(--linie); stroke-width: 0.7; }
+
+  @page { size: A4; margin: 0; }
+  @media print {
+    body { background: #fff; }
+    .steuerung, .marke-muster, .seitenmarke { display: none !important; }
+    .blatt { width: auto; margin: 0; box-shadow: none; }
+    .blatt + .blatt, .marke-muster + .blatt { break-before: page; }
+    [hidden] { display: none !important; }
+  }
+  @media screen and (max-width: 820px) {
+    .blatt { width: auto; margin: 0 8px 16px; padding: 16px; }
+    .steuerung, .marke-muster { margin-left: 8px; margin-right: 8px; }
+    .abschnitt, .unterabschnitt { grid-template-columns: 1fr; row-gap: 2mm; }
+    .stand, .fehlt, .diagramme, .pat-mitte, .werte-raster, .stamm, .lesehilfe { grid-template-columns: 1fr; }
+    .rand { flex-wrap: wrap; }
+    .rand p { margin-left: 0; text-align: left; }
+    .kern { grid-template-columns: 1fr; }
+    .kern > div + div, .stand > div + div { border-left: 0; border-top: 0.75pt solid var(--linie-stark); }
+  }
+</style>
+</head>
+<body>
+<!-- Symbole: Strich 1,6 wie in der App-Seitenleiste -->
+<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+  <symbol id="i-datum" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2" /><path d="M3.5 10h17M8 3v4M16 3v4" /></symbol>
+  <symbol id="i-phase" viewBox="0 0 24 24"><path d="M3 19h5v-5h5V9h5V4h3" /></symbol>
+  <symbol id="i-zeit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></symbol>
+  <symbol id="i-seite" viewBox="0 0 24 24"><path d="M10 3c0 4 1 6 1 9s-2 5-2 8M14 3c0 4 1 6 1 9s-1 5 1 8" /><circle cx="12" cy="12" r="1.6" /></symbol>
+  <symbol id="i-graft" viewBox="0 0 24 24"><path d="M6 18 18 6" /><circle cx="6" cy="18" r="2.2" /><circle cx="18" cy="6" r="2.2" /></symbol>
+  <symbol id="i-liste" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11" /><path d="m3.5 6 1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17" /></symbol>
+  <symbol id="i-kreis" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M8 12h8" /></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M12 11v5M12 8h.01" /></symbol>
+</svg>
+
+<div class="steuerung">
+  <h1>Muster: Berichte neu</h1>
+  <p>Statische Musterseite mit den Werten von DEMO-1990 (Endtestung 25.10.2026, Entwurf), abgeschrieben aus dem heutigen Bericht. Keine neuen Werte, Ziele oder Bewertungen – nur Anordnung, Schrift und Diagramme. Die Diagramme sind hier von Hand nachgezeichnet; in der App kommen sie aus den echten Daten.</p>
+  <p>Drucken (Strg + P) zeigt die Seitenaufteilung. Mit „Muster:“ markierte Hinweise sind nur Erklärungen und kommen nicht in den Bericht.</p>
+  <div class="pillen" role="group" aria-label="Ansicht">
+    <button type="button" data-zeige="beide" aria-pressed="true">Beide</button>
+    <button type="button" data-zeige="arzt" aria-pressed="false">Arztbericht</button>
+    <button type="button" data-zeige="pat" aria-pressed="false">Pat./Trainer-Bericht</button>
+  </div>
+</div>
+
+<!-- =================================================================== ARZTBERICHT -->
+<div data-bericht="arzt">
+<span class="marke-muster">Muster: Arztbericht – „Messprotokoll“ (Seite 1 Befund und Überblick, dann Detail, Verlauf, Anhang)</span>
+<article class="blatt" aria-label="Arztbericht">
+  <header>
+    <div class="kopfzeile">
+      <div class="kopf-marke"><img src="/logo-pzl.svg" alt="Physio Zentrum Linz" /><span>Physio Zentrum Linz</span></div>
+      <div class="kopf-art">Arztbericht Return-to-Sport <span class="entwurf">ENTWURF – Testung nicht abgeschlossen</span></div>
+    </div>
+    <div class="titelzeile"><h1>DEMO-1990</h1><span>Endtestung nach VKB-Verletzung</span></div>
+    <dl class="kontext">
+      <div><svg><use href="#i-datum" /></svg><dt>Datum der Testung</dt><dd>25.10.2026</dd></div>
+      <div><svg><use href="#i-phase" /></svg><dt>Phase</dt><dd>Return to Competition (&gt; 9 Monate)</dd></div>
+      <div><svg><use href="#i-zeit" /></svg><dt>Zeit bis zur Testung</dt><dd>11 Monate</dd></div>
+      <div><svg><use href="#i-seite" /></svg><dt>Betroffene Seite</dt><dd>links</dd></div>
+      <div><svg><use href="#i-graft" /></svg><dt>Graft</dt><dd>Hamstring (ST/G)</dd></div>
+    </dl>
+  </header>
+
+  <!-- 1 Befund -->
+  <section class="abschnitt">
+    <div class="rand"><span class="nr">1</span><h2>RTS-Vorschlag und Entscheidung</h2><p>Grau hinterlegt = Einschätzung. Messwerte ab Abschnitt 2.</p></div>
+    <div class="tafel beurteilung">
+      <div class="stand">
+        <div><span class="beurteilung-label">Pflicht-Tests</span><strong class="gross">12 <small>von</small> 13 <small>erfüllt</small></strong><span class="leise">1 nicht erfüllt</span></div>
+        <div><span class="beurteilung-label">Vorschlag der App</span><strong>Kriterien (noch) nicht erfüllt</strong></div>
+        <div><span class="beurteilung-label">Beurteilung der Therapeut:in</span><strong class="schwach" style="font-family: var(--schrift); font-size: 9.5pt">noch offen (Testung nicht abgeschlossen)</strong></div>
+      </div>
+    </div>
+    <div class="fehlt">
+      <div class="tafel tafel-innen">
+        <h3 class="tafel-titel"><svg><use href="#i-liste" /></svg>Was fehlt noch?</h3>
+        <ul><li><span class="bew gelb">~</span> SL-Drop-Jump: LSI Sprunghöhe 89,7 % – Ziel ≥ 90 %</li></ul>
+      </div>
+      <div class="tafel tafel-innen">
+        <h3 class="tafel-titel leise"><svg><use href="#i-kreis" /></svg>Wünschenswert, nicht erreicht (blockiert nicht)</h3>
+        <ul class="leise">
+          <li><span class="bew rot">✗</span> SL-CMJ: Net Impulse relativ (betroffen) 1,13 Ns/kg – Ziel &gt; 1,8 Ns/kg</li>
+          <li><span class="bew gelb">~</span> SL Calf Raise: LSI 86,7 % – Ziel ≥ 90 %</li>
+        </ul>
+      </div>
+    </div>
+    <p class="warnung">⚠ ACL-RSI 52 Punkte – unter 55 (psychologische Bereitschaft prüfen) – blockiert den Vorschlag nicht.</p>
+    <p class="freigabe">Ersetzt keine ärztliche Freigabe.</p>
+  </section>
+
+  <!-- 2 LSI-Übersicht -->
+  <section class="abschnitt">
+    <div class="rand"><span class="nr">2</span><h2>Seitenvergleich auf einen Blick</h2><p>LSI = betroffen / gesund × 100 (6 m Hop umgekehrt). Ohne LSI: Klinik, CMJ-Asymmetrie, IMTP, Fragebögen – siehe 4.</p></div>
+    <figure class="tafel tafel-innen">
+      <svg id="lsi-uebersicht" role="img" aria-label="LSI je Test, aktuelle und vorige Testung"></svg>
+      <div class="legende">
+        <span><i style="background: var(--korridor)"></i>Korridor 90–110 %</span>
+        <span>● aktuelle Testung, Farbe = Ampel ✓ ~ ✗</span>
+        <span>○ vorige Testung 02.05.2026</span>
+        <span>W = wünschenswert (blockiert nicht)</span>
+      </div>
+    </figure>
+  </section>
+
+  <!-- 3 Stammdaten -->
+  <section class="abschnitt">
+    <div class="rand"><span class="nr">3</span><h2>Stammdaten</h2></div>
+    <dl class="stamm">
+      <div><dt>OP-Datum</dt><dd>27.10.2025</dd></div>
+      <div><dt>Geschlecht</dt><dd>männlich</dd></div>
+      <div><dt>Geburtsjahr</dt><dd>2001</dd></div>
+      <div><dt>Körpergewicht</dt><dd>78 kg</dd></div>
+      <div><dt>Beinlänge</dt><dd>94 cm</dd></div>
+      <div><dt>Begleit-OP</dt><dd>Meniskus</dd></div>
+      <div><dt>Sportart</dt><dd>Fußball</dd></div>
+      <div><dt>Niveau</dt><dd>Wettkampf</dd></div>
+      <div class="breit"><dt>Phase</dt><dd>Return to Competition (&gt; 9 Monate)</dd></div>
+      <div class="breit"><dt>Tegner vor Verletzung</dt><dd>9 – Wettkampf untere Ligen: Fußball, Eishockey, Ringen, Turnen</dd></div>
+      <div class="breit"><dt>Tegner aktuell</dt><dd>7 – Wettkampf: Tennis, Laufen, Handball, Basketball; Freizeit: Fußball, Eishockey</dd></div>
+    </dl>
+  </section>
+  <p class="seitenmarke">Muster: Seitenende 1</p>
+
+  <!-- 4 Messergebnisse -->
+  <section class="abschnitt lang seitenwechsel">
+    <div class="rand"><span class="nr">4</span><h2>Ergebnisse</h2><p>Schwellen der Phase Return to Competition (&gt; 9 Monate). Ampel: ✓ erfüllt · ~ knapp · ✗ nicht erfüllt. Ohne Zusatz = Pflicht.</p></div>
+    <div>
+      <div class="tafel tafel-lang"><table class="mess ergebnis"><colgroup><col style="width: 36%" /><col style="width: 11%" /><col style="width: 11%" /><col style="width: 14%" /><col style="width: 12%" /><col style="width: 16%" /></colgroup>
+        <thead><tr><th>Test / Kriterium</th><th class="zahl">gesund</th><th class="zahl">betroffen</th><th class="zahl">Wert</th><th class="zahl">Ziel</th><th>Bewertung</th></tr></thead>
+        <tbody id="mess-koerper"></tbody>
+      </table></div>
+      <p class="klein leise" style="margin-top: 2mm">Meloq-Werte vom gewerteten Versuch (größte Sprunghöhe); O = Output, D = Driver, S = Strategy – ohne Ampel. Exzentrischer Bremsimpuls (eccentric deceleration impulse) wird von Meloq nicht angezeigt – die Read-Schwellen dazu entfallen.</p>
+      <ol class="klein leise" style="margin: 2mm 0 0; padding-left: 4mm">
+        <li>Aspetar S. 12; Read S. 59 (keine/minimale Schwellung)</li><li>Aspetar S. 12; Read S. 59</li><li>Read S. 59</li><li>Read S. 13; Handbook S. 22</li><li>Aspetar S. 39</li><li>Aspetar S. 39; Handbook S. 21</li><li>Read S. 59; Handbook S. 17</li><li>Handbook S. 20</li><li>Normdaten-Report (VALD)</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 5 Verlauf -->
+  <section class="abschnitt lang seitenwechsel">
+    <div class="rand"><span class="nr">5</span><h2>Verlauf</h2><p>✓ ~ ✗ nach dem Ziel der Phase der jeweiligen Testung. Veränderung = rohe Differenz zur vorigen Testung mit Wert (Pkt. = Prozentpunkte), ohne Angabe zum Messfehler.</p></div>
+    <div>
+      <div class="tafel tafel-lang"><table class="verlauf">
+        <thead><tr><th>Pflicht-Test <small>Kriterium</small></th><th class="zahl">01.02.2026<small>Mitte</small></th><th class="zahl">02.05.2026<small>Spät</small></th><th class="zahl">25.10.2026<small>&gt; 9 Mo</small></th><th class="zahl">Veränderung<small>zur vorigen Testung</small></th></tr></thead>
+        <tbody id="verlauf-koerper"></tbody>
+      </table></div>
+      <p class="klein leise" style="margin-top: 1.5mm">b = betroffen, g = gesund (Kraft in N/kg). <span class="fn" style="vertical-align: 0">†</span> Ziel dieser Phase: &lt; 13,4 % (aktuell &lt; 10 %).</p>
+      <div class="diagramme">
+        <figure class="tafel"><h3>Knie-Extension (HHD) <span>– Kraft relativ, N/kg</span></h3><svg id="d-kraft" role="img" aria-label="Verlauf Kraft relativ"></svg>
+          <div class="legende"><span><i style="border-top: 2px dashed var(--seite-gesund); height: 0"></i>gesund</span><span><i style="border-top: 2.5px solid var(--seite-betroffen); height: 0"></i>betroffen</span><span><i style="background: var(--korridor)"></i>Ziel über 5,5 / 7 / 7,5 N/kg (je Phase)</span></div></figure>
+        <figure class="tafel"><h3>Knie-Extension (HHD) <span>– LSI, %</span></h3><svg id="d-lsi" role="img" aria-label="Verlauf LSI"></svg>
+          <div class="legende"><span><i style="border-top: 2.5px solid var(--seite-betroffen); height: 0"></i>LSI (betroffen zu gesund)</span><span><i style="background: var(--korridor)"></i>Ziel ab 90 % (bis 110 % markiert)</span></div></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 Unterschrift -->
+  <section class="abschnitt">
+    <div class="rand"><span class="nr">6</span><h2>Bestätigung</h2></div>
+    <div class="unterschrift"><div>Ort, Datum</div><div>Unterschrift Therapeut:in</div></div>
+  </section>
+
+  <!-- Anhang -->
+  <section class="abschnitt lang seitenwechsel">
+    <div class="rand"><span class="nr">A</span><h2>Methodik und Definitionen</h2></div>
+    <dl class="methodik">
+      <dt>Ablauf</dt><dd>Allgemein: Gesundes Bein zuerst, 1 Probeversuch, 3 Messversuche, 30–60 s Pause (Read S. 32). Knie-Extension (HHD): Sitzend, Dynamometer distal am Unterschenkel, mit Gurt, isometrisch 3–5 s … <em>(alle Protokolle wie heute)</em></dd>
+      <dt>Gewerteter Versuch</dt><dd>Bestwert aus bis zu 3 Versuchen je Seite (6 m Hop: schnellster). Kraftmessplatte: der Versuch mit der größten Sprunghöhe zählt mit allen seinen Werten.</dd>
+      <dt>LSI</dt><dd>betroffen / gesund × 100 (6 m Hop: gesund / betroffen × 100). Bewertung: ✓ ab 90 %, ~ 80–unter 90 %, ✗ unter 80 % (PZL-Festlegung F22).</dd>
+      <dt>Asymmetrie</dt><dd>wie Meloq: (stärker − schwächer) / stärker × 100. Die Formel kennt keine Richtung, darum steht beim Wert, welche Seite schwächer ist. Sie ist nicht dasselbe wie 100 − LSI.</dd>
+      <dt>Relative Werte</dt><dd>N/kg = Kraft in kg × 9,81 / Körpergewicht · Ns/kg = Impuls in kg·s × 9,81 / Körpergewicht · Nm/kg = Kraft in N × Hebelarm in m / Körpergewicht.</dd>
+      <dt>Rundung</dt><dd>Bewertet wird die angezeigte, gerundete Zahl (89,96 % → 90,0 % → ✓).</dd>
+      <dt>Streuung</dt><dd>Variationskoeffizient (CV) = Standardabweichung der Versuche / Mittelwert × 100, ab 2 Versuchen. Über 10 % (Read S. 32) ist der Wert mit Vorsicht zu interpretieren.</dd>
+      <dt>Schwellen</dt><dd>Je Phase nach Read (S. 59) … <em>(Text wie heute)</em></dd>
+      <dt>Sprunghöhe · Vergleichswerte · RTS-Vorschlag · Quellen</dt><dd><em>Texte wie heute, nur zweispaltig gesetzt.</em></dd>
+    </dl>
+  </section>
+  <section class="abschnitt">
+    <div class="rand"><span class="nr">B</span><h2>Rohdaten</h2><p>Fett = gewerteter Versuch. CV mit „!“ = über 10 % (Read S. 32).</p></div>
+    <div class="tafel tafel-lang"><table class="mess">
+      <thead><tr><th>Test</th><th>Seite</th><th class="zahl">Versuch 1</th><th class="zahl">Versuch 2</th><th class="zahl">Versuch 3</th><th class="zahl">CV</th></tr></thead>
+      <tbody id="roh-koerper"></tbody>
+    </table></div>
+  </section>
+
+  <p class="fuss">Dokumentations- und Rechenhilfe – ersetzt keine ärztliche Freigabe.</p>
+</article>
+</div>
+
+<!-- =================================================================== PAT./TRAINER -->
+<div data-bericht="pat">
+<span class="marke-muster">Muster: Pat./Trainer-Bericht – „Ergebnisblatt“ (1 Seite)</span>
+<article class="blatt pat" aria-label="Pat./Trainer-Bericht">
+  <header>
+    <div class="kopfzeile">
+      <div class="kopf-marke"><img src="/logo-pzl.svg" alt="Physio Zentrum Linz" /><span>Physio Zentrum Linz</span></div>
+      <div class="kopf-art">Bericht für Pat. und Trainer:in <span class="entwurf">ENTWURF – Testung nicht abgeschlossen</span></div>
+    </div>
+    <div class="titelzeile"><h1>DEMO-1990</h1><span>Endtestung · Return to Competition (&gt; 9 Monate) · 25.10.2026</span></div>
+  </header>
+
+  <div class="kern">
+    <div>
+      <p class="label">Schon erreicht:</p>
+      <p class="zahlwort"><b>12 von 13</b><span>Pflicht-Zielen</span></p>
+    </div>
+    <div>
+      <p class="label">Kniebefund (Schwellung, Beweglichkeit, Bein heben):</p>
+      <p class="klinik">in Ordnung</p>
+    </div>
+  </div>
+
+  <div class="pat-mitte">
+    <section>
+      <h2>Seitenvergleich</h2>
+      <figure>
+        <svg id="netz" role="img" aria-label="Spinnennetz: betroffenes Bein in Prozent des gesunden"></svg>
+        <div class="legende">
+          <span><i style="border-top: 2px dashed var(--seite-gesund); height: 0"></i>gesundes Bein = 100 %</span>
+          <span><i style="border: 2px solid var(--seite-betroffen); background: rgb(29 113 184 / 0.14)"></i>betroffenes Bein</span>
+          <span><i style="border-top: 2px dotted var(--erfuellt); height: 0"></i>Ziel 90 %</span>
+          <span>○ zuvor (02.05.2026)</span>
+        </div>
+      </figure>
+    </section>
+    <section class="pat-rechts">
+      <div class="tafel tafel-innen">
+        <h2 class="tafel-titel" style="font: 600 10pt var(--titel)"><svg><use href="#i-liste" /></svg>Was fehlt noch?</h2>
+        <div class="pat-fehlt"><b>Niedersprung einbeinig (Höhe)</b>das betroffene Bein schafft 89,7 % des gesunden – Ziel: mindestens 90 %</div>
+      </div>
+      <div class="tafel tafel-innen pat-hinweis">
+        <h3 class="tafel-titel" style="color: var(--text)"><svg><use href="#i-info" /></svg>Vertrauen ins Knie</h3>
+        Der Fragebogen zeigt noch Unsicherheit oder Sorge vor einer neuen Verletzung – das ist normal und wird in der Therapie besprochen.
+      </div>
+      <div class="tafel tafel-innen einschaetzung">
+        <span class="beurteilung-label">Ergebnis der Testung (Beurteilung der Therapeut:in)</span>
+        <span class="leise">Muster: Dieser Kasten erscheint erst bei abgeschlossener Endtestung – mit „Ersetzt keine ärztliche Freigabe – die Rückkehr in den Sport besprechen Sie bitte mit Ihrer Ärztin / Ihrem Arzt.“</span>
+      </div>
+    </section>
+  </div>
+
+  <section class="werte">
+    <div class="werte-kopf"><h2>Ihre Werte</h2><p>betroffenes Bein in % vom gesunden · zuvor = Testung vom 02.05.2026</p></div>
+    <div class="werte-raster" id="werte"></div>
+  </section>
+
+  <div class="lesehilfe">
+    <div><b>100 %</b>so viel wie das gesunde Bein</div>
+    <div><b>Ziel</b>meist mindestens 90 %</div>
+    <div><b>✓ ~ ✗</b>erfüllt · knapp · nicht erfüllt</div>
+    <div><b>zuvor</b>letzte Testung (02.05.2026)</div>
+  </div>
+  <p class="fuss">Dokumentations- und Rechenhilfe – ersetzt keine ärztliche Freigabe.</p>
+</article>
+</div>
+
+<script>
+  const NS = 'http://www.w3.org/2000/svg'
+  const el = (name, attrs = {}, text) => { const e = document.createElementNS(NS, name); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text !== undefined) e.textContent = text; return e }
+  const z = (v, d = 1) => v.toLocaleString('de-AT', { maximumFractionDigits: d })
+  const ampel = (v) => (v >= 90 ? 'gruen' : v >= 80 ? 'gelb' : 'rot')
+  const ZEICHEN = { gruen: '✓', gelb: '~', rot: '✗' }
+  const FARBE = { gruen: 'var(--a-gruen)', gelb: 'var(--a-gelb)', rot: 'var(--a-rot)' }
+  const WORT = { gruen: 'erfüllt', gelb: 'knapp', rot: 'nicht erfüllt' }
+
+  /* ---------- 2 LSI-Übersicht: Werte aus dem heutigen Bericht ---------- */
+  const LSI = [
+    ['Knie-Extension (HHD)', 93.9, 83.3, false],
+    ['Knie-Flexion (HHD)', 90.3, 85.7, false],
+    ['Hüft-Abduktion (HHD)', 90.9, null, true],
+    ['SL-CMJ – Sprunghöhe', 90.7, 80.0, false],
+    ['SL-Drop-Jump – Sprunghöhe', 89.7, null, false],
+    ['Single Hop', 92.1, 84.4, false],
+    ['Triple Hop', 92.7, 85.1, false],
+    ['Crossover Hop', 90.5, 85.4, false],
+    ['6 m Hop auf Zeit', 92.1, 84.3, false],
+    ['SL Bridge', 96.4, 81.5, true],
+    ['SL Calf Raise', 86.7, 73.3, true],
+    ['SL Sit-to-Stand', 90.9, 80.0, true],
+  ]
+  ;(function () {
+    const svg = document.getElementById('lsi-uebersicht')
+    const B = 600, zeile = 17, oben = 20, H = oben + LSI.length * zeile + 6
+    const x0 = 170, x1 = 440, lo = 60, hi = 120
+    const x = (v) => x0 + ((Math.min(Math.max(v, lo), hi) - lo) / (hi - lo)) * (x1 - x0)
+    svg.setAttribute('viewBox', `0 0 ${B} ${H}`)
+    svg.append(el('rect', { x: x(90), y: oben - 4, width: x(110) - x(90), height: H - oben, fill: 'var(--korridor)' }))
+    for (const t of [60, 70, 80, 90, 100, 110, 120]) {
+      svg.append(el('line', { x1: x(t), x2: x(t), y1: oben - 4, y2: H - 2, class: 'd-raster', 'stroke-dasharray': t === 100 ? '3 3' : null || '' }))
+      svg.append(el('text', { x: x(t), y: 11, 'text-anchor': 'middle', class: 'd-text' }, `${t} %`))
+    }
+    svg.append(el('text', { x: 478, y: 11, 'text-anchor': 'end', class: 'd-text' }, 'LSI'))
+    svg.append(el('text', { x: 540, y: 11, 'text-anchor': 'end', class: 'd-text' }, 'zuvor'))
+    LSI.forEach(([name, v, vor, w], i) => {
+      const y = oben + i * zeile + zeile / 2
+      if (i % 2 === 0) svg.prepend(el('rect', { x: 0, y: y - zeile / 2, width: B, height: zeile, fill: '#fafbfc' }))
+      const a = ampel(v)
+      svg.append(el('text', { x: 0, y: y + 3.5, class: 'd-text-stark' }, name))
+      if (w) svg.append(el('text', { x: x0 - 8, y: y + 3.5, 'text-anchor': 'end', class: 'd-text' }, 'W'))
+      if (vor !== null) {
+        svg.append(el('line', { x1: x(vor), x2: x(v), y1: y, y2: y, stroke: 'var(--linie-stark)', 'stroke-width': 1.5 }))
+        svg.append(el('circle', { cx: x(vor), cy: y, r: 3.2, fill: '#fff', stroke: 'var(--text-sehr-leise)', 'stroke-width': 1.2 }))
+      }
+      svg.append(el('circle', { cx: x(v), cy: y, r: 4.6, fill: FARBE[a] }))
+      svg.append(el('text', { x: 478, y: y + 3.5, 'text-anchor': 'end', class: 'd-text-stark', 'font-weight': 600 }, `${z(v)} %`))
+      svg.append(el('text', { x: 540, y: y + 3.5, 'text-anchor': 'end', class: 'd-text' }, vor === null ? '–' : `${z(vor)} %`))
+      svg.append(el('text', { x: 556, y: y + 3.5, fill: FARBE[a], 'font-weight': 700, style: 'font: 600 10.5px Barlow' }, `${ZEICHEN[a]} ${a === 'gruen' ? '' : WORT[a]}`))
+    })
+  })()
+
+  /* ---------- 4 Ergebnisse ---------- */
+  const B_ = (a) => a ? `<span class="chip ${a}">${ZEICHEN[a]} ${WORT[a]}</span>` : '<span class="chip offen">Info (ohne Ampel)</span>'
+  const MESS = [
+    ['block', 'Klinik'],
+    ['test', 'Erguss (Stroke-Test)'], ['krit', 'Stroke-Test', '', '0', '0 / Spur', 1, 'gruen'],
+    ['test', 'Extension (ROM)'], ['krit', 'Extensionsdefizit', '', '0 °', '≤ 0 °', 2, 'gruen'],
+    ['test', 'Flexion (ROM)', '140 °', '136 °'], ['krit', 'Flexion', '', '136 °', '> 130 °', 3, 'gruen'], ['krit', 'Flexion zur Gegenseite', '', '97,1 %', '≥ 95 %', 4, 'gruen'],
+    ['test', 'SLR (Extensionslag)'], ['krit', 'kein Extensionslag', '', 'ja', 'ja', 3, 'gruen'],
+    ['block', 'Handdynamometer (HHD)'],
+    ['test', 'Knie-Extension (HHD)', '8,3 N/kg<br><span class="sehr-leise klein">66 kg</span>', '7,8 N/kg<br><span class="sehr-leise klein">62 kg</span>', 'Winkel 60° · Eingabe in kg'],
+    ['krit', 'Kraft relativ', '', '7,8 N/kg', '> 7,5 N/kg', 3, 'gruen'], ['krit', 'LSI', '', '93,9 %', '≥ 90 %', 3, 'gruen'],
+    ['test', 'Knie-Flexion (HHD)', '3,9 N/kg<br><span class="sehr-leise klein">31 kg</span>', '3,5 N/kg<br><span class="sehr-leise klein">28 kg</span>', 'Winkel 90° (Standard) · Eingabe in kg'],
+    ['krit', 'Kraft relativ', '', '3,5 N/kg', '> 2,8 N/kg', 3, 'gruen'], ['krit', 'LSI', '', '90,3 %', '≥ 90 %', 3, 'gruen'],
+    ['unter', 'H/Q-Quotient (Flexion 90° / Extension 60°, aus Kraft – gleicher Hebelarm angenommen, grobe Orientierung): gesund 47 % · betroffen 45 % – nur Info. Typisch um 60 %; auf der betroffenen Seite durch schwachen Quadrizeps oft zu hoch (Read S. 26).'],
+    ['test', 'Hüft-Abduktion (HHD)', '2,8 N/kg<br><span class="sehr-leise klein">22 kg</span>', '2,5 N/kg<br><span class="sehr-leise klein">20 kg</span>', 'Eingabe in kg'],
+    ['krit', 'LSI <span class="tag">wünschenswert</span>', '', '90,9 %', '≥ 90 %', 5, 'gruen'],
+    ['block', 'Kraftmessplatten'],
+    ['test', 'CMJ', '', '<span class="leise schwach">beidbeinig</span>'],
+    ['krit', 'Net-Impulse-Asymmetrie', '', '7,7 %<br><span class="sehr-leise klein">betroffene Seite stärker</span>', '< 10 %', 3, 'gruen'],
+    ['krit', 'Sprunghöhe <span class="tag">wünschenswert</span>', '', '34,6 cm', '> 33,9 cm', 3, 'gruen'],
+    ['krit', 'Net Impulse relativ <span class="tag">wünschenswert</span>', '', '3,77 Ns/kg', '> 2,6 Ns/kg', 3, 'gruen'],
+    ['meloq', 'S', 'Contraction Time', '790 ms', '–'], ['meloq', 'O', 'Flugzeit', '531 ms', '–'],
+    ['meloq', 'D', 'Peak Force (Propulsion)', 'L (betroffen) 98 · R 92 kg (12,3 / 11,6 N/kg)', 'Asymmetrie 6,1 % – betroffene Seite stärker'],
+    ['meloq', 'D', 'Peak Power (Propulsion)', 'L (betroffen) 2 350 · R 2 180 W (30,1 / 27,9 W/kg)', 'Asymmetrie 7,2 % – betroffene Seite stärker'],
+    ['norm', 'Typisch nach VKB-OP (12 Mo, männlich 20–30): Sprunghöhe 30,7 cm (±1 SD 26,1–35,3) · Vergleich ohne Verletzung – Sprunghöhe 34,5 cm (±1 SD 30,5–38,5)'],
+    ['test', 'SL-CMJ', '20,5 cm', '18,6 cm'],
+    ['krit', 'Sprunghöhe', '', '18,6 cm', '> 18 cm', 3, 'gruen'], ['krit', 'LSI Sprunghöhe', '', '90,7 %', '≥ 90 %', 3, 'gruen'],
+    ['krit', 'Net-Impulse-Asymmetrie <span class="tag">wünschenswert</span>', '', '8,2 %<br><span class="sehr-leise klein">betroffene Seite schwächer</span>', '< 20 %', 3, 'gruen'],
+    ['krit', 'Net Impulse relativ (betroffen) <span class="tag">wünschenswert</span>', '', '1,13 Ns/kg', '> 1,8 Ns/kg', 3, 'rot'],
+    ['meloq', 'S', 'Contraction Time', 'gesund 650 · betroffen 690 ms', 'betroffen 6,2 % länger'],
+    ['test', 'SL-Drop-Jump', '19,5 cm', '17,5 cm', 'Box 30 cm'],
+    ['krit', 'Sprunghöhe', '', '17,5 cm', '> 17 cm', 3, 'gruen'], ['krit', 'LSI Sprunghöhe', '', '89,7 %', '≥ 90 %', 3, 'gelb'],
+    ['krit', 'RSI <span class="tag">Info</span>', '', '0,48', '> 0,57', 3, null],
+    ['meloq', 'S', 'Kontaktzeit', 'gesund 300 · betroffen 340 ms', 'betroffen 13,3 % länger'],
+    ['norm', 'Typisch nach VKB-OP (12 Mo, männlich 20–30): Sprunghöhe betroffen 14 cm · gesund 16 cm · RSI betroffen 0,37 · gesund 0,46 – Normdaten mit 15-cm-Box (PZL-Standard 30 cm) – nur eingeschränkt vergleichbar.'],
+    ['test', 'IMTP', '', '<span class="leise schwach">beidbeinig</span>', 'Eingabe in kg'],
+    ['krit', 'Peak Force relativ <span class="tag">wünschenswert</span>', '', '37,7 N/kg', '> 37 N/kg', 3, 'gruen'],
+    ['block', 'Hops (Maßband/Stoppuhr)'],
+    ['test', 'Single Hop', '165 cm', '152 cm'], ['krit', 'LSI', '', '92,1 %', '≥ 90 %', 6, 'gruen'], ['unter', 'In % der Beinlänge (94 cm): gesund 176 % · betroffen 162 % – nur Info, ohne Bewertung'],
+    ['test', 'Triple Hop', '480 cm', '445 cm'], ['krit', 'LSI', '', '92,7 %', '≥ 90 %', 6, 'gruen'], ['unter', 'In % der Beinlänge (94 cm): gesund 511 % · betroffen 473 % – nur Info, ohne Bewertung'],
+    ['test', 'Crossover Hop', '420 cm', '380 cm'], ['krit', 'LSI', '', '90,5 %', '≥ 90 %', 6, 'gruen'], ['unter', 'In % der Beinlänge (94 cm): gesund 447 % · betroffen 404 % – nur Info, ohne Bewertung'],
+    ['test', '6 m Hop auf Zeit', '2,1 s', '2,28 s'], ['krit', 'LSI', '', '92,1 %', '≥ 90 %', 6, 'gruen'],
+    ['block', 'Kraftausdauer'],
+    ['test', 'SL Bridge', '28 Wdh.', '27 Wdh.'], ['krit', 'Wiederholungen (betroffen) <span class="tag">wünschenswert</span>', '', '27 Wdh.', '> 25 Wdh.', 7, 'gruen'], ['krit', 'LSI <span class="tag">wünschenswert</span>', '', '96,4 %', '≥ 90 %', 3, 'gruen'],
+    ['test', 'SL Calf Raise', '30 Wdh.', '26 Wdh.'], ['krit', 'Wiederholungen (betroffen) <span class="tag">wünschenswert</span>', '', '26 Wdh.', '> 25 Wdh.', 7, 'gruen'], ['krit', 'LSI <span class="tag">wünschenswert</span>', '', '86,7 %', '≥ 90 %', 3, 'gelb'],
+    ['test', 'SL Sit-to-Stand', '22 Wdh.', '20 Wdh.'], ['krit', 'Wiederholungen (betroffen) <span class="tag">wünschenswert</span>', '', '20 Wdh.', '≥ 15 Wdh.', 3, 'gruen'], ['krit', 'LSI <span class="tag">wünschenswert</span>', '', '90,9 %', '≥ 90 %', 3, 'gruen'],
+    ['block', 'Fragebögen (PROM)'],
+    ['test', 'ACL-RSI'], ['krit', 'Score <span class="tag">Warnung</span>', '', '52 Punkte', '≥ 55 Punkte', 8, 'warn'], ['unter', 'Score unter 55 – Warnung (blockiert nicht)'],
+    ['test', 'IKDC'], ['krit', 'Score <span class="tag">Info</span>', '', '86,2 Punkte', '–', 9, null],
+    ['test', 'KOOS'], ['krit', 'Subskalen <span class="tag">Info</span>', '', '–', '–', null, null], ['unter', 'Symptome 89,3 · Schmerz 94,4 · Alltag (ADL) 98,5 · Sport/Freizeit 80 · Lebensqualität 68,8'],
+  ]
+  ;(function () {
+    const tb = document.getElementById('mess-koerper')
+    let html = ''
+    for (const r of MESS) {
+      if (r[0] === 'block') html += `<tr class="block"><td colspan="6">${r[1]}</td></tr>`
+      if (r[0] === 'test') html += `<tr class="test"><th scope="row">${r[1]}${r[4] ? `<span class="protokoll">Protokoll: ${r[4]}</span>` : ''}</th><td class="zahl spalte-g">${r[2] ?? ''}</td><td class="zahl spalte-b">${r[3] ?? ''}</td><td colspan="3"></td></tr>`
+      if (r[0] === 'krit') {
+        const bew = r[6] === 'warn' ? '<span class="chip gelb">~ Warnung</span>' : B_(r[6])
+        html += `<tr class="krit"><td colspan="3">${r[1]}</td><td class="zahl">${r[3]}</td><td class="zahl">${r[4]}${r[5] ? `<span class="fn">${r[5]}</span>` : ''}</td><td>${bew}</td></tr>`
+      }
+      if (r[0] === 'meloq') html += `<tr class="meloq"><td><span class="ods">${r[1]}</span>${r[2]}</td><td colspan="3" style="text-align: right">${r[3]}</td><td colspan="2">${r[4]}</td></tr>`
+      if (r[0] === 'unter') html += `<tr class="unter"><td colspan="6">${r[1]}</td></tr>`
+      if (r[0] === 'norm') html += `<tr class="unter norm"><td colspan="6">${r[1]}</td></tr>`
+    }
+    tb.innerHTML = html
+  })()
+
+  /* ---------- 5 Verlauf ---------- */
+  const V = (w, a, bg) => w === '–' ? '<span class="sehr-leise">–</span>' : `<b>${w}</b> <span class="bew ${a}">${ZEICHEN[a]}</span>${bg ? `<span class="bg">${bg}</span>` : ''}`
+  const VERLAUF = [
+    ['Erguss (Stroke-Test)', '', [V('Spur', 'gruen'), V('0', 'gruen'), V('0', 'gruen')], '–'],
+    ['Extension (ROM)', 'Extensionsdefizit', [V('0 °', 'gruen'), V('0 °', 'gruen'), V('0 °', 'gruen')], '±0 °'],
+    ['Flexion (ROM)', 'Flexion zur Gegenseite', [V('89,3 %', 'rot', 'b 125 · g 140 °'), V('94,3 %', 'rot', 'b 132 · g 140 °'), V('97,1 %', 'gruen', 'b 136 · g 140 °')], '+2,8 Pkt.<span class="bg">betroffen +4 °</span>'],
+    ['SLR (Extensionslag)', 'kein Extensionslag', [V('ja', 'gruen'), V('ja', 'gruen'), V('ja', 'gruen')], '–'],
+    ['Knie-Extension (HHD)', 'LSI', [V('69,1 %', 'rot', 'b 4,9 · g 7,1'), V('83,3 %', 'gelb', 'b 6,4 · g 7,6'), V('93,9 %', 'gruen', 'b 7,8 · g 8,3')], '+10,6 Pkt.<span class="bg">betroffen +1,4 N/kg</span>'],
+    ['Knie-Flexion (HHD)', 'LSI', [V('76,9 %', 'rot', 'b 2,6 · g 3,4'), V('85,7 %', 'gelb', 'b 3,1 · g 3,6'), V('90,3 %', 'gruen', 'b 3,5 · g 3,9')], '+4,6 Pkt.<span class="bg">betroffen +0,4 N/kg</span>'],
+    ['CMJ', 'Net-Impulse-Asymmetrie', [V('19,2 %<span class="fn">†</span>', 'rot'), V('11,7 %<span class="fn">†</span>', 'gruen'), V('7,7 %', 'gruen')], '−4 Pkt.'],
+    ['SL-CMJ', 'LSI Sprunghöhe', [V('65,3 %', 'rot', 'b 9,8 · g 15 cm'), V('80,0 %', 'gelb', 'b 14,8 · g 18,5 cm'), V('90,7 %', 'gruen', 'b 18,6 · g 20,5 cm')], '+10,7 Pkt.<span class="bg">betroffen +3,8 cm</span>'],
+    ['SL-Drop-Jump', 'LSI Sprunghöhe', [V('–'), V('–'), V('89,7 %', 'gelb', 'b 17,5 · g 19,5 cm')], '–'],
+    ['Single Hop', 'LSI', [V('70,0 %', 'rot', 'b 105 · g 150 cm'), V('84,4 %', 'gelb', 'b 135 · g 160 cm'), V('92,1 %', 'gruen', 'b 152 · g 165 cm')], '+7,7 Pkt.<span class="bg">betroffen +17 cm</span>'],
+    ['Triple Hop', 'LSI', [V('–'), V('85,1 %', 'gelb', 'b 400 · g 470 cm'), V('92,7 %', 'gruen', 'b 445 · g 480 cm')], '+7,6 Pkt.<span class="bg">betroffen +45 cm</span>'],
+    ['Crossover Hop', 'LSI', [V('–'), V('85,4 %', 'gelb', 'b 350 · g 410 cm'), V('90,5 %', 'gruen', 'b 380 · g 420 cm')], '+5,1 Pkt.<span class="bg">betroffen +30 cm</span>'],
+    ['6 m Hop auf Zeit', 'LSI', [V('–'), V('84,3 %', 'gelb', 'b 2,55 · g 2,15 s'), V('92,1 %', 'gruen', 'b 2,28 · g 2,1 s')], '+7,8 Pkt.<span class="bg">betroffen −0,3 s</span>'],
+  ]
+  document.getElementById('verlauf-koerper').innerHTML = VERLAUF.map(([n, k, w, d]) => `<tr><td><b style="font-weight:600">${n}</b>${k ? `<span class="bg" style="display:block;color:var(--text-sehr-leise);font-size:7pt">${k}</span>` : ''}</td>${w.map((x) => `<td class="zahl">${x}</td>`).join('')}<td class="zahl delta">${d}</td></tr>`).join('')
+
+  /* Verlaufsdiagramme (nachgezeichnet wie LinienDiagramm: Monate seit OP, Phasen als feine Linien, Korridor) */
+  function diagramm(id, { lo, hi, ticks, korridor, gesund, betroffen, punkte }) {
+    const svg = document.getElementById(id), B = 300, H = 170, l = 26, r = 8, o = 16, u = 26
+    const x = (m) => l + (m / 13) * (B - l - r), y = (v) => o + (1 - (v - lo) / (hi - lo)) * (H - o - u)
+    svg.setAttribute('viewBox', `0 0 ${B} ${H}`)
+    for (const k of korridor) svg.append(el('rect', { x: x(k[0]), y: y(Math.min(k[3] ?? hi, hi)), width: x(k[1]) - x(k[0]), height: y(k[2]) - y(Math.min(k[3] ?? hi, hi)), fill: 'var(--korridor)' }))
+    for (const t of ticks) { svg.append(el('line', { x1: l, x2: B - r, y1: y(t), y2: y(t), class: 'd-raster' })); svg.append(el('text', { x: l - 5, y: y(t) + 3.5, 'text-anchor': 'end', class: 'd-text' }, z(t))) }
+    ;[[3, 'Mitte'], [5, 'Spät'], [8, '8–9'], [9, '> 9 Mo']].forEach(([m, n]) => { svg.append(el('line', { x1: x(m), x2: x(m), y1: o - 2, y2: H - u, stroke: 'var(--linie-stark)', 'stroke-width': 0.6 })); svg.append(el('text', { x: x(m) + 3, y: o - 5, class: 'd-text' }, n)) })
+    for (const m of [0, 3, 6, 9, 12]) svg.append(el('text', { x: x(m), y: H - u + 13, 'text-anchor': 'middle', class: 'd-text' }, m))
+    svg.append(el('text', { x: B - r, y: H - 2, 'text-anchor': 'end', class: 'd-text' }, 'Monate seit OP'))
+    const pfad = (pts) => pts.map(([m, v], i) => `${i ? 'L' : 'M'}${x(m).toFixed(1)},${y(v).toFixed(1)}`).join(' ')
+    if (gesund) { svg.append(el('path', { d: pfad(gesund), fill: 'none', stroke: 'var(--seite-gesund)', 'stroke-width': 2, 'stroke-dasharray': '5 4' })); gesund.forEach(([m, v]) => svg.append(el('circle', { cx: x(m), cy: y(v), r: 2.6, fill: '#fff', stroke: 'var(--seite-gesund)', 'stroke-width': 1.3 }))) }
+    svg.append(el('path', { d: pfad(betroffen), fill: 'none', stroke: 'var(--seite-betroffen)', 'stroke-width': 2.5 }))
+    betroffen.forEach(([m, v], i) => { const a = punkte[i]; svg.append(el('circle', { cx: x(m), cy: y(v), r: 4.2, fill: FARBE[a], stroke: '#fff', 'stroke-width': 1.2 })); svg.append(el('text', { x: x(m), y: y(v) + 15, 'text-anchor': 'middle', fill: FARBE[a], style: 'font: 600 10px Barlow' }, ZEICHEN[a])) })
+  }
+  diagramm('d-kraft', { lo: 0, hi: 10, ticks: [0, 2, 4, 6, 8, 10], korridor: [[3, 5, 5.5], [5, 9, 7], [9, 13, 7.5]], gesund: [[3.2, 7.1], [6.2, 7.6], [11.9, 8.3]], betroffen: [[3.2, 4.9], [6.2, 6.4], [11.9, 7.8]], punkte: ['rot', 'rot', 'gruen'] })
+  diagramm('d-lsi', { lo: 60, hi: 120, ticks: [60, 80, 100, 120], korridor: [[0, 13, 90, 110]], betroffen: [[3.2, 69.1], [6.2, 83.3], [11.9, 93.9]], punkte: ['rot', 'gelb', 'gruen'] })
+
+  /* ---------- Rohdaten ---------- */
+  const ROH = [
+    ['Knie-Extension (HHD)', 'kg · gewertet: Bestwert', [['gesund', '64', '<b>66</b>', '65', '1,5 %'], ['betroffen', '60', '<b>62</b>', '61', '1,6 %']]],
+    ['Knie-Flexion (HHD)', 'kg · gewertet: Bestwert', [['gesund', '30', '<b>31</b>', '30', '1,9 %'], ['betroffen', '27', '<b>28</b>', '27', '2,1 %']]],
+    ['Hüft-Abduktion (HHD)', 'kg · gewertet: Bestwert', [['gesund', '<b>22</b>', '22', '21', '2,7 %'], ['betroffen', '<b>20</b>', '20', '19', '2,9 %']]],
+    ['CMJ', 'cm · gewertet: größte Sprunghöhe', [['beidbeinig', '33,5', '<b>34,6</b>', '34', '1,6 %']]],
+    ['SL-CMJ', 'cm · gewertet: größte Sprunghöhe', [['gesund', '<b>20,5</b>', '–', '–', '–'], ['betroffen', '<b>18,6</b>', '–', '–', '–']]],
+    ['SL-Drop-Jump', 'cm · gewertet: größte Sprunghöhe', [['gesund', '<b>19,5</b>', '–', '–', '–'], ['betroffen', '<b>17,5</b>', '–', '–', '–']]],
+    ['IMTP', 'kg · gewertet: Bestwert', [['beidbeinig', '290', '<b>300</b>', '296', '1,7 %']]],
+    ['Single Hop', 'cm · gewertet: Bestwert', [['gesund', '162', '<b>165</b>', '164', '0,9 %'], ['betroffen', '150', '<b>152</b>', '149', '1 %']]],
+    ['Triple Hop', 'cm · gewertet: Bestwert', [['gesund', '475', '<b>480</b>', '–', '0,7 %'], ['betroffen', '440', '<b>445</b>', '–', '0,8 %']]],
+    ['Crossover Hop', 'cm · gewertet: Bestwert', [['gesund', '415', '<b>420</b>', '–', '0,8 %'], ['betroffen', '378', '<b>380</b>', '–', '0,4 %']]],
+    ['6 m Hop auf Zeit', 's · gewertet: schnellster Versuch', [['gesund', '2,12', '<b>2,1</b>', '–', '0,7 %'], ['betroffen', '2,3', '<b>2,28</b>', '–', '0,6 %']]],
+  ]
+  document.getElementById('roh-koerper').innerHTML = ROH.map(([n, e, zs]) => zs.map((r, i) => `<tr>${i === 0 ? `<td rowspan="${zs.length}" style="font-weight:600">${n}<span class="protokoll" style="display:block;font-weight:400;font-size:7pt;color:var(--text-sehr-leise)">${e}</span></td>` : ''}<td class="leise">${r[0]}</td>${r.slice(1).map((c) => `<td class="zahl">${c}</td>`).join('')}</tr>`).join('')).join('')
+
+  /* ---------- Pat.: Spinnennetz (Achsen, Werte aus dem heutigen Bericht) ---------- */
+  const NETZ = [['Kraft vorne', 93.9, 83.3], ['Kraft hinten', 90.3, 85.7], ['Kraft Hüfte', 90.9, null], ['Sprung einbeinig', 90.7, 80.0], ['Niedersprung', 89.7, null], ['Weitsprung', 92.1, 84.4], ['3er-Sprung', 92.7, 85.1], ['Crossover', 90.5, 85.4], ['6 m auf Zeit', 92.1, 84.3], ['Becken heben', 96.4, 81.5], ['Zehenstand', 86.7, 73.3], ['Aufstehen', 90.9, 80.0]]
+  ;(function () {
+    const svg = document.getElementById('netz'), B = 420, H = 296, M = { x: 210, y: 149 }, R = 116, MAX = 120, MIN = 50
+    svg.setAttribute('viewBox', `0 0 ${B} ${H}`)
+    const n = NETZ.length
+    const p = (i, v) => { const w = -Math.PI / 2 + (2 * Math.PI * i) / n, r = ((Math.min(Math.max(v, MIN), MAX) - MIN) / (MAX - MIN)) * R; return { x: M.x + r * Math.cos(w), y: M.y + r * Math.sin(w), c: Math.cos(w), s: Math.sin(w) } }
+    const ring = (v) => NETZ.map((_, i) => { const q = p(i, v); return `${q.x.toFixed(1)},${q.y.toFixed(1)}` }).join(' ')
+    for (const r of [50, 70, 100, 120]) svg.append(el('polygon', { points: ring(r), class: 'n-ring' }))
+    NETZ.forEach((_, i) => { const q = p(i, MAX); svg.append(el('line', { x1: M.x, y1: M.y, x2: q.x, y2: q.y, class: 'n-ring' })) })
+    svg.append(el('polygon', { points: ring(100), class: 'n-gesund' }))
+    svg.append(el('polygon', { points: ring(90), class: 'n-ring-90' }))
+    svg.append(el('polygon', { points: NETZ.map(([, v], i) => { const q = p(i, v); return `${q.x.toFixed(1)},${q.y.toFixed(1)}` }).join(' '), class: 'n-flaeche' }))
+    NETZ.forEach(([, , vor], i) => { if (vor !== null) { const q = p(i, vor); svg.append(el('circle', { cx: q.x, cy: q.y, r: 2.6, class: 'n-vorige' })) } })
+    NETZ.forEach(([, v], i) => { const q = p(i, v); svg.append(el('circle', { cx: q.x, cy: q.y, r: 4.2, fill: FARBE[ampel(v)], stroke: '#fff', 'stroke-width': 1.2 })) })
+    for (const r of [70, 100]) { const q = p(0, r); svg.append(el('text', { x: q.x + 4, y: q.y + 10, class: 'n-ringtext' }, `${r} %`)) }
+    NETZ.forEach(([name, v], i) => {
+      const q = p(i, MAX + 4), a = Math.abs(q.c) < 0.2 ? 'middle' : q.c > 0 ? 'start' : 'end', xx = q.x + q.c * 6, yy = q.y + q.s * 8 + (q.s < -0.5 ? -10 : 0)
+      svg.append(el('text', { x: xx, y: yy, 'text-anchor': a, class: 'n-text' }, name))
+      svg.append(el('text', { x: xx, y: yy + 12, 'text-anchor': a, fill: FARBE[ampel(v)], style: 'font: 600 11px Barlow' }, `${z(v)} % ${ZEICHEN[ampel(v)]}`))
+    })
+  })()
+
+  /* ---------- Pat.: Werte ---------- */
+  const W = (name, unter, wert, a, vor, ohne) => `<div class="wert"><div class="name">${name}<small>${unter}</small></div><div class="prozent${ohne ? ' ohne' : ''}">${wert}</div><div class="rechts"><span class="chip ${a}">${ZEICHEN[a]} ${WORT[a]}</span><small>${vor ? `zuvor ${vor}` : '&nbsp;'}</small></div></div>`
+  document.getElementById('werte').innerHTML = `
+    <div>
+      <div class="gruppe"><h3>Kraft</h3>
+        ${W('Kraft Oberschenkel vorne (Knie strecken)', 'gesund 66 kg · betroffen 62 kg', '93,9 %', 'gruen', '83,3 %')}
+        ${W('Kraft Oberschenkel hinten (Knie beugen)', 'gesund 31 kg · betroffen 28 kg', '90,3 %', 'gruen', '85,7 %')}
+        ${W('Kraft Hüfte seitlich', 'gesund 22 kg · betroffen 20 kg', '90,9 %', 'gruen')}
+        ${W('Maximalkraft Beine (Zug im Stand)', 'beidbeinig', '37,7 N/kg', 'gruen', null, true)}
+      </div>
+      <div class="gruppe"><h3>Kraftausdauer</h3>
+        ${W('Becken heben einbeinig', 'gesund 28 · betroffen 27 Wdh.', '96,4 %', 'gruen', '81,5 %')}
+        ${W('Zehenstand einbeinig', 'gesund 30 · betroffen 26 Wdh.', '86,7 %', 'gelb', '73,3 %')}
+        ${W('Aufstehen einbeinig', 'gesund 22 · betroffen 20 Wdh.', '90,9 %', 'gruen', '80 %')}
+      </div>
+    </div>
+    <div>
+      <div class="gruppe"><h3>Sprünge</h3>
+        ${W('Sprung beidbeinig (Höhe)', 'beidbeinig', '34,6 cm', 'gruen', null, true)}
+        ${W('Sprung beidbeinig – Verteilung auf beide Beine', 'Unterschied 7,7 % – betroffenes Bein stärker', '7,7 %', 'gruen', null, true)}
+        ${W('Sprung einbeinig (Höhe)', 'gesund 20,5 cm · betroffen 18,6 cm', '90,7 %', 'gruen', '80 %')}
+        ${W('Niedersprung einbeinig (Höhe)', 'gesund 19,5 cm · betroffen 17,5 cm', '89,7 %', 'gelb')}
+        ${W('Weitsprung einbeinig', 'gesund 165 cm · betroffen 152 cm', '92,1 %', 'gruen', '84,4 %')}
+        ${W('3 Sprünge einbeinig', 'gesund 480 cm · betroffen 445 cm', '92,7 %', 'gruen', '85,1 %')}
+        ${W('3 Sprünge einbeinig über eine Linie', 'gesund 420 cm · betroffen 380 cm', '90,5 %', 'gruen', '85,4 %')}
+        ${W('6 m einbeinig hüpfen (Zeit)', 'gesund 2,1 s · betroffen 2,28 s', '92,1 %', 'gruen', '84,3 %')}
+      </div>
+    </div>`
+
+  /* ---------- Umschalter ---------- */
+  document.querySelectorAll('[data-zeige]').forEach((k) => k.addEventListener('click', () => {
+    document.querySelectorAll('[data-zeige]').forEach((x) => x.setAttribute('aria-pressed', String(x === k)))
+    document.querySelectorAll('[data-bericht]').forEach((b) => { b.hidden = k.dataset.zeige !== 'beide' && b.dataset.bericht !== k.dataset.zeige })
+  }))
+</script>
+</body>
+</html>
