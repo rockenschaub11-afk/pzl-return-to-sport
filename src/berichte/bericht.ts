@@ -240,6 +240,17 @@ function meloqWerte(test: TestDef, testung: Testung, a: TestAuswertung, auswahl:
 }
 
 /** Seitenwerte für Vergleiche: bei Krafttests mit Körpergewicht in N/kg (gerundet wie angezeigt), sonst in der Einheit des Tests. */
+/** Hop-Weiten mit Beinlänge (Audit G4) – ohne Normdaten, daher nur Info ohne Bewertung. */
+const HOP_WEITE = ['single_hop', 'triple_hop', 'crossover_hop']
+
+export function beinlaengeText(test: TestDef, b: TestAuswertung['berechnung'], patient: Patient): string | null {
+  const bein = parseZahl(patient.beinlaengeCm)
+  const s = b.seiten
+  if (!HOP_WEITE.includes(test.id) || !bein || !s || s.einheit !== 'cm' || (s.gesund === null && s.betroffen === null)) return null
+  const pct = (w: number | null) => (w === null ? '–' : `${zahl((w / bein) * 100, 0)} %`)
+  return `In % der Beinlänge (${zahl(bein)} cm): gesund ${pct(s.gesund)} · betroffen ${pct(s.betroffen)} – nur Info, ohne Bewertung`
+}
+
 function seitenWerte(test: TestDef, b: TestAuswertung['berechnung'], kg: number | null): { gesund: number | null; betroffen: number | null; einheit: string } | null {
   const s = b.seiten
   if (!s || (s.gesund === null && s.betroffen === null)) return null
@@ -315,6 +326,8 @@ function arztTest(
     zusatz.push(`H/Q-Quotient (Flexion 90° / Extension 60°${hq.ausDrehmoment ? ', aus Nm/kg' : ', aus Kraft – gleicher Hebelarm angenommen, grobe Orientierung'}): gesund ${pct(hq.gesund)} · betroffen ${pct(hq.betroffen)} – nur Info. ${HQ_HINWEIS}`)
   }
   for (const st of b.streuung) zusatz.push(streuungHinweis(st.seite, st.cv))
+  const hopBein = beinlaengeText(test, b, patient)
+  if (hopBein) zusatz.push(hopBein)
   if (test.id === 'koos') {
     const e = testung.eingaben.koos ?? {}
     const teile = KOOS_SUBSKALEN.filter(([id]) => parseZahl(e[`koos_${id}`]) !== null).map(([id, name]) => `${name} ${zahl(parseZahl(e[`koos_${id}`]))}`)

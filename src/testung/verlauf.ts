@@ -189,8 +189,13 @@ export interface Zielkorridor {
   stufen: { von: number; bis: number | null; wert: number }[]
   /** oben = Werte über der Schwelle sind erfüllt (> / ≥), unten = darunter (< / ≤) */
   richtung: 'oben' | 'unten'
+  /** obere Grenze des gezeichneten Bereichs (nur LSI: 110 %, DESIGNKONZEPT 6) – ändert keine Ampel */
+  grenze: number | null
   text: string
 }
+
+/** LSI-Zielbereich nach oben: ein LSI weit über 110 % ist ebenfalls auffällig (Bericht-Audit Punkt 24). */
+export const LSI_OBERGRENZE = 110
 
 /** Zielbereich aus den Schwellen der Phasen (config) – nichts Neues, nur die vorhandenen Grenzwerte über die Zeit. */
 export function zielkorridor(k: Kriterium | undefined): Zielkorridor | null {
@@ -208,7 +213,13 @@ export function zielkorridor(k: Kriterium | undefined): Zielkorridor | null {
   const zeichen = { '>': 'über', '>=': 'ab', '<': 'unter', '<=': 'bis' }[k.vergleich]
   const einheit = k.einheit === '%' ? ' %' : k.einheit ? ` ${k.einheit}` : ''
   const werte = [...new Set(stufen.map((x) => x.wert.toLocaleString('de-AT')))]
-  return { stufen, richtung, text: `Ziel: ${k.bezeichnung} ${zeichen} ${werte.join(' / ')}${einheit}${werte.length > 1 ? ' (je Phase)' : ''}` }
+  const grenze = k.art === 'lsi' && richtung === 'oben' ? LSI_OBERGRENZE : null
+  return {
+    stufen,
+    richtung,
+    grenze,
+    text: `Ziel: ${k.bezeichnung} ${zeichen} ${werte.join(' / ')}${einheit}${werte.length > 1 ? ' (je Phase)' : ''}${grenze ? ` (Bereich bis ${grenze} % markiert)` : ''}`,
+  }
 }
 
 /** Testungen, in deren Testset der Test liegt, die aber keinen Wert dazu haben („nicht gemessen“). */

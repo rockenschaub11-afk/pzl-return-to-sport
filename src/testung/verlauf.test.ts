@@ -63,6 +63,11 @@ describe('Verlauf', () => {
       { von: 5, bis: null, wert: 7.5 },
     ])
     expect(zielkorridor(kriterienFuer(option('hhd_knie_ext')).zweites)?.stufen).toEqual([{ von: 0, bis: null, wert: 90 }])
+    // LSI-Bereich nach oben bis 110 % (Audit Punkt 24), Absolutwerte nach oben offen
+    const lsi = zielkorridor(kriterienFuer(option('hhd_knie_ext')).zweites)
+    expect(lsi?.grenze).toBe(110)
+    expect(lsi?.text).toBe('Ziel: LSI ab 90 % (Bereich bis 110 % markiert)')
+    expect(k?.grenze).toBeNull()
     // Hops haben nur ein LSI-Ziel, kein Absolutziel
     expect(kriterienFuer(option('single_hop')).wert).toBeUndefined()
   })

@@ -262,6 +262,17 @@ describe('Pat./Trainer-Bericht', () => {
   })
 })
 
+describe('Beinlänge (Audit G4)', () => {
+  it('Hop-Weiten in % der Beinlänge nur als Info, ohne Beinlänge nichts', () => {
+    const hop = arztBericht(patient, ende).bloecke.flatMap((bl) => bl.tests).find((t) => t.test.id === 'single_hop')!
+    expect(hop.zusatz).toContain('In % der Beinlänge (94 cm): gesund 176 % · betroffen 162 % – nur Info, ohne Bewertung')
+    const timed = arztBericht(patient, ende).bloecke.flatMap((bl) => bl.tests).find((t) => t.test.id === 'timed_hop')!
+    expect(timed.zusatz.some((z) => z.includes('Beinlänge'))).toBe(false)
+    const ohne = arztBericht({ ...patient, beinlaengeCm: '' }, ende).bloecke.flatMap((bl) => bl.tests).find((t) => t.test.id === 'single_hop')!
+    expect(ohne.zusatz.some((z) => z.includes('Beinlänge'))).toBe(false)
+  })
+})
+
 describe('Bausteine', () => {
   it('Bewertung immer mit Text, auch bei Warnung und fehlendem Wert', () => {
     const k = { id: 'score', bezeichnung: 'Score', art: 'absolut', status: 'warnung', werte: {}, quelle: '' } as const

@@ -93,7 +93,7 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
   const x = (m: number) => R.links + (m / xMax) * (B - R.links - R.rechts)
 
   const werte = punkte.flatMap((p) => p.werte).filter((w): w is number => w !== null)
-  const ziele = korridor?.stufen.map((s) => s.wert) ?? []
+  const ziele = [...(korridor?.stufen.map((s) => s.wert) ?? []), ...(korridor?.grenze ? [korridor.grenze] : [])]
   const alle = [...werte, ...ziele]
   const lo = abNull ? 0 : Math.min(...alle) - 5
   const hi = abNull ? Math.max(...alle) * 1.12 : Math.max(...alle) + 5
@@ -146,7 +146,7 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
           const bis = x(Math.min(s.bis ?? xMax, xMax))
           if (bis <= von) return null
           const ys = y(Math.min(Math.max(s.wert, yMin), yMax))
-          const y1 = korridor.richtung === 'oben' ? R.oben : ys
+          const y1 = korridor.richtung === 'oben' ? (korridor.grenze ? y(Math.min(korridor.grenze, yMax)) : R.oben) : ys
           const y2 = korridor.richtung === 'oben' ? ys : unten
           return <rect key={s.von} x={von} y={y1} width={bis - von} height={Math.max(0, y2 - y1)} className="diagramm-korridor" />
         })}
