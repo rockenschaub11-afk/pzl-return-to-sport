@@ -3036,6 +3036,44 @@ fieldset:disabled .test-hinzu {
   font-size: 8pt;
 }
 
+/* Paket C (Bericht-Audit): Fußnoten, Quellenliste, Meloq-Zwischenzeile, Normdaten, Stand, Veränderung */
+.bericht-fussnote {
+  margin-left: 1px;
+  color: var(--text-leise);
+  font-size: 7pt;
+}
+
+.bericht-quellen {
+  margin: 0.2rem 0;
+  padding-left: 1.4rem;
+  color: var(--text-leise);
+  font-size: 8.5pt;
+}
+
+.bericht-meloq-kopf td {
+  padding-top: 0.3rem;
+  border-bottom: 0;
+  color: var(--text-leise);
+  font-size: 8pt;
+  font-weight: 600;
+}
+
+.bericht-normdaten {
+  color: var(--text-leise);
+  font-size: 8.5pt;
+  font-style: italic;
+}
+
+.bericht-stand-zeile {
+  margin: 0 0 0.4rem;
+  font-weight: 600;
+}
+
+.bericht-veraenderung {
+  color: var(--text-leise);
+  font-size: 8.5pt;
+}
+
 .bericht-meloq td {
   color: #333;
 }
@@ -3307,7 +3345,7 @@ fieldset:disabled .test-hinzu {
     break-after: avoid;
   }
 
-  .bericht-verlauf,
+  /* Verlauf darf zwischen Tabelle und Diagrammen umbrechen (jedes Diagramm bleibt ganz) – sonst bleiben halbe Seiten leer */
   .bericht-unterschrift {
     break-inside: avoid;
   }

@@ -36,6 +36,7 @@ import {
   type ProtokollTeil,
   type RohTest,
 } from './nachvollziehbarkeit'
+import { normdatenFuer } from '../testung/normdaten'
 import { pflichtStatus, pflichtVerfehlt, RTS_TEXT, rtsVorschlag, wertText, zielText, type RtsVorschlag } from '../testung/rts'
 
 /** Ampel-Zeichen – damit die Bewertung auch in Schwarz-Weiß lesbar bleibt (10a, D6). */
@@ -114,6 +115,8 @@ export interface ArztTest {
   seiten: string | null
   /** Winkel, Box, Eingabe-Einheit, Hebelarm (Audit Punkt 5) */
   protokoll: ProtokollTeil[]
+  /** „Typisch nach VKB-OP …“ – nur bei genau passender Gruppe, ohne Einfluss auf die Ampel (Audit Punkt 11) */
+  normdaten: string | null
   kriterien: ArztKriterium[]
   /** Kern-Satz-Strategy und gewählte Meloq-Zusatzmetriken mit Wert (ohne Ampel) */
   meloq: { ods: MeloqZeile['ods']; name: string; wert: string; vergleich: string }[]
@@ -138,6 +141,8 @@ export interface ArztBericht {
     hinweise: string[]
     entscheidung: { text: string; ergebnis: string; begruendung: string } | null
   } | null
+  /** Überblick über die Pflicht-Tests – bei Verlaufstests eigener Kasten, bei der Endtestung Zählzeile im RTS-Kasten (Audit Punkt 7) */
+  stand: PflichtStand
   bloecke: { block: Block; name: string; tests: ArztTest[] }[]
   therapeut: string
   abgeschlossenAm: string | null
@@ -145,6 +150,34 @@ export interface ArztBericht {
   protokolle: { name: string; ablauf: string; quelle: string }[]
   /** Anhang: Einzelversuche mit Streuung (Audit Punkt 9) */
   rohdaten: RohTest[]
+}
+
+export interface PflichtStand {
+  titel: string
+  /** z. B. „7 von 11 Pflicht-Tests erfüllt · 3 nicht erfüllt · 1 nicht gemessen“ */
+  zeile: string
+  /** nicht erfüllte Pflicht-Tests mit Wert und Ziel */
+  offen: string[]
+  nichtGemessen: string[]
+  aclRsiWarnung: string | null
+}
+
+/** Pflicht-Tests der Testung gezählt wie beim RTS-Vorschlag (nur grün zählt, klinisch anders beurteilt mit Begründung). */
+function pflichtStand(v: RtsVorschlag, testung: Testung, auswertung: Map<string, TestAuswertung>, phaseKurz: string): PflichtStand {
+  const p = v.pflicht
+  const erfuellt = p.filter((x) => x.status === 'erfuellt').length
+  const nicht = p.filter((x) => x.status === 'nicht_erfuellt')
+  const fehlt = p.filter((x) => x.status === 'fehlt')
+  const teile = [`${erfuellt} von ${p.length} Pflicht-Tests erfüllt`]
+  if (nicht.length > 0) teile.push(`${nicht.length} nicht erfüllt`)
+  if (fehlt.length > 0) teile.push(`${fehlt.length} nicht gemessen`)
+  return {
+    titel: `Stand der Phase ${phaseKurz}`,
+    zeile: p.length === 0 ? 'In dieser Testung gibt es keine Pflicht-Tests.' : teile.join(' · '),
+    offen: nicht.map((x) => (x.klinischAnders ? `${x.test.name}: klinisch als nicht erfüllt beurteilt – ${x.klinischAnders.begruendung}` : `${x.test.name}: ${x.gruende.join('; ')}`)),
+    nichtGemessen: fehlt.map((x) => (wartetAufGewicht(testung, auswertung.get(x.test.id)) ? `${x.test.name} (Körpergewicht fehlt)` : x.test.name)),
+    aclRsiWarnung: v.aclRsiWarnung,
+  }
 }
 
 function stammdaten(p: Patient, t: Testung): [string, string][] {
@@ -206,15 +239,34 @@ function meloqWerte(test: TestDef, testung: Testung, a: TestAuswertung, auswahl:
     })
 }
 
+/** Seitenwerte für Vergleiche: bei Krafttests mit Körpergewicht in N/kg (gerundet wie angezeigt), sonst in der Einheit des Tests. */
+function seitenWerte(test: TestDef, b: TestAuswertung['berechnung'], kg: number | null): { gesund: number | null; betroffen: number | null; einheit: string } | null {
+  const s = b.seiten
+  if (!s || (s.gesund === null && s.betroffen === null)) return null
+  if (ERFASSUNG[test.id]?.typ === 'kraft') {
+    if (!kg) return null
+    const rel = (v: number | null) => (v === null ? null : Math.round(nProKg(alsNewton(v, s.einheit === 'N' ? 'N' : 'kg'), kg) * 10) / 10)
+    return { gesund: rel(s.gesund), betroffen: rel(s.betroffen), einheit: 'N/kg' }
+  }
+  return { gesund: s.gesund, betroffen: s.betroffen, einheit: s.einheit }
+}
+
 /** Seitenwerte; bei Krafttests mit Körpergewicht in N/kg, die Eingabe in Klammern (Audit Punkt 22). */
 function seitenText(test: TestDef, b: TestAuswertung['berechnung'], kg: number | null): string | null {
   const s = b.seiten
   if (!s || (s.gesund === null && s.betroffen === null)) return null
-  if (ERFASSUNG[test.id]?.typ === 'kraft' && kg) {
-    const rel = (v: number | null) => (v === null ? '–' : zahl(nProKg(alsNewton(v, s.einheit === 'N' ? 'N' : 'kg'), kg)))
-    return `gesund ${rel(s.gesund)} · betroffen ${rel(s.betroffen)} N/kg (${zahl(s.gesund)} / ${zahl(s.betroffen)} ${s.einheit})`
+  const w = seitenWerte(test, b, kg)
+  if (w && w.einheit === 'N/kg') {
+    return `gesund ${zahl(w.gesund)} · betroffen ${zahl(w.betroffen)} N/kg (${zahl(s.gesund)} / ${zahl(s.betroffen)} ${s.einheit})`
   }
   return `gesund ${mitEinheit(s.gesund, s.einheit)} · betroffen ${mitEinheit(s.betroffen, s.einheit)}`
+}
+
+/** Normdaten wie in der Testkarte – nur bei passender Gruppe, sonst nichts (Audit Punkt 11, Frage 3a). */
+function normdatenText(test: TestDef, patient: Patient, testung: Testung): string | null {
+  const n = normdatenFuer(test.id, patient, testung.datum, monateBisTestung(patient.opDatum, testung.datum))
+  if (!n || n.keine || n.zeilen.length === 0) return null
+  return `${n.kopf}: ${n.zeilen.join(' · ')}${n.hinweis ? ` – ${n.hinweis}` : ''}`
 }
 
 function arztTest(
@@ -225,8 +277,9 @@ function arztTest(
   vorschlag: RtsVorschlag | null,
   auswahl: MeloqAuswahl | undefined,
   hq: ReturnType<typeof hqQuotient>,
-  seite: Patient['seite'],
+  patient: Patient,
 ): ArztTest {
+  const seite = patient.seite
   const b = a.berechnung
   const eingabe = testung.eingaben[test.id] ?? {}
   const gemessen = hatEingabe(testung.eingaben[test.id])
@@ -243,8 +296,19 @@ function arztTest(
       bewertung: gemessen && ohneGewicht(e, kg) ? { ampel: null, text: `Körpergewicht fehlt – keine ${e.kriterium.einheit}` } : bewertungText(e),
       quelle: e.kriterium.quelle,
     }))
+  // Vorverletzungswert als eigene Zeile, ohne Ampel (F22; Audit Punkt 13)
+  if (b.lsiVorverletzung !== null) {
+    kriterien.push({
+      bezeichnung: 'LSI zur Vorverletzung',
+      status: 'Info',
+      wert: `${b.lsiVorverletzung.toLocaleString('de-AT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`,
+      wertHinweis: null,
+      ziel: '–',
+      bewertung: { ampel: null, text: 'Info (ohne Ampel)' },
+      quelle: KATALOG.regeln.lsi.quelle,
+    })
+  }
   const zusatz: string[] = [...a.ergebnis.hinweise]
-  if (b.lsiVorverletzung !== null) zusatz.push(`LSI zur Vorverletzung: ${zahl(b.lsiVorverletzung)} %`)
   if (b.nmProKg) zusatz.push(`Drehmoment relativ: gesund ${zahl(b.nmProKg.gesund, 2)} · betroffen ${zahl(b.nmProKg.betroffen, 2)} Nm/kg`)
   if (hq) {
     const pct = (q: number | null) => (q === null ? '–' : `${zahl(q * 100, 0)} %`)
@@ -262,6 +326,7 @@ function arztTest(
     gemessen,
     seiten: seitenText(test, b, kg),
     protokoll: gemessen ? protokollTeile(test, eingabe) : [],
+    normdaten: gemessen ? normdatenText(test, patient, testung) : null,
     kriterien,
     meloq: meloqWerte(test, testung, a, auswahl, seite),
     klinischAnders: anders ? { urteil: anders.urteil === 'erfuellt' ? 'als erfüllt beurteilt' : 'als nicht erfüllt beurteilt', begruendung: anders.begruendung } : null,
@@ -308,7 +373,7 @@ export function arztBericht(patient: Patient, testung: Testung, auswahl?: MeloqA
       .filter((t) => t.block === block)
       .map((t) => {
         const hq = t.id === 'hhd_knie_flex' ? hqQuotient(auswertung.get(t.id)?.berechnung, auswertung.get('hhd_knie_ext')?.berechnung) : null
-        return arztTest(t, testung, auswertung.get(t.id)!, phase, vorschlag, auswahl, hq, patient.seite)
+        return arztTest(t, testung, auswertung.get(t.id)!, phase, vorschlag, auswahl, hq, patient)
       }),
   })).filter((b) => b.tests.length > 0)
 
@@ -328,6 +393,7 @@ export function arztBericht(patient: Patient, testung: Testung, auswahl?: MeloqA
     phase: { name: p.name, uebersteuert: p.uebersteuert },
     stammdaten: stammdaten(patient, testung),
     rts,
+    stand: pflichtStand(vorschlag ?? rtsVorschlag(testung, patient, auswertung, phase), testung, auswertung, p.kurz),
     bloecke,
     therapeut: testung.entscheidung?.therapeut.trim() ?? '',
     abgeschlossenAm: abgeschlossen && testung.abgeschlossenAm ? datumDeutsch(testung.abgeschlossenAm.slice(0, 10)) : null,
@@ -343,12 +409,27 @@ export interface VerlaufZelle {
   wert: string
   /** Ziel der Phase dieser Testung – nur gesetzt, wenn es sich in der Zeile zwischen den Testungen ändert (Audit Punkt 3) */
   ziel: string | null
+  /** Absolutwerte je Seite, z. B. „b 7,8 · g 8,3 N/kg“ (Audit Punkt 4) */
+  seiten: string | null
 }
 
 export interface VerlaufTabelle {
   spalten: { datum: string; phase: string }[]
   /** kriterium leer, wenn es schon im Testnamen steht (z. B. „Erguss (Stroke-Test)“) */
-  zeilen: { name: string; kriterium: string; werte: VerlaufZelle[] }[]
+  zeilen: {
+    name: string
+    kriterium: string
+    werte: VerlaufZelle[]
+    /** rohe Differenz dieser Testung zur vorigen mit Wert, z. B. „+10,6 Pkt. · betroffen +1,4 N/kg“ (Audit Punkt 17) */
+    veraenderung: string | null
+  }[]
+}
+
+/** Vorzeichen-Zahl mit einer Nachkommastelle: „+1,4“, „−3“, „±0“ */
+function differenz(d: number, einheit: string): string {
+  const r = Math.round(d * 10) / 10
+  const text = Math.abs(r).toLocaleString('de-AT', { maximumFractionDigits: einheit === 's' ? 2 : 1 })
+  return `${r > 0 ? '+' : r < 0 ? '−' : '±'}${text} ${einheit}`
 }
 
 const MAX_SPALTEN = 6
@@ -375,15 +456,33 @@ export function verlaufTabelle(patient: Patient, testungen: readonly Testung[], 
     const pflicht = test.kriterien.filter((k) => k.status === 'pflicht')
     const k = pflicht.find((x) => x.art === 'lsi') ?? pflicht[0]
     if (!k) continue
-    const zellen = ausgewertet.map(({ a }) => {
-      const e = a.get(test.id)?.ergebnis.kriterien.find((x) => x.kriterium.id === k.id)
-      if (!e || e.zustand !== 'bewertet') return { wert: '–', ziel: '' }
-      return { wert: `${wertText(e)}${e.ampel ? ` ${AMPEL_ZEICHEN[e.ampel]}` : ''}`, ziel: zielText(e) }
+    const zellen = ausgewertet.map(({ t, a }) => {
+      const aus = a.get(test.id)
+      const e = aus?.ergebnis.kriterien.find((x) => x.kriterium.id === k.id)
+      const s = aus && hatEingabe(t.eingaben[test.id]) ? seitenWerte(test, aus.berechnung, parseZahl(t.koerpergewichtKg)) : null
+      if (!e || e.zustand !== 'bewertet') return { wert: '–', ziel: '', zahl: null, s: null }
+      return { wert: `${wertText(e)}${e.ampel ? ` ${AMPEL_ZEICHEN[e.ampel]}` : ''}`, ziel: zielText(e), zahl: typeof e.wert === 'number' ? e.wert : null, s }
     })
     const zieleVerschieden = new Set(zellen.filter((z) => z.wert !== '–').map((z) => z.ziel)).size > 1
-    const werte = zellen.map((z) => ({ wert: z.wert, ziel: zieleVerschieden && z.wert !== '–' && z.ziel ? z.ziel : null }))
+    const nk = (einheit: string) => (einheit === 's' ? 2 : 1)
+    const werte = zellen.map((z) => ({
+      wert: z.wert,
+      ziel: zieleVerschieden && z.wert !== '–' && z.ziel ? z.ziel : null,
+      seiten: z.s && (z.s.betroffen !== null || z.s.gesund !== null) ? `b ${zahl(z.s.betroffen, nk(z.s.einheit))} · g ${zahl(z.s.gesund, nk(z.s.einheit))} ${z.s.einheit}` : null,
+    }))
+    // Veränderung: diese Testung (letzte Spalte) zur vorigen mit Wert – rohe Differenz der angezeigten Zahlen
+    let veraenderung: string | null = null
+    const jetzt = zellen[zellen.length - 1]
+    const vorher = [...zellen.slice(0, -1)].reverse().find((z) => z.zahl !== null)
+    if (jetzt && jetzt.zahl !== null && vorher && vorher.zahl !== null) {
+      const teile = [differenz(jetzt.zahl - vorher.zahl, k.einheit === '%' ? 'Pkt.' : (k.einheit ?? ''))]
+      if (k.art !== 'absolut' && jetzt.s?.betroffen != null && vorher.s?.betroffen != null && jetzt.s.einheit === vorher.s.einheit) {
+        teile.push(`betroffen ${differenz(jetzt.s.betroffen - vorher.s.betroffen, jetzt.s.einheit)}`)
+      }
+      veraenderung = teile.join(' · ')
+    }
     const kriterium = test.name.includes(k.bezeichnung) ? '' : k.bezeichnung
-    if (werte.some((w) => w.wert !== '–')) zeilen.push({ name: test.name, kriterium, werte })
+    if (werte.some((w) => w.wert !== '–')) zeilen.push({ name: test.name, kriterium, werte, veraenderung })
   }
   return {
     spalten: ausgewertet.map(({ t, ph }) => ({ datum: datumDeutsch(t.datum), phase: phaseNach(ph).name })),
@@ -468,6 +567,8 @@ export interface PatZeile {
   lsi: number | null
   /** Ampel des LSI-Kriteriums – für das Spinnennetz */
   lsiAmpel: Ampel | null
+  /** betroffen in % des Werts vor der Verletzung (nur wenn eingetragen; Audit Punkt 13) */
+  vorverletzung: number | null
   bewertung: Bewertung
 }
 
@@ -522,6 +623,7 @@ function patZeilen(test: TestDef, a: TestAuswertung, eingabe: TestEingabe, seite
       wertArt: s ? null : 'beidbeinig',
       lsi: typeof lsiWert === 'number' && Number.isFinite(lsiWert) ? Math.round(lsiWert * 10) / 10 : null,
       lsiAmpel: lsiE?.ampel ?? null,
+      vorverletzung: a.berechnung.lsiVorverletzung === null ? null : Math.round(a.berechnung.lsiVorverletzung * 10) / 10,
       bewertung: zeilenBewertung(haupt),
     })
   }
@@ -543,6 +645,7 @@ function patZeilen(test: TestDef, a: TestAuswertung, eingabe: TestEingabe, seite
       wertArt: 'unterschied',
       lsi: null,
       lsiAmpel: null,
+      vorverletzung: null,
       bewertung: zeilenBewertung(asym),
     })
   }

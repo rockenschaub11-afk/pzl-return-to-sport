@@ -137,6 +137,42 @@ describe('Arztbericht', () => {
     expect(b.rohdaten.some((r) => r.id === 'sl_bridge')).toBe(false)
   })
 
+  it('Überblick: Pflicht-Tests gezählt – Verlaufstest mit eigenem Stand, Endtestung mit Zählzeile', () => {
+    const mitte = arztBericht(patient, testungen[0])
+    expect(mitte.stand.titel).toBe('Stand der Phase Mitte')
+    expect(mitte.stand.zeile).toMatch(/^\d+ von \d+ Pflicht-Tests erfüllt · \d+ nicht erfüllt/)
+    expect(mitte.stand.offen.some((o) => o.startsWith('Knie-Extension (HHD): '))).toBe(true)
+    const e = arztBericht(patient, ende)
+    expect(e.stand.zeile).toMatch(/ von \d+ Pflicht-Tests erfüllt · 1 nicht erfüllt$/)
+    expect(e.stand.offen).toEqual(['SL-Drop-Jump: LSI Sprunghöhe 89,7 % – Ziel ≥ 90 %'])
+  })
+
+  it('Verlaufstabelle: Seitenwerte je Zelle und Veränderung zur vorigen Testung', () => {
+    const v = verlaufTabelle(patient, testungen, ende)
+    const ext = v.zeilen.find((z) => z.name === 'Knie-Extension (HHD)')!
+    expect(ext.werte[2].seiten).toBe('b 7,8 · g 8,3 N/kg')
+    expect(ext.werte[0].seiten).toBe('b 4,9 · g 7,1 N/kg')
+    expect(ext.veraenderung).toBe('+10,6 Pkt. · betroffen +1,4 N/kg')
+    const cmj = v.zeilen.find((z) => z.name === 'CMJ')!
+    expect(cmj.veraenderung).toBe('−4 Pkt.')
+    // nur ein Wert in früheren Testungen → keine Veränderung
+    expect(v.zeilen.find((z) => z.name === 'SL-Drop-Jump')!.veraenderung).toBeNull()
+  })
+
+  it('Normdaten nur bei passender Gruppe; Vorverletzung als eigene Zeile ohne Ampel', () => {
+    const tests = arztBericht(patient, ende).bloecke.flatMap((x) => x.tests)
+    expect(tests.find((t) => t.test.id === 'cmj')!.normdaten).toMatch(/^Typisch nach VKB-OP \(12 Mo, männlich 20–30\): Sprunghöhe: 30,7 cm .*Vergleich ohne Verletzung/)
+    expect(tests.find((t) => t.test.id === 'hhd_knie_ext')!.normdaten).toBeNull()
+    const ohneGeschlecht = arztBericht({ ...patient, geschlecht: '' }, ende).bloecke.flatMap((x) => x.tests)
+    expect(ohneGeschlecht.find((t) => t.test.id === 'cmj')!.normdaten).toBeNull()
+
+    const mitVor = { ...ende, eingaben: { ...ende.eingaben, single_hop: { ...ende.eingaben.single_hop, vor: '160' } } }
+    const hop = arztBericht(patient, mitVor).bloecke.flatMap((x) => x.tests).find((t) => t.test.id === 'single_hop')!
+    expect(hop.kriterien.find((k) => k.bezeichnung === 'LSI zur Vorverletzung')).toMatchObject({ wert: '95,0 %', bewertung: { ampel: null } })
+    expect(hop.zusatz.join(' ')).not.toMatch(/Vorverletzung/)
+    expect(patBericht(patient, mitVor).zeilen.find((z) => z.id === 'single_hop')?.vorverletzung).toBe(95)
+  })
+
   it('fehlendes Körpergewicht heißt nicht „nicht gemessen“', () => {
     const ohne = { ...ende, koerpergewichtKg: '' }
     const b = arztBericht(patient, ohne)

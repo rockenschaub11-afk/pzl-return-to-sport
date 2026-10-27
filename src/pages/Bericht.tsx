@@ -10,6 +10,7 @@ import { HINWEIS } from '../navigation'
 import { datumDeutsch, type Patient } from '../patienten/stammdaten'
 import { KATALOG } from '../katalog'
 import type { RohTest } from '../berichte/nachvollziehbarkeit'
+import { NORMDATEN } from '../testung/normdaten'
 import LinienDiagramm from '../testung/LinienDiagramm'
 import { useMeloqAuswahl } from '../testung/meloqAuswahl'
 import { verfuegbareOptionen } from '../testung/verlauf'
@@ -201,6 +202,9 @@ function ArztAnsicht({
   const b: ArztBericht = useMemo(() => arztBericht(patient, testung, meloqAuswahl), [patient, testung, meloqAuswahl])
   const bis = bisZu(alle, testung)
   const tabelle = verlaufTabelle(patient, bis, testung)
+  // Quellen als Fußnoten statt eigener Spalte (Bericht-Audit Punkt 12): Nummer in Reihenfolge des ersten Auftretens
+  const quellen = [...new Set(b.bloecke.flatMap((x) => x.tests.flatMap((t) => (t.gemessen ? t.kriterien.map((k) => k.quelle) : []))).filter((q) => q && q !== '–'))]
+  const quelleNr = (q: string) => (quellen.includes(q) ? quellen.indexOf(q) + 1 : null)
 
   return (
     <article className="bericht bericht-arzt" aria-label="Arztbericht">
@@ -226,9 +230,30 @@ function ArztAnsicht({
         </dl>
       </section>
 
+      {!b.rts && (
+        <section className="bericht-abschnitt bericht-rts">
+          <h2>{b.stand.titel}</h2>
+          <p className="bericht-stand-zeile">{b.stand.zeile}</p>
+          {b.stand.aclRsiWarnung && <p className="bericht-warnung">⚠ {b.stand.aclRsiWarnung}</p>}
+          {b.stand.offen.length > 0 && (
+            <>
+              <h3>Nicht erfüllt</h3>
+              <ul>
+                {b.stand.offen.map((w) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          {b.stand.nichtGemessen.length > 0 && <p className="bericht-leise">Nicht gemessen: {b.stand.nichtGemessen.join(', ')}</p>}
+          <p className="bericht-leise">Verlaufstest – Ziele der Phase nach Read, kein RTS-Vorschlag.</p>
+        </section>
+      )}
+
       {b.rts && (
         <section className="bericht-abschnitt bericht-rts">
           <h2>RTS-Vorschlag und Entscheidung</h2>
+          <p className="bericht-stand-zeile">{b.stand.zeile}</p>
           <div className="bericht-rts-raster">
             <div className="bericht-rts-feld">
               <span className="bericht-rts-label">Vorschlag der App</span>
@@ -292,16 +317,15 @@ function ArztAnsicht({
               <th>Wert</th>
               <th>Ziel</th>
               <th>Bewertung</th>
-              <th>Quelle</th>
             </tr>
           </thead>
           {b.bloecke.map((block) => (
             <tbody key={block.block}>
               <tr className="bericht-block-zeile">
-                <th colSpan={6}>{block.name}</th>
+                <th colSpan={SPALTEN}>{block.name}</th>
               </tr>
               {block.tests.map((t) => (
-                <ArztTestZeilen key={t.test.id} t={t} />
+                <ArztTestZeilen key={t.test.id} t={t} quelleNr={quelleNr} />
               ))}
             </tbody>
           ))}
@@ -309,6 +333,16 @@ function ArztAnsicht({
         <p className="bericht-leise">
           Meloq-Werte vom gewerteten Versuch (größte Sprunghöhe); O = Output, D = Driver, S = Strategy – ohne Ampel. {MELOQ.nichtMessbar}
         </p>
+        {quellen.length > 0 && (
+          <>
+            <h3>Quellen der Ziele</h3>
+            <ol className="bericht-quellen">
+              {quellen.map((q) => (
+                <li key={q}>{q}</li>
+              ))}
+            </ol>
+          </>
+        )}
       </section>
 
       <VerlaufAbschnitt patient={patient} testungen={bis} tabelle={tabelle} wahl={verlaufWahl} />
@@ -391,6 +425,12 @@ function Methodik({ protokolle, endtestung }: { protokolle: ArztBericht['protoko
         </dd>
         <dt>Sprunghöhe</dt>
         <dd>Meloq berechnet sie aus der Flugzeit, VALD (Read-Referenz) aus dem Impuls – Abweichungen sind möglich. {MELOQ.nichtMessbar}</dd>
+        <dt>Vergleichswerte</dt>
+        <dd>
+          LSI zur Vorverletzung: betroffen im Verhältnis zum eingetragenen Wert vor der Verletzung, ohne Ampel. Normdaten „typisch nach VKB-OP“ (VALD Research
+          Normative Data Report, Mittelwert ± 1 SD) stehen nur, wenn Geschlecht, Altersband und Zeitpunkt (6 / 9 / 12 Monate, ± {NORMDATEN.toleranzMonate.toLocaleString('de-AT')}{' '}
+          Monate) genau passen – ohne Einfluss auf die Bewertung.
+        </dd>
         {endtestung && (
           <>
             <dt>RTS-Vorschlag</dt>
@@ -466,13 +506,15 @@ function RohdatenAnhang({ rohdaten }: { rohdaten: RohTest[] }) {
 }
 
 const ODS_KURZ = { output: 'O', driver: 'D', strategy: 'S' } as const
+/** Spalten der Ergebnistabelle – Quelle steht als Fußnote beim Ziel (Bericht-Audit Punkt 12) */
+const SPALTEN = 5
 
-function ArztTestZeilen({ t }: { t: ArztBericht['bloecke'][number]['tests'][number] }) {
+function ArztTestZeilen({ t, quelleNr }: { t: ArztBericht['bloecke'][number]['tests'][number]; quelleNr: (q: string) => number | null }) {
   if (!t.gemessen) {
     return (
       <tr className="bericht-test-zeile">
         <th scope="row">{t.test.name}</th>
-        <td colSpan={5} className="bericht-leise">
+        <td colSpan={SPALTEN - 1} className="bericht-leise">
           nicht gemessen
         </td>
       </tr>
@@ -481,7 +523,7 @@ function ArztTestZeilen({ t }: { t: ArztBericht['bloecke'][number]['tests'][numb
   return (
     <>
       <tr className="bericht-test-zeile">
-        <th scope="row" colSpan={6}>
+        <th scope="row" colSpan={SPALTEN}>
           {t.test.name}
           {t.seiten && <span className="bericht-seiten"> – {t.seiten}</span>}
           {t.ausserhalbTestset && <span className="bericht-leise"> (nicht im Testset der Phase)</span>}
@@ -511,34 +553,48 @@ function ArztTestZeilen({ t }: { t: ArztBericht['bloecke'][number]['tests'][numb
               </>
             )}
           </td>
-          <td className="bericht-zahl">{k.ziel}</td>
+          <td className="bericht-zahl">
+            {k.ziel}
+            {quelleNr(k.quelle) !== null && <sup className="bericht-fussnote">{quelleNr(k.quelle)}</sup>}
+          </td>
           <td>
             <BewertungMarke b={k.bewertung} />
           </td>
-          <td className="bericht-quelle">{k.quelle}</td>
         </tr>
       ))}
+      {t.meloq.length > 0 && (
+        <tr className="bericht-meloq-kopf">
+          <td colSpan={SPALTEN} className="bericht-einrueck">
+            Meloq-Werte (gewerteter Versuch) – ohne Ampel
+          </td>
+        </tr>
+      )}
       {t.meloq.map((m) => (
         <tr key={m.name} className="bericht-meloq">
           <td className="bericht-einrueck">
             <span className="bericht-ods">{ODS_KURZ[m.ods]}</span> {m.name}
           </td>
-          <td>Meloq</td>
-          <td colSpan={2}>{m.wert}</td>
+          <td colSpan={3}>{m.wert}</td>
           <td>{m.vergleich || '–'}</td>
-          <td className="bericht-quelle">ohne Ampel</td>
         </tr>
       ))}
+      {t.normdaten && (
+        <tr>
+          <td colSpan={SPALTEN} className="bericht-einrueck bericht-normdaten">
+            {t.normdaten}
+          </td>
+        </tr>
+      )}
       {t.klinischAnders && (
         <tr className="bericht-markiert-zeile">
-          <td colSpan={6}>
+          <td colSpan={SPALTEN}>
             <strong>Klinisch anders beurteilt:</strong> {t.klinischAnders.urteil} – {t.klinischAnders.begruendung}
           </td>
         </tr>
       )}
       {t.zusatz.length > 0 && (
         <tr>
-          <td colSpan={6} className="bericht-einrueck bericht-leise">
+          <td colSpan={SPALTEN} className="bericht-einrueck bericht-leise">
             {t.zusatz.join(' · ')}
           </td>
         </tr>
@@ -551,6 +607,7 @@ function VerlaufAbschnitt({ patient, testungen, tabelle, wahl }: { patient: Pati
   const optionen = verfuegbareOptionen(patient, testungen)
   const option = optionen.length > 0 ? waehleOption(optionen, wahl) : undefined
   const v = option ? verlaufsDiagramme(patient, testungen, option) : null
+  const mitVeraenderung = tabelle.spalten.length >= 2
 
   return (
     <section className="bericht-abschnitt bericht-verlauf">
@@ -568,6 +625,7 @@ function VerlaufAbschnitt({ patient, testungen, tabelle, wahl }: { patient: Pati
                   <span className="bericht-leise">{s.phase}</span>
                 </th>
               ))}
+              {mitVeraenderung && <th className="bericht-zahl">Veränderung zur vorigen Testung</th>}
             </tr>
           </thead>
           <tbody>
@@ -580,6 +638,12 @@ function VerlaufAbschnitt({ patient, testungen, tabelle, wahl }: { patient: Pati
                 {z.werte.map((w, i) => (
                   <td key={i} className="bericht-zahl">
                     {w.wert}
+                    {w.seiten && (
+                      <>
+                        <br />
+                        <span className="bericht-leise">{w.seiten}</span>
+                      </>
+                    )}
                     {w.ziel && (
                       <>
                         <br />
@@ -588,13 +652,17 @@ function VerlaufAbschnitt({ patient, testungen, tabelle, wahl }: { patient: Pati
                     )}
                   </td>
                 ))}
+                {mitVeraenderung && <td className="bericht-zahl bericht-veraenderung">{z.veraenderung ?? '–'}</td>}
               </tr>
             ))}
           </tbody>
         </table>
       )}
       {tabelle.zeilen.length > 0 && (
-        <p className="bericht-leise">✓ ~ ✗ jeweils nach dem Ziel der Phase dieser Testung – ändert sich das Ziel, steht es unter dem Wert.</p>
+        <p className="bericht-leise">
+          ✓ ~ ✗ jeweils nach dem Ziel der Phase dieser Testung – ändert sich das Ziel, steht es unter dem Wert. b = betroffen, g = gesund (Kraft in N/kg).
+          {mitVeraenderung && ' Veränderung: rohe Differenz der angezeigten Werte zur vorigen Testung mit Wert (Pkt. = Prozentpunkte), ohne Angabe zum Messfehler.'}
+        </p>
       )}
       {v && v.punkte.length > 1 && (
         <div className="bericht-diagramme">
@@ -652,7 +720,15 @@ function PatAnsicht({ patient, testung, name }: { patient: Patient; testung: Tes
                     <td className="bericht-zahl">{z.betroffen}</td>
                   </>
                 )}
-                <td className="bericht-zahl">{z.lsi === null ? '–' : `${z.lsi.toLocaleString('de-AT')} %`}</td>
+                <td className="bericht-zahl">
+                  {z.lsi === null ? '–' : `${z.lsi.toLocaleString('de-AT')} %`}
+                  {z.vorverletzung !== null && (
+                    <>
+                      <br />
+                      <span className="bericht-leise">vor der Verletzung: {z.vorverletzung.toLocaleString('de-AT')} %</span>
+                    </>
+                  )}
+                </td>
                 <td>
                   <BewertungMarke b={z.bewertung} />
                 </td>
