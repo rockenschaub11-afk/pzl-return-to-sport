@@ -113,6 +113,8 @@ export interface ArztTest {
   gemessen: boolean
   /** Bestwerte gesund/betroffen, z. B. „gesund 8,3 · betroffen 7,8 N/kg (66 / 62 kg)“ */
   seiten: string | null
+  /** dieselben Bestwerte für die Spalten gesund | betroffen; Eingabe (z. B. „66 kg“) nur bei Krafttests in N/kg */
+  seitenSpalten: { gesund: string; betroffen: string; gesundEingabe: string | null; betroffenEingabe: string | null } | null
   /** Winkel, Box, Eingabe-Einheit, Hebelarm (Audit Punkt 5) */
   protokoll: ProtokollTeil[]
   /** „Typisch nach VKB-OP …“ – nur bei genau passender Gruppe, ohne Einfluss auf die Ampel (Audit Punkt 11) */
@@ -273,6 +275,17 @@ function seitenText(test: TestDef, b: TestAuswertung['berechnung'], kg: number |
   return `gesund ${mitEinheit(s.gesund, s.einheit)} · betroffen ${mitEinheit(s.betroffen, s.einheit)}`
 }
 
+/** Bestwerte als Spalten – gleiche Zahlen wie seitenText. */
+function seitenSpalten(test: TestDef, b: TestAuswertung['berechnung'], kg: number | null): ArztTest['seitenSpalten'] {
+  const s = b.seiten
+  if (!s || (s.gesund === null && s.betroffen === null)) return null
+  const w = seitenWerte(test, b, kg)
+  if (w && w.einheit === 'N/kg') {
+    return { gesund: mitEinheit(w.gesund, 'N/kg'), betroffen: mitEinheit(w.betroffen, 'N/kg'), gesundEingabe: mitEinheit(s.gesund, s.einheit), betroffenEingabe: mitEinheit(s.betroffen, s.einheit) }
+  }
+  return { gesund: mitEinheit(s.gesund, s.einheit), betroffen: mitEinheit(s.betroffen, s.einheit), gesundEingabe: null, betroffenEingabe: null }
+}
+
 /** Normdaten wie in der Testkarte – nur bei passender Gruppe, sonst nichts (Audit Punkt 11, Frage 3a). */
 function normdatenText(test: TestDef, patient: Patient, testung: Testung): string | null {
   const n = normdatenFuer(test.id, patient, testung.datum, monateBisTestung(patient.opDatum, testung.datum))
@@ -338,6 +351,7 @@ function arztTest(
     test,
     gemessen,
     seiten: seitenText(test, b, kg),
+    seitenSpalten: seitenSpalten(test, b, kg),
     protokoll: gemessen ? protokollTeile(test, eingabe) : [],
     normdaten: gemessen ? normdatenText(test, patient, testung) : null,
     kriterien,
@@ -762,7 +776,7 @@ export function patBericht(patient: Patient, testung: Testung, alle: readonly Te
     entwurf: testung.status !== 'abgeschlossen',
     klinik: klinikText,
     zeilen,
-    netz: zeilen.filter((z) => z.lsi !== null).map((z) => ({ name: z.kurz, lsi: z.lsi!, ampel: z.lsiAmpel })),
+    netz: zeilen.filter((z) => z.lsi !== null).map((z) => ({ name: z.kurz, lsi: z.lsi!, ampel: z.lsiAmpel, vorige: z.vorige })),
     wasFehltTitel: endtestung ? 'Was fehlt noch?' : 'Ziele dieser Phase – noch offen',
     erreicht,
     wasFehlt,

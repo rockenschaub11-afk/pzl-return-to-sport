@@ -4,6 +4,7 @@ import { db, type Testung } from '../db'
 import type { Patient } from '../patienten/stammdaten'
 import { auswahlBereinigen } from '../testung/meloqAuswahl'
 import { arztBericht, bewertungText, kriteriumAlltag, patBericht, verlaufTabelle, zeitVergleich } from './bericht'
+import { lsiUebersicht } from './lsiZeilen'
 
 let patient: Patient
 let testungen: Testung[]
@@ -199,11 +200,23 @@ describe('Pat./Trainer-Bericht', () => {
     expect(b.klinik).toMatch(/in Ordnung/)
   })
 
+  it('LSI-Übersicht im Arztbericht: Werte und Ampel wie im Pat.-Bericht, vorige Testung, wünschenswert markiert', () => {
+    const pat = patBericht(patient, ende, testungen)
+    const z = lsiUebersicht(arztBericht(patient, ende, auswahlBereinigen(undefined)), pat)
+    const ext = z.find((x) => x.id === 'hhd_knie_ext')!
+    expect(ext).toMatchObject({ name: 'Knie-Extension (HHD)', lsi: 93.9, ampel: 'gruen', wuenschenswert: false })
+    expect(ext.vorige).toBe(pat.zeilen.find((x) => x.id === 'hhd_knie_ext')!.vorige)
+    expect(z.find((x) => x.id === 'sl_dj')).toMatchObject({ name: 'SL-Drop-Jump – Sprunghöhe', lsi: 89.7, ampel: 'gelb' })
+    expect(z.find((x) => x.id === 'sl_calf_raise')?.wuenschenswert).toBe(true)
+    // ohne LSI-Kriterium (CMJ-Asymmetrie, IMTP) keine Zeile
+    expect(z.some((x) => x.id === 'cmj' || x.id === 'imtp')).toBe(false)
+  })
+
   it('Spinnennetz: Achsen nur für Tests mit Seitenvergleich', () => {
     const b = patBericht(patient, ende)
     expect(b.netz.length).toBeGreaterThanOrEqual(3)
     expect(b.netz.map((a) => a.name)).not.toContain('Sprung beidbeinig')
-    expect(b.netz.find((a) => a.name === 'Niedersprung')).toEqual({ name: 'Niedersprung', lsi: 89.7, ampel: 'gelb' })
+    expect(b.netz.find((a) => a.name === 'Niedersprung')).toEqual({ name: 'Niedersprung', lsi: 89.7, ampel: 'gelb', vorige: null })
   })
 
   it('Unterschied zwischen den Beinen als eigene Zeile, auch unter „Was fehlt noch?“; keine leeren Zeilen', () => {
