@@ -138,6 +138,7 @@ Feldtests (5-0-5, Sprint, CMAS) sind **nicht** Teil der App (F19).
 |---|---|---|
 | Knie-Extension (HHD) | Sitzend, **60° Knieflexion**, Dynamometer distal am Unterschenkel, mit Gurt, isometrisch 3–5 s | Quadrizeps-Defizite nach VKB-OP sind bei 50–80° am größten (Read S. 24); entspricht Aspetar (S. 11). Gurt: misst die Kraft der Pat., nicht der Therapeut:in |
 | Knie-Flexion (HHD) | Bauchlage, **90° Knieflexion**, Gurt, isometrisch | Hamstring-Defizite v. a. bei > 75° Flexion, besonders nach Hamstring-Graft (Read S. 25) |
+| Knie-Flexion 60° / 30° (HHD) | Sitzend, 60° bzw. 30°, Gurt, isometrisch (seit Etappe 12, s. 5.1) | H/Q variiert über das Bewegungsausmaß; 30° = Outer Range, Sprint-Schwungphase (Read S. 26) |
 | Hüft-Abduktion (HHD) | Rückenlage, langer Hebel, Dynamometer knapp proximal des Malleolus lateralis, isometrisch | Read-Referenzsetting (S. 35), gut standardisierbar |
 | Plantarflexion | Sitzend, Knie 90°, auf der Platte (Soleus) | Read S. 36 |
 | CMJ / SL-CMJ | Hände an den Hüften | Read S. 39 – keine Armschwung-Effekte |
@@ -146,6 +147,21 @@ Feldtests (5-0-5, Sprint, CMAS) sind **nicht** Teil der App (F19).
 | Allgemein | Gesundes Bein zuerst, 1 Probeversuch, 3 Messversuche, 30–60 s Pause | Betroffenes Bein nicht durch Lerneffekt benachteiligt; Read empfiehlt Familiarisierung (S. 32) |
 
 HHD-Krafttests erst ab ca. **8 Wochen** post-OP (Read: 6–12 Wochen Wartezeit, S. 24).
+
+### 5.1 Hamstring-Winkel und Stammdaten-Hinweise (Nachtrag 27.10.2026, Etappe 12, von Philipp bestätigt)
+
+Quelle: Read, *Practitioner's Guide to ACL* (VALD), S. 21, 25–26, 46.
+
+| Thema | Entscheidung |
+|---|---|
+| Knie-Flexion 90° (Bauchlage) | bleibt der Pflicht-Test mit den Read-Schwellen (2,0 / 2,5 / 2,8 N/kg, LSI ≥ 90 %); Inner Range, in der Frühphase ausreichend |
+| Knie-Flexion 60° und 30° (sitzend) | **zwei eigene Tests**, damit Verläufe je Winkel vergleichbar bleiben. Optional im Testset ab „Mitte“ (Knopf „+ hinzufügen“), davor über „+ weiteren Test“. **Keine N/kg-Ampel** (Read-Schwellen gelten nur für 90°), nur LSI ≥ 90 % *wünschenswert* |
+| Gurt/Bank | ca. **10° unter dem Zielwinkel** einstellen (Kniewinkel ändert sich bei Maximalkraft; Transplantatschutz) – im Ablauf aller drei Knie-Flexions-Protokolle |
+| H/Q-Quotient | Knie-Flexion 90° / Knie-Extension 60° je Seite, **nur Info ohne Ampel**, in der Testkarte Knie-Flexion und im Arztbericht. Mit Hebelarm bei beiden Tests aus Nm/kg, sonst aus der Kraft in N. Hinweis: typisch ~60 %, betroffen durch schwachen Quadrizeps oft zu hoch |
+| Hamstring-Graft (ST/G) | Info bei allen Knie-Flexions-Tests: Flexoren-Defizite beachten, mehrere Winkel empfohlen |
+| BPTB-Graft | Info bei Knie-Extension (Fokus Quadrizeps) und beim CMJ (Asymmetrien im Impuls erholen sich langsamer, S. 46) |
+| Meniskus-OP / LET | Info beim SL-Squat: weniger Knieflexion zu erwarten (S. 21) |
+| Nicht übernommen (Guide-Durchsicht) | Hamstring-Richtwert 3,5 N/kg (S. 37), Nm/kg-Richtwerte, RFD, Abfall der gesunden Seite, Einbeinstand-Voraussetzungen, ROM-Meilensteine, Gültigkeit über exzentrische Geschwindigkeit, Landekraft/Sprunghöhe, Gewichtsverteilung, Step-Down, TSA – vorerst nicht |
 
 ## 6. Kraftmessplatte Meloq EasyBase (F31, F40)
 
@@ -353,6 +369,7 @@ Ersetzt die früheren Varianten (Knöpfe + Kacheln; Messfenster mit Zahlen rund 
 1. CSV/Excel-Import aus Meloq und VALD Hub (Beispieldateien mit Fantasiekürzel nötig) (F11 b)
 2. Eventuell VALD-API (Lizenzvertrag mit VALD nötig) (F11 c)
 3. Digitale Fragebögen nach Lizenz-Freigabe (F38)
+4. Exzentrische Hamstring-Kraft (z. B. NordBord) – bleibt laut Read bis zu 10 Jahre nach VKB-OP reduziert (S. 25)
 
 ## 12. Quellen
 

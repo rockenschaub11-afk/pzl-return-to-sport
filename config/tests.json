@@ -156,6 +156,36 @@
       ]
     },
     {
+      "id": "hhd_knie_flex_60",
+      "name": "Knie-Flexion 60° (HHD)",
+      "block": "hhd",
+      "messgeraet": "dynamo",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "optional": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "knie_flex_60",
+      "hinweise": ["Read-Schwellen in N/kg gibt es nur für 90° – hier zählt nur das LSI (wünschenswert)."],
+      "kriterien": [
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "wuenschenswert", "quelle": "Read S. 26" }
+      ]
+    },
+    {
+      "id": "hhd_knie_flex_30",
+      "name": "Knie-Flexion 30° (HHD)",
+      "block": "hhd",
+      "messgeraet": "dynamo",
+      "seitenvergleich": true,
+      "inEndtestung": true,
+      "optional": true,
+      "phasen": ["mitte", "spaet", "rtt", "rtc"],
+      "protokoll": "knie_flex_30",
+      "hinweise": ["Read-Schwellen in N/kg gibt es nur für 90° – hier zählt nur das LSI (wünschenswert)."],
+      "kriterien": [
+        { "id": "lsi", "bezeichnung": "LSI", "art": "lsi", "vergleich": ">=", "einheit": "%", "werte": { "alle": 90 }, "status": "wuenschenswert", "quelle": "Read S. 26" }
+      ]
+    },
+    {
       "id": "hhd_hueft_abd",
       "name": "Hüft-Abduktion (HHD)",
       "block": "hhd",

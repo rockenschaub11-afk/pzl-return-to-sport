@@ -18,7 +18,8 @@ import {
 } from '../testung/ablauf'
 import Laedt from '../Laedt'
 import ErgebnisEntscheidung, { AbschlussVerlauf } from '../testung/ErgebnisEntscheidung'
-import { hatEingabe, parseZahl } from '../testung/erfassung'
+import { hatEingabe, hqQuotient, parseZahl } from '../testung/erfassung'
+import { stammdatenHinweise } from '../testung/stammdatenHinweise'
 import KlinischAnders from '../testung/KlinischAnders'
 import { AmpelMarke } from '../testung/Ladebalken'
 import { useMeloqAuswahl } from '../testung/meloqAuswahl'
@@ -290,6 +291,8 @@ export default function TestungErfassen() {
                               : []),
                             ...(ausserhalb ? [`Nicht im Testset der Phase „${phaseNach(phase).name}“ – zusätzlich hinzugefügt.`] : []),
                           ]}
+                          infos={stammdatenHinweise(t.id, patient)}
+                          hq={t.id === 'hhd_knie_flex' ? hqQuotient(a.berechnung, auswertung.get('hhd_knie_ext')?.berechnung) : null}
                           normdaten={normdatenFuer(t.id, patient, testung.datum, monate)}
                           fuss={
                             p && ph.art === 'endtestung' ? (

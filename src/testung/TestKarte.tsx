@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { protokollNach } from '../katalog'
 import type { TestDef } from '../katalog/typen'
 import type { KriteriumErgebnis, TestErgebnis } from '../rechnen/bewertung'
-import { ERFASSUNG, KOOS_SUBSKALEN, VERSUCHE, type Berechnung, type TestEingabe } from './erfassung'
+import { ERFASSUNG, HQ_HINWEIS, KOOS_SUBSKALEN, VERSUCHE, type Berechnung, type hqQuotient, type TestEingabe } from './erfassung'
 import { istMeloqTest } from '../katalog/meloq'
 import Ladebalken, { AMPEL_TEXT, AmpelMarke } from './Ladebalken'
 import FragebogenRechner from './FragebogenRechner'
@@ -30,6 +30,10 @@ interface Props {
   fuss?: ReactNode
   /** Hinweise oben in der Karte, z. B. „HHD erst ab 8 Wochen“ */
   hinweise?: string[]
+  /** Info-Hinweise oben, z. B. aus Graft oder Begleit-OP */
+  infos?: string[]
+  /** H/Q-Quotient (nur bei Knie-Flexion 90°) */
+  hq?: ReturnType<typeof hqQuotient>
   /** Normdaten als graue Zusatzinfo (ohne Einfluss auf die Ampel) */
   normdaten?: NormAnzeige | null
 }
@@ -37,6 +41,7 @@ interface Props {
 const zahl = (v: number, nachkomma = 1) =>
   v.toLocaleString('de-AT', { minimumFractionDigits: nachkomma, maximumFractionDigits: nachkomma })
 const ZEICHEN = { '>': '>', '>=': '≥', '<': '<', '<=': '≤' } as const
+const hqText = (q: number | null) => (q === null ? '–' : `${zahl(q * 100, 0)} %`)
 
 /** Eingabefeld für eine Zahl (Komma oder Punkt). */
 function Zahl({ wert, onChange, label, einheit, breit = false }: { wert?: string; onChange: (v: string) => void; label: string; einheit?: string; breit?: boolean }) {
@@ -259,6 +264,11 @@ export default function TestKarte(props: Props) {
           {h}
         </p>
       ))}
+      {props.infos?.map((h) => (
+        <p key={h} className="meldung meldung-info test-hinweis">
+          {h}
+        </p>
+      ))}
 
       {/* 1. Ergebnis (laut) */}
       <div className="test-ergebnis">
@@ -273,6 +283,12 @@ export default function TestKarte(props: Props) {
           <p className="test-zusatz">
             Drehmoment: {props.seiten.gesund} {b.nmProKg.gesund === null ? '–' : zahl(b.nmProKg.gesund, 2)} · {props.seiten.betroffen}{' '}
             {b.nmProKg.betroffen === null ? '–' : zahl(b.nmProKg.betroffen, 2)} Nm/kg
+          </p>
+        )}
+        {props.hq && (
+          <p className="test-zusatz">
+            H/Q-Quotient (Flexion 90° / Extension 60°{props.hq.ausDrehmoment ? ', aus Nm/kg' : ''}): {props.seiten.gesund} {hqText(props.hq.gesund)} ·{' '}
+            {props.seiten.betroffen} {hqText(props.hq.betroffen)} – nur Info. {HQ_HINWEIS}
           </p>
         )}
         {b.brauchtKoerpergewicht && koerpergewichtFehlt && <p className="meldung meldung-warnung">Für relative Werte fehlt das Körpergewicht (oben).</p>}

@@ -19,10 +19,26 @@
     {
       "id": "knie_flex",
       "name": "Knie-Flexion (HHD)",
-      "ablauf": "Bauchlage, Gurt, isometrisch.",
+      "ablauf": "Bauchlage, Gurt, isometrisch. Gurt und Bank ca. 10° unter dem Zielwinkel einstellen – bei Maximalkraft verändert sich der Kniewinkel; schützt das Transplantat v. a. früh nach der OP.",
       "winkelGrad": 90,
-      "warum": "Hamstring-Defizite zeigen sich v. a. bei > 75° Flexion, besonders nach Hamstring-Graft.",
-      "quelle": "Read S. 25"
+      "warum": "Inner Range: Hamstring-Defizite zeigen sich v. a. bei > 75° Flexion, besonders nach Hamstring-Graft. In der Frühphase reicht dieser Winkel.",
+      "quelle": "Read S. 25–26"
+    },
+    {
+      "id": "knie_flex_60",
+      "name": "Knie-Flexion 60° (HHD)",
+      "ablauf": "Sitzend, Dynamometer distal am Unterschenkel, Gurt, isometrisch 3–5 s. Gurt und Bank ca. 10° unter dem Zielwinkel einstellen – schützt das Transplantat.",
+      "winkelGrad": 60,
+      "warum": "Mittlerer Bereich: Der H/Q-Quotient ändert sich stark über das Bewegungsausmaß, ein Winkel allein zeigt nicht das ganze Kraftprofil. Früh nach der OP sind 90° und 60° die empfohlenen Winkel.",
+      "quelle": "Read S. 26"
+    },
+    {
+      "id": "knie_flex_30",
+      "name": "Knie-Flexion 30° (HHD)",
+      "ablauf": "Sitzend, Dynamometer distal am Unterschenkel, Gurt, isometrisch 3–5 s. Gurt und Bank ca. 10° unter dem Zielwinkel einstellen – schützt das Transplantat.",
+      "winkelGrad": 30,
+      "warum": "Outer Range: tendenziell höhere Kraftwerte; entspricht der Anforderung in der späten Schwungphase beim Sprint, in der die Hamstrings exzentrisch bremsen.",
+      "quelle": "Read S. 25–26"
     },
     {
       "id": "hueft_abd",

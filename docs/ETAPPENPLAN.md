@@ -36,7 +36,9 @@ Alles kostenlos. Keine Cloud, keine Pat.-Daten außerhalb des Laptops.
 | 11 | **Veröffentlichen** | PWA/offline, GitHub Pages unter Philipps Account, Installationsanleitung Windows/Mac |
 | 12 | **Pilot** | Philipp testet 2–3 echte Pat., Korrekturrunde, Kurzanleitung in der App, dann Kolleg:innen |
 
-**Später:** CSV/Excel-Import (Meloq, VALD), evtl. VALD-API, digitale Fragebögen nach Lizenz.
+**Etappe 12, erledigt (27.10.2026):** Knie-Flexion 60°/30° als optionale Tests, Gurt 10° unter Zielwinkel, H/Q-Quotient als Info, Hinweise je Graft und Begleit-OP (ENTSCHEIDUNGEN 5.1).
+
+**Später:** CSV/Excel-Import (Meloq, VALD), evtl. VALD-API, digitale Fragebögen nach Lizenz, exzentrische Hamstring-Kraft (NordBord).
 
 ## Offene Kleinigkeiten (blockieren nichts)
 

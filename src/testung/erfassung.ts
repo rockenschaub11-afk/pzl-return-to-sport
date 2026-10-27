@@ -36,6 +36,8 @@ export const ERFASSUNG: Record<string, Erfassung> = {
   slr: { typ: 'janein' },
   hhd_knie_ext: { typ: 'kraft' },
   hhd_knie_flex: { typ: 'kraft' },
+  hhd_knie_flex_60: { typ: 'kraft' },
+  hhd_knie_flex_30: { typ: 'kraft' },
   hhd_hueft_abd: { typ: 'kraft' },
   plantarflexion: { typ: 'kraft' },
   cmj: { typ: 'cmj' },
@@ -283,6 +285,29 @@ export function berechne(test: TestDef, e: TestEingabe, kontext: Kontext): Berec
       break
   }
   return ergebnis
+}
+
+export const HQ_HINWEIS = 'Typisch um 60 %; auf der betroffenen Seite durch schwachen Quadrizeps oft zu hoch (Read S. 26).'
+
+/**
+ * H/Q-Quotient je Seite: Knie-Flexion 90° / Knie-Extension 60° – nur Info, ohne Ampel (Read S. 26).
+ * Mit Hebelarm bei beiden Tests aus Nm/kg, sonst aus der Kraft in N (gleicher Hebel vorausgesetzt).
+ */
+export function hqQuotient(flex: Berechnung | undefined, ext: Berechnung | undefined): { gesund: number | null; betroffen: number | null; ausDrehmoment: boolean } | null {
+  if (!flex?.seiten || !ext?.seiten) return null
+  const ausDrehmoment = !!flex.nmProKg && !!ext.nmProKg
+  const groesse = (b: Berechnung, seite: 'gesund' | 'betroffen') => {
+    if (ausDrehmoment) return b.nmProKg![seite]
+    const v = b.seiten![seite]
+    return v === null ? null : alsNewton(v, b.seiten!.einheit as 'kg' | 'N')
+  }
+  const wert = (seite: 'gesund' | 'betroffen') => {
+    const f = groesse(flex, seite)
+    const x = groesse(ext, seite)
+    return f !== null && x !== null && x > 0 ? f / x : null
+  }
+  const q = { gesund: wert('gesund'), betroffen: wert('betroffen'), ausDrehmoment }
+  return q.gesund === null && q.betroffen === null ? null : q
 }
 
 /** Hat der Test schon irgendeine Eingabe? (für „optional“ und die Übersicht) */

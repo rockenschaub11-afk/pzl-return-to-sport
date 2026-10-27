@@ -18,7 +18,7 @@ import {
 import type { Ampel, KriteriumErgebnis } from '../rechnen/bewertung'
 import { ART_TEXT, monateBisTestung, phasenStand, sichtbareTests, werteAus, type TestAuswertung } from '../testung/ablauf'
 import { endErgebnis, ENTSCHEIDUNG_TEXT } from '../testung/ErgebnisEntscheidung'
-import { hatEingabe, KOOS_SUBSKALEN, parseZahl } from '../testung/erfassung'
+import { hatEingabe, HQ_HINWEIS, hqQuotient, KOOS_SUBSKALEN, parseZahl } from '../testung/erfassung'
 import { AMPEL_TEXT } from '../testung/Ladebalken'
 import { kernStrategie, zusatzZeilen, type MeloqZeile } from '../testung/meloq'
 import type { MeloqAuswahl } from '../testung/meloqAuswahl'
@@ -150,7 +150,15 @@ function meloqWerte(test: TestDef, testung: Testung, a: TestAuswertung, auswahl:
     })
 }
 
-function arztTest(test: TestDef, testung: Testung, a: TestAuswertung, phase: Testung['phase'], vorschlag: RtsVorschlag | null, auswahl: MeloqAuswahl | undefined): ArztTest {
+function arztTest(
+  test: TestDef,
+  testung: Testung,
+  a: TestAuswertung,
+  phase: Testung['phase'],
+  vorschlag: RtsVorschlag | null,
+  auswahl: MeloqAuswahl | undefined,
+  hq: ReturnType<typeof hqQuotient>,
+): ArztTest {
   const b = a.berechnung
   const s = b.seiten
   const seiten = s && (s.gesund !== null || s.betroffen !== null) ? `gesund ${mitEinheit(s.gesund, s.einheit)} · betroffen ${mitEinheit(s.betroffen, s.einheit)}` : null
@@ -167,6 +175,10 @@ function arztTest(test: TestDef, testung: Testung, a: TestAuswertung, phase: Tes
   const zusatz: string[] = [...a.ergebnis.hinweise]
   if (b.lsiVorverletzung !== null) zusatz.push(`LSI zur Vorverletzung: ${zahl(b.lsiVorverletzung)} %`)
   if (b.nmProKg) zusatz.push(`Drehmoment relativ: gesund ${zahl(b.nmProKg.gesund, 2)} · betroffen ${zahl(b.nmProKg.betroffen, 2)} Nm/kg`)
+  if (hq) {
+    const pct = (q: number | null) => (q === null ? '–' : `${zahl(q * 100, 0)} %`)
+    zusatz.push(`H/Q-Quotient (Flexion 90° / Extension 60°${hq.ausDrehmoment ? ', aus Nm/kg' : ''}): gesund ${pct(hq.gesund)} · betroffen ${pct(hq.betroffen)} – nur Info. ${HQ_HINWEIS}`)
+  }
   for (const st of b.streuung) zusatz.push(`Streuung ${st.seite} ${zahl(st.cv)} % (> 10 %) – Messung ggf. wiederholt`)
   if (test.id === 'koos') {
     const e = testung.eingaben.koos ?? {}
@@ -216,7 +228,12 @@ export function arztBericht(patient: Patient, testung: Testung, auswahl?: MeloqA
   const bloecke = BLOECKE.map((block) => ({
     block,
     name: BLOCK_NAMEN[block],
-    tests: tests.filter((t) => t.block === block).map((t) => arztTest(t, testung, auswertung.get(t.id)!, phase, vorschlag, auswahl)),
+    tests: tests
+      .filter((t) => t.block === block)
+      .map((t) => {
+        const hq = t.id === 'hhd_knie_flex' ? hqQuotient(auswertung.get(t.id)?.berechnung, auswertung.get('hhd_knie_ext')?.berechnung) : null
+        return arztTest(t, testung, auswertung.get(t.id)!, phase, vorschlag, auswahl, hq)
+      }),
   })).filter((b) => b.tests.length > 0)
 
   return {
@@ -281,6 +298,8 @@ export const ALLTAG: Record<string, { lang: string; kurz: string }> = {
   slr: { lang: 'Bein gestreckt heben', kurz: 'Bein heben' },
   hhd_knie_ext: { lang: 'Kraft Oberschenkel vorne (Knie strecken)', kurz: 'Kraft vorne' },
   hhd_knie_flex: { lang: 'Kraft Oberschenkel hinten (Knie beugen)', kurz: 'Kraft hinten' },
+  hhd_knie_flex_60: { lang: 'Kraft Oberschenkel hinten bei 60° (Knie beugen)', kurz: 'Kraft hinten 60°' },
+  hhd_knie_flex_30: { lang: 'Kraft Oberschenkel hinten bei 30° (Knie beugen)', kurz: 'Kraft hinten 30°' },
   hhd_hueft_abd: { lang: 'Kraft Hüfte seitlich', kurz: 'Kraft Hüfte' },
   plantarflexion: { lang: 'Kraft Wade', kurz: 'Kraft Wade' },
   kniebeuge_asym: { lang: 'Kniebeuge – Verteilung auf beide Beine', kurz: 'Kniebeuge' },

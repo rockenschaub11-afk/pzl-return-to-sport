@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { KATALOG, testNach } from '../katalog'
 import type { TestDef } from '../katalog/typen'
 import { bewerteTest } from '../rechnen/bewertung'
-import { berechne, ERFASSUNG, hatEingabe, parseZahl } from './erfassung'
+import { berechne, ERFASSUNG, hatEingabe, hqQuotient, parseZahl } from './erfassung'
 
 const test = (id: string) => testNach(id) as TestDef
 const kg = 80
@@ -118,5 +118,33 @@ describe('Hops, Kraftausdauer, Klinik, PROM', () => {
 
   it('ACL-RSI-Score', () => {
     expect(berechne(test('acl_rsi'), { wert: '62' }, { koerpergewichtKg: kg }).werte.score).toBe(62)
+  })
+})
+
+describe('H/Q-Quotient (Etappe 12, Read S. 26)', () => {
+  const flex = test('hhd_knie_flex')
+  const ext = test('hhd_knie_ext')
+
+  it('Flexion 90° / Extension 60° je Seite, auch bei gemischten Einheiten', () => {
+    const f = berechne(flex, { g1: '30', b1: '27' }, { koerpergewichtKg: kg })
+    const x = berechne(ext, { einheit: 'N', g1: String(50 * 9.81), b1: String(36 * 9.81) }, { koerpergewichtKg: kg })
+    const q = hqQuotient(f, x)!
+    expect(q.gesund).toBeCloseTo(0.6, 6)
+    expect(q.betroffen).toBeCloseTo(0.75, 6) // schwacher Quadrizeps → Quotient zu hoch
+    expect(q.ausDrehmoment).toBe(false)
+  })
+
+  it('aus Nm/kg, wenn bei beiden Tests ein Hebelarm angegeben ist', () => {
+    const f = berechne(flex, { g1: '30', b1: '27', hebel: '0,3' }, { koerpergewichtKg: kg })
+    const x = berechne(ext, { g1: '50', b1: '45', hebel: '0,4' }, { koerpergewichtKg: kg })
+    const q = hqQuotient(f, x)!
+    expect(q.ausDrehmoment).toBe(true)
+    expect(q.gesund).toBeCloseTo((30 * 0.3) / (50 * 0.4), 6)
+  })
+
+  it('ohne Extension kein Quotient', () => {
+    const f = berechne(flex, { g1: '30', b1: '27' }, { koerpergewichtKg: kg })
+    expect(hqQuotient(f, berechne(ext, {}, { koerpergewichtKg: kg }))).toBeNull()
+    expect(hqQuotient(f, undefined)).toBeNull()
   })
 })
