@@ -7,7 +7,9 @@ import { db, type Testung } from '../db'
 import Laedt from '../Laedt'
 import { MELOQ } from '../katalog/meloq'
 import { HINWEIS } from '../navigation'
-import type { Patient } from '../patienten/stammdaten'
+import { datumDeutsch, type Patient } from '../patienten/stammdaten'
+import { KATALOG } from '../katalog'
+import type { RohTest } from '../berichte/nachvollziehbarkeit'
 import LinienDiagramm from '../testung/LinienDiagramm'
 import { useMeloqAuswahl } from '../testung/meloqAuswahl'
 import { verfuegbareOptionen } from '../testung/verlauf'
@@ -53,6 +55,7 @@ export default function Bericht() {
 
   return (
     <section>
+      <Fusszeile text={`${patient.kuerzel} · ${arzt ? 'Arztbericht' : 'Pat./Trainer-Bericht'} · Testung ${datumDeutsch(testung.datum)}`} />
       <div className="bericht-steuerung karte">
         <div className="seitenkopf">
           <div>
@@ -96,6 +99,17 @@ export default function Bericht() {
         <PatAnsicht patient={patient} testung={testung} name={name} />
       )}
     </section>
+  )
+}
+
+/**
+ * Fußzeile auf jeder gedruckten Seite: Kürzel, Bericht, Datum, „Seite x von y“ – nie der Name (Bericht-Audit Punkt 18).
+ * Über @page-Randfelder; Chrome und Edge drucken sie, Safari lässt sie weg.
+ */
+function Fusszeile({ text }: { text: string }) {
+  const sicher = text.replace(/[\\"]/g, '')
+  return (
+    <style>{`@media print { @page { @bottom-center { content: "${sicher} · Seite " counter(page) " von " counter(pages); font-family: Barlow, Arial, sans-serif; font-size: 8pt; color: #56606d; } } }`}</style>
   )
 }
 
@@ -310,8 +324,144 @@ function ArztAnsicht({
         </div>
       </section>
       {b.abgeschlossenAm && <p className="bericht-leise">Testung abgeschlossen am {b.abgeschlossenAm}.</p>}
+
+      <Methodik protokolle={b.protokolle} endtestung={b.rts !== null} />
+      <RohdatenAnhang rohdaten={b.rohdaten} />
       <Fuss />
     </article>
+  )
+}
+
+// ---------- Anhang (Bericht-Audit Punkte 8 und 9) ----------
+
+const QUELLEN = [
+  'Read P. Practitioner’s Guide to ACL. VALD, 2024 (Seitenangaben „Read S. …“; Schwellen je Phase S. 59).',
+  'Aspetar ACL Rehabilitation Protocol.',
+  'ACL Injuries Part 2 Handbook (Clinical Physio).',
+  'VALD Research Normative Data Report – ACL.',
+  'Hawkin Dynamics, ODS System; McMahon et al., Strength Cond J 2021 (Output / Driver / Strategy).',
+]
+
+function Methodik({ protokolle, endtestung }: { protokolle: ArztBericht['protokolle']; endtestung: boolean }) {
+  const r = KATALOG.regeln
+  return (
+    <section className="bericht-abschnitt bericht-anhang">
+      <h2>Anhang: Methodik und Definitionen</h2>
+      <dl className="bericht-methodik">
+        <dt>Ablauf</dt>
+        <dd>
+          <ul>
+            {protokolle.map((p) => (
+              <li key={p.name}>
+                <strong>{p.name}:</strong> {p.ablauf} <span className="bericht-quelle">({p.quelle})</span>
+              </li>
+            ))}
+          </ul>
+          Tatsächlicher Winkel, Boxhöhe, Eingabe-Einheit und Hebelarm stehen beim jeweiligen Test („Protokoll“).
+        </dd>
+        <dt>Gewerteter Versuch</dt>
+        <dd>
+          Bestwert aus bis zu {r.versucheJeSeite} Versuchen je Seite (6 m Hop: schnellster). Kraftmessplatte: der Versuch mit der größten Sprunghöhe zählt mit allen
+          seinen Werten.
+        </dd>
+        <dt>LSI</dt>
+        <dd>
+          betroffen / gesund × 100 (6 m Hop: gesund / betroffen × 100). Bewertung: ✓ ab {r.lsi.gruenAb} %, ~ {r.lsi.gelbAb}–unter {r.lsi.gruenAb} %, ✗ unter {r.lsi.gelbAb} % ({r.lsi.quelle}).
+        </dd>
+        <dt>Asymmetrie</dt>
+        <dd>
+          wie Meloq: (stärker − schwächer) / stärker × 100. Die Formel kennt keine Richtung, darum steht beim Wert, welche Seite schwächer ist. Sie ist nicht dasselbe
+          wie 100 − LSI.
+        </dd>
+        <dt>Relative Werte</dt>
+        <dd>
+          N/kg = Kraft in kg × {r.erdbeschleunigung.toLocaleString('de-AT')} / Körpergewicht · Ns/kg = Impuls in kg·s × {r.erdbeschleunigung.toLocaleString('de-AT')} / Körpergewicht · Nm/kg = Kraft in N × Hebelarm in m / Körpergewicht.
+        </dd>
+        <dt>Rundung</dt>
+        <dd>Bewertet wird die angezeigte, gerundete Zahl (89,96 % → 90,0 % → ✓).</dd>
+        <dt>Streuung</dt>
+        <dd>
+          Variationskoeffizient (CV) = Standardabweichung der Versuche / Mittelwert × 100, ab 2 Versuchen. Über {r.variationskoeffizientWarnungUeber} % (
+          {r.variationskoeffizientQuelle}) ist der Wert mit Vorsicht zu interpretieren.
+        </dd>
+        <dt>Schwellen</dt>
+        <dd>
+          Je Phase nach Read (S. 59); eine Phase ohne eigenen Wert übernimmt den der Phase davor. Read-Bereiche sind 95-%-Konfidenzintervalle, teils aus
+          unveröffentlichten Daten, „for guidance only“ und nicht nach Geschlecht getrennt (Schwelle = untere bzw. obere Grenze). {r.frauenHinweis}
+        </dd>
+        <dt>Sprunghöhe</dt>
+        <dd>Meloq berechnet sie aus der Flugzeit, VALD (Read-Referenz) aus dem Impuls – Abweichungen sind möglich. {MELOQ.nichtMessbar}</dd>
+        {endtestung && (
+          <>
+            <dt>RTS-Vorschlag</dt>
+            <dd>
+              „Kriterien erfüllt“ nur, wenn alle Pflicht-Kriterien ✓ sind und mindestens {r.rts.mindestMonate} Monate seit der OP vergangen sind ({r.rts.quelle}).
+              Die Therapeut:in bestätigt oder überstimmt mit Begründung. Ersetzt keine ärztliche Freigabe.
+            </dd>
+          </>
+        )}
+        <dt>Quellen</dt>
+        <dd>
+          <ul>
+            {QUELLEN.map((q) => (
+              <li key={q}>{q}</li>
+            ))}
+          </ul>
+        </dd>
+      </dl>
+    </section>
+  )
+}
+
+const zahlRoh = (v: number | null, einheit: string) => (v === null ? '–' : v.toLocaleString('de-AT', { maximumFractionDigits: einheit === 's' ? 2 : 1 }))
+
+function RohdatenAnhang({ rohdaten }: { rohdaten: RohTest[] }) {
+  if (rohdaten.length === 0) return null
+  return (
+    <section className="bericht-abschnitt">
+      <h2>Anhang: Rohdaten</h2>
+      <table className="bericht-tabelle bericht-roh">
+        <thead>
+          <tr>
+            <th>Test</th>
+            <th>Seite</th>
+            <th className="bericht-zahl">Versuch 1</th>
+            <th className="bericht-zahl">Versuch 2</th>
+            <th className="bericht-zahl">Versuch 3</th>
+            <th className="bericht-zahl">CV</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rohdaten.flatMap((t) =>
+            t.zeilen.map((z, zi) => (
+              <tr key={`${t.id}-${z.seite}`}>
+                {zi === 0 && (
+                  <td rowSpan={t.zeilen.length}>
+                    {t.name}
+                    <br />
+                    <span className="bericht-leise">
+                      {t.einheit} · gewertet: {t.gewertet}
+                    </span>
+                  </td>
+                )}
+                <td className="bericht-roh-seite">{z.seite}</td>
+                {z.werte.map((w, i) => (
+                  <td key={i} className="bericht-zahl">
+                    {i === z.gewertet ? <strong>{zahlRoh(w, t.einheit)}</strong> : zahlRoh(w, t.einheit)}
+                  </td>
+                ))}
+                <td className="bericht-zahl">
+                  {z.cv === null ? '–' : z.cvHoch ? <strong>{`${z.cv.toLocaleString('de-AT', { maximumFractionDigits: 1 })} % !`}</strong> : `${z.cv.toLocaleString('de-AT', { maximumFractionDigits: 1 })} %`}
+                </td>
+              </tr>
+            )),
+          )}
+        </tbody>
+      </table>
+      <p className="bericht-leise">
+        Fett = gewerteter Versuch. CV mit „!“ = über {KATALOG.regeln.variationskoeffizientWarnungUeber} % ({KATALOG.regeln.variationskoeffizientQuelle}) – Wert mit Vorsicht interpretieren.
+      </p>
+    </section>
   )
 }
 
@@ -335,13 +485,32 @@ function ArztTestZeilen({ t }: { t: ArztBericht['bloecke'][number]['tests'][numb
           {t.test.name}
           {t.seiten && <span className="bericht-seiten"> – {t.seiten}</span>}
           {t.ausserhalbTestset && <span className="bericht-leise"> (nicht im Testset der Phase)</span>}
+          {t.protokoll.length > 0 && (
+            <span className="bericht-protokoll">
+              Protokoll:{' '}
+              {t.protokoll.map((p, i) => (
+                <span key={p.text}>
+                  {i > 0 && ' · '}
+                  {p.abweichend ? <strong>{p.text}</strong> : p.text}
+                </span>
+              ))}
+            </span>
+          )}
         </th>
       </tr>
       {t.kriterien.map((k) => (
         <tr key={k.bezeichnung}>
           <td className="bericht-einrueck">{k.bezeichnung}</td>
           <td>{k.status}</td>
-          <td className="bericht-zahl">{k.wert}</td>
+          <td className="bericht-zahl">
+            {k.wert}
+            {k.wertHinweis && (
+              <>
+                <br />
+                <span className="bericht-leise">{k.wertHinweis}</span>
+              </>
+            )}
+          </td>
           <td className="bericht-zahl">{k.ziel}</td>
           <td>
             <BewertungMarke b={k.bewertung} />

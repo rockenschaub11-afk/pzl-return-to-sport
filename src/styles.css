@@ -2984,6 +2984,44 @@ fieldset:disabled .test-hinzu {
   font-weight: 400;
 }
 
+/* Protokoll je Test (Bericht-Audit Punkt 5) – abweichende Werte fett */
+.bericht-protokoll {
+  display: block;
+  color: var(--text-leise);
+  font-size: 8.5pt;
+  font-weight: 400;
+}
+
+.bericht-protokoll strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* Anhang Methodik (Punkt 8) */
+.bericht-methodik {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  font-size: 9pt;
+}
+
+.bericht-methodik dt {
+  font-weight: 600;
+}
+
+.bericht-methodik dd {
+  margin: 0;
+}
+
+.bericht-methodik ul {
+  margin: 0 0 0.2rem;
+}
+
+.bericht-roh-seite {
+  color: var(--text-leise);
+}
+
 .bericht-einrueck {
   padding-left: 1rem !important;
 }
@@ -3230,8 +3268,14 @@ fieldset:disabled .test-hinzu {
     background: #fff;
   }
 
-  /* Kopfleiste, Navigation, Hinweisleiste und Bedienelemente nicht drucken */
+  /* Platz der Seitenleiste nicht freihalten */
+  .app {
+    padding-left: 0;
+  }
+
+  /* Kopfleiste, Seitenleiste, Hinweisleiste und Bedienelemente nicht drucken */
   .kopf,
+  .leiste,
   .hinweis,
   .konfig-fehler,
   .bericht-steuerung {
@@ -3268,6 +3312,11 @@ fieldset:disabled .test-hinzu {
     break-inside: avoid;
   }
 
+  /* Anhang beginnt auf einer neuen Seite */
+  .bericht-anhang {
+    break-before: page;
+  }
+
   .netz-flaeche {
     animation: none;
   }
@@ -3280,6 +3329,16 @@ fieldset:disabled .test-hinzu {
   .bericht-pat-tabelle td {
     padding-top: 0.1rem;
     padding-bottom: 0.1rem;
+  }
+
+  /* Testnamen nicht in eine schmale Spalte drücken (lange Verteilungs-Zeilen) */
+  .bericht-pat-tabelle th:first-child {
+    width: 30%;
+  }
+
+  /* Netz etwas kleiner, damit auch mit Verteilungs-Zeilen alles auf eine Seite passt */
+  .bericht-pat .netz svg {
+    max-height: 72mm;
   }
 }
 

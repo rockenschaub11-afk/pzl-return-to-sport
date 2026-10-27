@@ -123,6 +123,20 @@ describe('Arztbericht', () => {
     expect(tests.find((t) => t.test.id === 'hhd_knie_flex')!.zusatz.join(' ')).toMatch(/aus Kraft – gleicher Hebelarm angenommen/)
   })
 
+  it('Nachvollziehbarkeit: Protokoll, Richtung, N/kg je Seite, Anhang mit Protokollen und Rohdaten', () => {
+    const b = arztBericht(patient, ende, auswahlBereinigen(undefined))
+    const tests = b.bloecke.flatMap((x) => x.tests)
+    const ext = tests.find((t) => t.test.id === 'hhd_knie_ext')!
+    expect(ext.seiten).toBe('gesund 8,3 · betroffen 7,8 N/kg (66 / 62 kg)')
+    expect(ext.protokoll.map((p) => p.text)).toEqual(['Winkel 60°', 'Eingabe in kg'])
+    const cmj = tests.find((t) => t.test.id === 'cmj')!
+    expect(cmj.kriterien.find((k) => k.bezeichnung === 'Net-Impulse-Asymmetrie')?.wertHinweis).toBe('betroffene Seite stärker')
+    expect(cmj.meloq.find((m) => m.name.startsWith('Peak Force'))).toMatchObject({ wert: expect.stringMatching(/^L \(betroffen\) 98 · R 92 kg/), vergleich: 'Asymmetrie 6,1 % – betroffene Seite stärker' })
+    expect(b.protokolle.map((p) => p.name)).toEqual(expect.arrayContaining(['Allgemein', 'Knie-Extension (HHD)', 'SL-Drop-Jump']))
+    expect(b.rohdaten.map((r) => r.id)).toEqual(expect.arrayContaining(['hhd_knie_ext', 'cmj', 'single_hop', 'imtp']))
+    expect(b.rohdaten.some((r) => r.id === 'sl_bridge')).toBe(false)
+  })
+
   it('fehlendes Körpergewicht heißt nicht „nicht gemessen“', () => {
     const ohne = { ...ende, koerpergewichtKg: '' }
     const b = arztBericht(patient, ohne)
@@ -158,7 +172,8 @@ describe('Pat./Trainer-Bericht', () => {
 
   it('Unterschied zwischen den Beinen als eigene Zeile, auch unter „Was fehlt noch?“; keine leeren Zeilen', () => {
     const cmj = patBericht(patient, ende).zeilen.find((z) => z.id === 'cmj:verteilung')!
-    expect(cmj).toMatchObject({ name: 'Sprung beidbeinig – Verteilung auf beide Beine', wert: '7,7 %', wertArt: 'unterschied', bewertung: { ampel: 'gruen' } })
+    // DEMO-1990: betroffen links, Net Impulse L 15,6 > R 14,4
+    expect(cmj).toMatchObject({ name: 'Sprung beidbeinig – Verteilung auf beide Beine', wert: '7,7 % – betroffenes Bein stärker', wertArt: 'unterschied', bewertung: { ampel: 'gruen' } })
     const mitte = patBericht(patient, testungen[0])
     expect(mitte.zeilen.find((z) => z.id === 'hop_platte:verteilung')?.wert).toMatch(/^14/)
     expect(mitte.zeilen.some((z) => z.id === 'hop_platte')).toBe(false)

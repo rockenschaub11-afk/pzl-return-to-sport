@@ -3,7 +3,7 @@
 // Formulierung nie „Freigabe“ (F36).
 
 import type { Testung } from '../db'
-import { KATALOG, phaseNach } from '../katalog'
+import { KATALOG, phaseNach, protokollNach } from '../katalog'
 import { BLOCK_NAMEN, BLOECKE, STATUS_NAMEN, type Block, type TestDef } from '../katalog/typen'
 import { istMeloqTest } from '../katalog/meloq'
 import {
@@ -18,11 +18,24 @@ import {
 import type { Ampel, KriteriumErgebnis } from '../rechnen/bewertung'
 import { ART_TEXT, monateBisTestung, phasenStand, sichtbareTests, werteAus, type TestAuswertung } from '../testung/ablauf'
 import { endErgebnis, ENTSCHEIDUNG_TEXT } from '../testung/ErgebnisEntscheidung'
-import { hatEingabe, HQ_HINWEIS, hqQuotient, KOOS_SUBSKALEN, parseZahl } from '../testung/erfassung'
+import { ERFASSUNG, hatEingabe, HQ_HINWEIS, hqQuotient, KOOS_SUBSKALEN, parseZahl, type TestEingabe } from '../testung/erfassung'
 import { AMPEL_TEXT } from '../testung/Ladebalken'
 import { kernStrategie, zusatzZeilen, type MeloqZeile } from '../testung/meloq'
 import type { MeloqAuswahl } from '../testung/meloqAuswahl'
 import type { NetzAchse } from './Spinnennetz'
+import { alsNewton, nProKg } from '../rechnen/einheiten'
+import {
+  impulsRichtung,
+  nachSeite,
+  protokollTeile,
+  richtung,
+  RICHTUNG_ARZT,
+  RICHTUNG_PAT,
+  rohdaten,
+  streuungHinweis,
+  type ProtokollTeil,
+  type RohTest,
+} from './nachvollziehbarkeit'
 import { pflichtStatus, pflichtVerfehlt, RTS_TEXT, rtsVorschlag, wertText, zielText, type RtsVorschlag } from '../testung/rts'
 
 /** Ampel-Zeichen – damit die Bewertung auch in Schwarz-Weiß lesbar bleibt (10a, D6). */
@@ -87,6 +100,8 @@ export interface ArztKriterium {
   bezeichnung: string
   status: string
   wert: string
+  /** leise unter dem Wert, z. B. „betroffene Seite schwächer“ (Audit Punkt 6) */
+  wertHinweis: string | null
   ziel: string
   bewertung: Bewertung
   quelle: string
@@ -95,8 +110,10 @@ export interface ArztKriterium {
 export interface ArztTest {
   test: TestDef
   gemessen: boolean
-  /** Bestwerte gesund/betroffen, z. B. „gesund 65 kg · betroffen 61 kg“ */
+  /** Bestwerte gesund/betroffen, z. B. „gesund 8,3 · betroffen 7,8 N/kg (66 / 62 kg)“ */
   seiten: string | null
+  /** Winkel, Box, Eingabe-Einheit, Hebelarm (Audit Punkt 5) */
+  protokoll: ProtokollTeil[]
   kriterien: ArztKriterium[]
   /** Kern-Satz-Strategy und gewählte Meloq-Zusatzmetriken mit Wert (ohne Ampel) */
   meloq: { ods: MeloqZeile['ods']; name: string; wert: string; vergleich: string }[]
@@ -124,6 +141,10 @@ export interface ArztBericht {
   bloecke: { block: Block; name: string; tests: ArztTest[] }[]
   therapeut: string
   abgeschlossenAm: string | null
+  /** Anhang: Ablauf der Protokolle der gemessenen Tests (Audit Punkt 8) */
+  protokolle: { name: string; ablauf: string; quelle: string }[]
+  /** Anhang: Einzelversuche mit Streuung (Audit Punkt 9) */
+  rohdaten: RohTest[]
 }
 
 function stammdaten(p: Patient, t: Testung): [string, string][] {
@@ -156,24 +177,44 @@ export function zeitVergleich(lsiWert: number): string {
   return `betroffen ${zahl(Math.abs(diff))} % ${diff > 0 ? 'länger' : 'kürzer'}`
 }
 
-function meloqWerte(test: TestDef, testung: Testung, a: TestAuswertung, auswahl: MeloqAuswahl | undefined): ArztTest['meloq'] {
+function meloqWerte(test: TestDef, testung: Testung, a: TestAuswertung, auswahl: MeloqAuswahl | undefined, seite: Patient['seite']): ArztTest['meloq'] {
   if (!istMeloqTest(test.id)) return []
   const e = testung.eingaben[test.id] ?? {}
   const zeilen = [kernStrategie(test.id, e, a.berechnung), ...(auswahl ? zusatzZeilen(test.id, e, auswahl[test.id], parseZahl(testung.koerpergewichtKg)) : [])]
+  // L/R der betroffenen Seite zuordnen (Audit Punkt 6)
+  const markiere = (s: 'L' | 'R') => (nachSeite('L', 'R', seite)?.betroffen === s ? `${s} (betroffen)` : s)
   return zeilen
     .filter((z) => z.werte.some((w) => w !== null))
     .map((z) => {
       const nk = z.einheit === 'ms' ? 0 : 1
-      const roh = z.form === 'eins' ? `${zahl(z.werte[0], nk)} ${z.einheit}` : `${z.form === 'lr' ? 'L' : 'gesund'} ${zahl(z.werte[0], nk)} · ${z.form === 'lr' ? 'R' : 'betroffen'} ${zahl(z.werte[1], nk)} ${z.einheit}`
+      const roh =
+        z.form === 'eins'
+          ? `${zahl(z.werte[0], nk)} ${z.einheit}`
+          : `${z.form === 'lr' ? markiere('L') : 'gesund'} ${zahl(z.werte[0], nk)} · ${z.form === 'lr' ? markiere('R') : 'betroffen'} ${zahl(z.werte[1], nk)} ${z.einheit}`
       const rel = z.relativ && z.relativ.werte.some((w) => w !== null) ? ` (${z.relativ.werte.map((w) => zahl(w, z.relativ!.einheit === 'N/s' ? 0 : 1)).join(' / ')} ${z.relativ.einheit})` : ''
-      const v =
-        !z.vergleich || z.vergleich.wert === null
-          ? ''
-          : z.vergleich.art === 'lsi' && z.einheit === 'ms'
-            ? zeitVergleich(z.vergleich.wert)
-            : `${z.vergleich.art === 'lsi' ? 'LSI' : 'Asymmetrie'} ${zahl(z.vergleich.wert)} %`
+      let v = ''
+      if (z.vergleich && z.vergleich.wert !== null) {
+        if (z.vergleich.art === 'lsi' && z.einheit === 'ms') v = zeitVergleich(z.vergleich.wert)
+        else if (z.vergleich.art === 'lsi') v = `LSI ${zahl(z.vergleich.wert)} %`
+        else {
+          const s = nachSeite(z.werte[0], z.werte[1], seite)
+          const r = s ? richtung(s.betroffen, s.gesund) : null
+          v = `Asymmetrie ${zahl(z.vergleich.wert)} %${r ? ` – ${RICHTUNG_ARZT[r]}` : ''}`
+        }
+      }
       return { ods: z.ods, name: z.name, wert: roh + rel, vergleich: v }
     })
+}
+
+/** Seitenwerte; bei Krafttests mit Körpergewicht in N/kg, die Eingabe in Klammern (Audit Punkt 22). */
+function seitenText(test: TestDef, b: TestAuswertung['berechnung'], kg: number | null): string | null {
+  const s = b.seiten
+  if (!s || (s.gesund === null && s.betroffen === null)) return null
+  if (ERFASSUNG[test.id]?.typ === 'kraft' && kg) {
+    const rel = (v: number | null) => (v === null ? '–' : zahl(nProKg(alsNewton(v, s.einheit === 'N' ? 'N' : 'kg'), kg)))
+    return `gesund ${rel(s.gesund)} · betroffen ${rel(s.betroffen)} N/kg (${zahl(s.gesund)} / ${zahl(s.betroffen)} ${s.einheit})`
+  }
+  return `gesund ${mitEinheit(s.gesund, s.einheit)} · betroffen ${mitEinheit(s.betroffen, s.einheit)}`
 }
 
 function arztTest(
@@ -184,18 +225,20 @@ function arztTest(
   vorschlag: RtsVorschlag | null,
   auswahl: MeloqAuswahl | undefined,
   hq: ReturnType<typeof hqQuotient>,
+  seite: Patient['seite'],
 ): ArztTest {
   const b = a.berechnung
-  const s = b.seiten
-  const seiten = s && (s.gesund !== null || s.betroffen !== null) ? `gesund ${mitEinheit(s.gesund, s.einheit)} · betroffen ${mitEinheit(s.betroffen, s.einheit)}` : null
+  const eingabe = testung.eingaben[test.id] ?? {}
   const gemessen = hatEingabe(testung.eingaben[test.id])
   const kg = parseZahl(testung.koerpergewichtKg)
+  const r = impulsRichtung(test, eingabe, b, seite)
   const kriterien = a.ergebnis.kriterien
     .filter((e) => e.zustand !== 'nicht_anwendbar')
     .map((e) => ({
       bezeichnung: e.kriterium.bezeichnung,
       status: STATUS_NAMEN[e.kriterium.status],
       wert: wertText(e),
+      wertHinweis: r && e.kriterium.id === 'impuls_asymmetrie' && e.zustand === 'bewertet' ? RICHTUNG_ARZT[r] : null,
       ziel: zielText(e) || '–',
       bewertung: gemessen && ohneGewicht(e, kg) ? { ampel: null, text: `Körpergewicht fehlt – keine ${e.kriterium.einheit}` } : bewertungText(e),
       quelle: e.kriterium.quelle,
@@ -207,7 +250,7 @@ function arztTest(
     const pct = (q: number | null) => (q === null ? '–' : `${zahl(q * 100, 0)} %`)
     zusatz.push(`H/Q-Quotient (Flexion 90° / Extension 60°${hq.ausDrehmoment ? ', aus Nm/kg' : ', aus Kraft – gleicher Hebelarm angenommen, grobe Orientierung'}): gesund ${pct(hq.gesund)} · betroffen ${pct(hq.betroffen)} – nur Info. ${HQ_HINWEIS}`)
   }
-  for (const st of b.streuung) zusatz.push(`Streuung ${st.seite} ${zahl(st.cv)} % (> 10 %) – Messung ggf. wiederholt`)
+  for (const st of b.streuung) zusatz.push(streuungHinweis(st.seite, st.cv))
   if (test.id === 'koos') {
     const e = testung.eingaben.koos ?? {}
     const teile = KOOS_SUBSKALEN.filter(([id]) => parseZahl(e[`koos_${id}`]) !== null).map(([id, name]) => `${name} ${zahl(parseZahl(e[`koos_${id}`]))}`)
@@ -217,9 +260,10 @@ function arztTest(
   return {
     test,
     gemessen,
-    seiten,
+    seiten: seitenText(test, b, kg),
+    protokoll: gemessen ? protokollTeile(test, eingabe) : [],
     kriterien,
-    meloq: meloqWerte(test, testung, a, auswahl),
+    meloq: meloqWerte(test, testung, a, auswahl, seite),
     klinischAnders: anders ? { urteil: anders.urteil === 'erfuellt' ? 'als erfüllt beurteilt' : 'als nicht erfüllt beurteilt', begruendung: anders.begruendung } : null,
     zusatz,
     ausserhalbTestset: !!phase && !test.phasen.includes(phase),
@@ -264,9 +308,17 @@ export function arztBericht(patient: Patient, testung: Testung, auswahl?: MeloqA
       .filter((t) => t.block === block)
       .map((t) => {
         const hq = t.id === 'hhd_knie_flex' ? hqQuotient(auswertung.get(t.id)?.berechnung, auswertung.get('hhd_knie_ext')?.berechnung) : null
-        return arztTest(t, testung, auswertung.get(t.id)!, phase, vorschlag, auswahl, hq)
+        return arztTest(t, testung, auswertung.get(t.id)!, phase, vorschlag, auswahl, hq, patient.seite)
       }),
   })).filter((b) => b.tests.length > 0)
+
+  // Anhang (Audit Punkte 8, 9): Protokolle und Einzelversuche der gemessenen Tests
+  const gemessen = tests.filter((t) => hatEingabe(testung.eingaben[t.id]))
+  const protokolle = [...new Set(['allgemein', ...gemessen.map((t) => t.protokoll).filter((x): x is string => !!x)])]
+    .map((id) => protokollNach(id))
+    .filter((x) => !!x)
+    .map((x) => ({ name: x!.name, ablauf: x!.ablauf, quelle: x!.quelle }))
+  const roh = gemessen.map((t) => rohdaten(t, testung.eingaben[t.id] ?? {}, auswertung.get(t.id)!.berechnung)).filter((x): x is RohTest => x !== null)
 
   return {
     kuerzel: patient.kuerzel,
@@ -279,6 +331,8 @@ export function arztBericht(patient: Patient, testung: Testung, auswahl?: MeloqA
     bloecke,
     therapeut: testung.entscheidung?.therapeut.trim() ?? '',
     abgeschlossenAm: abgeschlossen && testung.abgeschlossenAm ? datumDeutsch(testung.abgeschlossenAm.slice(0, 10)) : null,
+    protokolle,
+    rohdaten: roh,
   }
 }
 
@@ -448,7 +502,7 @@ const istAsymmetrie = (e: KriteriumErgebnis) => e.kriterium.art === 'asymmetrie'
  * Zeilen eines Tests: Hauptzeile (Seiten bzw. beidbeiniger Wert) und – wo nötig – eine eigene Zeile
  * „Verteilung auf beide Beine“ für den Unterschied zwischen den Beinen (Bericht-Audit Punkt 2).
  */
-function patZeilen(test: TestDef, a: TestAuswertung): PatZeile[] {
+function patZeilen(test: TestDef, a: TestAuswertung, eingabe: TestEingabe, seite: Patient['seite']): PatZeile[] {
   const s = a.berechnung.seiten
   const haupt = a.ergebnis.kriterien.filter((e) => !DRIVER.includes(e.kriterium.id) && !istAsymmetrie(e))
   const einzeln = haupt.filter((e) => e.zustand !== 'nicht_anwendbar' && typeof e.wert === 'number' && e.kriterium.art !== 'lsi')
@@ -477,13 +531,15 @@ function patZeilen(test: TestDef, a: TestAuswertung): PatZeile[] {
     (e) => istAsymmetrie(e) && typeof e.wert === 'number' && (!DRIVER.includes(e.kriterium.id) || e.kriterium.status === 'pflicht' || !hatHaupt),
   )
   if (asym.length > 0) {
+    // Richtung nur beim Net Impulse bekannt (L/R bzw. gesund/betroffen) – Audit Punkt 6
+    const r = asym.some((e) => e.kriterium.id === 'impuls_asymmetrie') ? impulsRichtung(test, eingabe, a.berechnung, seite) : null
     zeilen.push({
       id: `${test.id}:verteilung`,
       name: verteilungName(test),
       kurz: alltag(test).kurz,
       gesund: null,
       betroffen: null,
-      wert: asym.map((e) => wertText(e)).join(' · '),
+      wert: `${asym.map((e) => wertText(e)).join(' · ')}${r ? ` – ${RICHTUNG_PAT[r]}` : ''}`,
       wertArt: 'unterschied',
       lsi: null,
       lsiAmpel: null,
@@ -501,7 +557,7 @@ export function patBericht(patient: Patient, testung: Testung): PatBericht {
   const endtestung = p.ph.art === 'endtestung'
   const v = rtsVorschlag(testung, patient, auswertung, phase)
 
-  const zeilen = tests.filter((t) => LEISTUNG.includes(t.block) && hatEingabe(testung.eingaben[t.id])).flatMap((t) => patZeilen(t, auswertung.get(t.id)!))
+  const zeilen = tests.filter((t) => LEISTUNG.includes(t.block) && hatEingabe(testung.eingaben[t.id])).flatMap((t) => patZeilen(t, auswertung.get(t.id)!, testung.eingaben[t.id] ?? {}, patient.seite))
 
   // Klinik in einer Zeile (Etappe-9-Frage 2)
   const klinik = tests.filter((t) => t.block === 'klinik').map((t) => pflichtStatus(auswertung.get(t.id)!)?.status)
