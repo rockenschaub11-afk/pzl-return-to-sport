@@ -45,6 +45,8 @@ interface Props {
   nachkomma?: number
   /** welches Kriterium die Punkt-Ampel bewertet, z. B. „Kraft relativ“ */
   bewertet?: string
+  /** Satz, wenn es kein Ziel gibt (DESIGNKONZEPT 6: kein Korridor, dafür ein Satz) */
+  hinweis?: string
 }
 
 const H = 250
@@ -83,7 +85,7 @@ function useBreite(standard = 640) {
   return [ref, breite] as const
 }
 
-export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen, korridor, fehlend = [], abNull = true, nachkomma = 1, bewertet }: Props) {
+export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen, korridor, fehlend = [], abNull = true, nachkomma = 1, bewertet, hinweis }: Props) {
   const [ref, B] = useBreite()
   const [aktiv, setAktiv] = useState<number | null>(null)
 
@@ -294,6 +296,7 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
         )}
         {punkte.some((p) => p.ampel) && <span>Punkte: ✓ erfüllt · ~ knapp · ✗ nicht erfüllt</span>}
         {fehlend.length > 0 && <span>○ nicht gemessen</span>}
+        {!korridor && hinweis && <span>{hinweis}</span>}
       </p>
       {punkte.length < 2 && <p className="diagramm-hinweis">Erst eine Messung – der Verlauf entsteht ab zwei Testungen.</p>}
     </figure>

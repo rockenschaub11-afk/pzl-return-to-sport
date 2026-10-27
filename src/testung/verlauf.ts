@@ -1,15 +1,18 @@
 // Daten für die Verlaufsdiagramme auf der Seite eines Kürzels (Etappe-7-Frage 6):
 // je Testung Bestwerte gesund/betroffen (bzw. ein Wert) und LSI bzw. Asymmetrie.
+// Bremsphase (Meloq-Zusatzmetriken, Paper Sheth & Elis 2026 geprüft): nur zum Anschauen – ohne Ziel, Korridor und Ampel.
 
+import { nachSeite } from '../berichte/nachvollziehbarkeit'
 import type { Testung } from '../db'
 import { KATALOG, phaseNach, testNach } from '../katalog'
+import { istMeloqTest, zusatzFuer } from '../katalog/meloq'
 import type { Kriterium, PhaseId } from '../katalog/typen'
 import type { Patient } from '../patienten/stammdaten'
 import { schwelleFuer, type Ampel } from '../rechnen/bewertung'
 import { alsNewton, nProKg } from '../rechnen/einheiten'
 import { ERFASSBARE_TESTS, monateBisTestung, phasenStand, sichtbareTests, werteAus, type TestAuswertung } from './ablauf'
 import { ERFASSUNG, parseZahl } from './erfassung'
-import { kernStrategie } from './meloq'
+import { kernStrategie, zusatzZeilen } from './meloq'
 
 export interface VerlaufOption {
   id: string
@@ -19,6 +22,8 @@ export interface VerlaufOption {
   seiten: boolean
   /** zweites Diagramm: LSI (Ziel ≥ 90 %) oder Asymmetrie (Ziel < 10 %) */
   zweites?: { name: 'LSI' | 'Asymmetrie'; ziel: number }
+  /** Satz unter dem Diagramm, wenn es kein Ziel gibt */
+  hinweis?: string
 }
 
 export interface VerlaufPunkt {
@@ -41,6 +46,21 @@ export interface VerlaufPunkt {
 const LSI = { name: 'LSI', ziel: 90 } as const
 const ASYM = { name: 'Asymmetrie', ziel: 10 } as const
 
+/** Meloq-Werte der Bremsphase, die als Verlauf wählbar sind (ohne Ziel). */
+export const BREMSPHASE = ['peak_power_braking', 'net_peak_braking_force', 'rfd_braking'] as const
+const BREMS_HINWEIS = 'Meloq-Wert der Bremsphase – nur zur Info, ohne Ziel und ohne Ampel.'
+
+/** id `<test>:z_<metrik>`; Wert relativ (W/kg, N/kg, N/s) wie im Arztbericht in Klammern; CMJ links/rechts nach betroffener Seite. */
+function bremsOptionen(testId: string, testName: string): VerlaufOption[] {
+  if (!istMeloqTest(testId)) return []
+  return zusatzFuer(testId)
+    .filter((m) => (BREMSPHASE as readonly string[]).includes(m.id))
+    .map((m) => {
+      const seiten = testId !== 'cmj' || !!m.seitig
+      return { id: `${testId}:z_${m.id}`, name: `${testName} – ${m.name}`, einheit: m.relativ ?? m.einheit, seiten, zweites: seiten ? (testId === 'cmj' ? ASYM : LSI) : undefined, hinweis: BREMS_HINWEIS }
+    })
+}
+
 /** Alle denkbaren Verlaufsgrößen in Katalog-Reihenfolge, Strategy-Werte (ENTSCHEIDUNGEN 6.4) dazu. */
 export const VERLAUF_OPTIONEN: readonly VerlaufOption[] = ERFASSBARE_TESTS.flatMap((t): VerlaufOption[] => {
   const art = ERFASSUNG[t.id]
@@ -57,6 +77,7 @@ export const VERLAUF_OPTIONEN: readonly VerlaufOption[] = ERFASSBARE_TESTS.flatM
       return [
         { id: t.id, name: `${t.name} – Sprunghöhe`, einheit: 'cm', seiten: true, zweites: LSI },
         { id: `${t.id}:ct`, name: `${t.name} – Contraction Time`, einheit: 'ms', seiten: true, zweites: LSI },
+        ...bremsOptionen(t.id, t.name),
       ]
     case 'sl_dj':
       return [
@@ -67,6 +88,7 @@ export const VERLAUF_OPTIONEN: readonly VerlaufOption[] = ERFASSBARE_TESTS.flatM
       return [
         { id: t.id, name: `${t.name} – Sprunghöhe`, einheit: 'cm', seiten: false, zweites: ASYM },
         { id: `${t.id}:ct`, name: `${t.name} – Contraction Time`, einheit: 'ms', seiten: false },
+        ...bremsOptionen(t.id, t.name),
       ]
     case 'imtp':
       return [{ id: t.id, name: `${t.name} – relativ`, einheit: 'N/kg', seiten: false }]
@@ -82,7 +104,7 @@ export const VERLAUF_OPTIONEN: readonly VerlaufOption[] = ERFASSBARE_TESTS.flatM
 })
 
 /** Werte einer Verlaufsgröße aus einer ausgewerteten Testung. */
-function punktWerte(option: VerlaufOption, testung: Testung, a: Map<string, TestAuswertung>): Omit<VerlaufPunkt, 'testungId' | 'datum' | 'monate' | 'phase' | 'genau' | 'ampelWert' | 'ampelZweites'> {
+function punktWerte(option: VerlaufOption, testung: Testung, a: Map<string, TestAuswertung>, seite: Patient['seite'] | ''): Omit<VerlaufPunkt, 'testungId' | 'datum' | 'monate' | 'phase' | 'genau' | 'ampelWert' | 'ampelZweites'> {
   const [testId, strategie] = option.id.split(':')
   const aus = a.get(testId)
   const leer = { gesund: null, betroffen: null, wert: null, zweites: null }
@@ -90,6 +112,15 @@ function punktWerte(option: VerlaufOption, testung: Testung, a: Map<string, Test
   const b = aus.berechnung
   const w = b.werte
   const zahl = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) ? v : null)
+
+  if (strategie?.startsWith('z_')) {
+    const [z] = istMeloqTest(testId) ? zusatzZeilen(testId, testung.eingaben[testId] ?? {}, [strategie.slice(2)], parseZahl(testung.koerpergewichtKg)) : []
+    if (!z) return leer
+    const v = z.relativ ? z.relativ.werte : z.werte
+    if (z.form === 'eins') return { ...leer, wert: v[0] }
+    const s = z.form === 'lr' ? nachSeite(v[0], v[1], seite) : { gesund: v[0], betroffen: v[1] }
+    return { ...leer, gesund: s?.gesund ?? null, betroffen: s?.betroffen ?? null, zweites: z.vergleich?.wert ?? null }
+  }
 
   if (strategie) {
     const k = kernStrategie(testId as 'cmj' | 'sl_cmj' | 'sl_dj', testung.eingaben[testId] ?? {}, b)
@@ -123,7 +154,7 @@ function punktWerte(option: VerlaufOption, testung: Testung, a: Map<string, Test
 
 /** Verlaufspunkte je Testung (nach Datum sortiert), nur Testungen mit Werten. */
 export function verlaufsDaten(
-  patient: Pick<Patient, 'opDatum' | 'geschlecht'>,
+  patient: Pick<Patient, 'opDatum' | 'geschlecht'> & Partial<Pick<Patient, 'seite'>>,
   testungen: readonly Testung[],
   option: VerlaufOption,
 ): VerlaufPunkt[] {
@@ -139,7 +170,7 @@ export function verlaufsDaten(
         monate: monateBisTestung(patient.opDatum, t.datum),
         genau: monateGenau(patient.opDatum, t.datum),
         phase,
-        ...punktWerte(option, t, a),
+        ...punktWerte(option, t, a, patient.seite ?? ''),
         ampelWert: ampelVon(a, option, k.wert),
         ampelZweites: ampelVon(a, option, k.zweites),
       }
@@ -224,7 +255,7 @@ export function zielkorridor(k: Kriterium | undefined): Zielkorridor | null {
 
 /** Testungen, in deren Testset der Test liegt, die aber keinen Wert dazu haben („nicht gemessen“). */
 export function fehlendeMessungen(
-  patient: Pick<Patient, 'opDatum' | 'geschlecht'>,
+  patient: Pick<Patient, 'opDatum' | 'geschlecht'> & Partial<Pick<Patient, 'seite'>>,
   testungen: readonly Testung[],
   option: VerlaufOption,
 ): { testungId: string; datum: string; genau: number | null; phase: PhaseId }[] {
@@ -239,7 +270,7 @@ export function fehlendeMessungen(
 }
 
 /** Nur Verlaufsgrößen, zu denen es mindestens einen Wert gibt. */
-export function verfuegbareOptionen(patient: Pick<Patient, 'opDatum' | 'geschlecht'>, testungen: readonly Testung[]): VerlaufOption[] {
+export function verfuegbareOptionen(patient: Pick<Patient, 'opDatum' | 'geschlecht'> & Partial<Pick<Patient, 'seite'>>, testungen: readonly Testung[]): VerlaufOption[] {
   return VERLAUF_OPTIONEN.filter((o) => verlaufsDaten(patient, testungen, o).length > 0)
 }
 

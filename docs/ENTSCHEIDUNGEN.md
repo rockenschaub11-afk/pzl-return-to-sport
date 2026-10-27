@@ -204,6 +204,11 @@ Quellen: Hawkin Dynamics „ODS System“; McMahon et al., Jump Framework (Stren
 - Start-Standard: Flugzeit, Peak Force L/R, Peak Power L/R.
 - Kurze, aufklappbare Erklärung „Was heißt Output / Driver / Strategy?“ – damit es ohne Vorwissen bedienbar bleibt.
 
+**Paper geprüft: Sheth & Elis, „Decel to Excel“ (JOSPT Open 2026;4(3):247–253, doi:10.2519/josptopen.2026.0215) – Nachtrag 27.10.2026, von Philipp bestätigt:**
+- Klinischer Kommentar ohne eigene Daten; stützt sich u. a. auf Dutaillis et al. 2024 (Meta-Analyse, exzentrische und konzentrische Defizite nach VKB-OP) und Labban et al. 2024.
+- **Übernommen:** Bremsphase nur zum Anschauen – Peak Power (Braking), Net Peak Braking Force, RFD 0–100 ms (Braking) als wählbares Verlaufsdiagramm (CMJ, SL-CMJ), relativ wie in der Anzeige (W/kg, N/kg, N/s), CMJ links/rechts nach betroffener Seite, Asymmetrie bzw. LSI als zweites Diagramm. **Ohne Ziel, Korridor und Ampel**, mit Satz „nur zur Info“.
+- **Nicht übernommen:** Bremsimpuls und exzentrische Brems-RFD (mit Meloq nicht messbar, kein VALD geplant); Zielwerte des Papers (VALD-Normdaten NCAA-Basketball, Impulse nicht pro kg, Einheiten teils widersprüchlich); Bewegungsmuster und Übungslisten je Defizit (App empfiehlt keine Therapie); Peak Velocity (bei Meloq unklar, ob Abwärts- oder Absprunggeschwindigkeit – erst mit Export klären).
+
 ### 6.5 Handdynamometer VALD DynaMo
 Anzeige in kg/N, Peak Force, Zeit bis Peak, RFD. Hinweis: Die DynaMo-App verlangt Vor-/Nachname, Geburtsdatum, Geschlecht (VALD-Cloud) – betrifft die VALD-Nutzung, nicht diese App.
 
@@ -379,3 +384,4 @@ Ersetzt die früheren Varianten (Knöpfe + Kacheln; Messfenster mit Zahlen rund 
 - ACL Injuries Part 2 Handbook (Clinical Physio)
 - VALD *Research Normative Data Report — ACL*
 - Hawkin Dynamics, ODS System; McMahon et al. 2021, Strength Cond J (Jump Framework)
+- Sheth NB, Elis J. *Decel to Excel: Translating Countermovement Jump Metrics Into Targeted Rehabilitation Strategies for Return to Play*. JOSPT Open 2026;4(3):247–253 (geprüft 27.10.2026, siehe 6.4)

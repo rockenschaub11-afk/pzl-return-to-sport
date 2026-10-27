@@ -10,7 +10,7 @@ import { fehlendeMessungen, kriterienFuer, PHASEN_MONATE, verlaufsDaten, zielkor
 export const REIHE_GESUND: Reihe = { name: 'gesund', farbe: 'var(--seite-gesund)', gestrichelt: true }
 export const REIHE_BETROFFEN: Reihe = { name: 'betroffen', farbe: 'var(--seite-betroffen)' }
 
-export function verlaufsDiagramme(patient: Pick<Patient, 'opDatum' | 'geschlecht'>, testungen: readonly Testung[], option: VerlaufOption) {
+export function verlaufsDiagramme(patient: Pick<Patient, 'opDatum' | 'geschlecht'> & Partial<Pick<Patient, 'seite'>>, testungen: readonly Testung[], option: VerlaufOption) {
   const punkte = verlaufsDaten(patient, testungen, option)
   const fehlend = fehlendeMessungen(patient, testungen, option).map((f) => ({ datum: f.datum, monate: f.genau, phase: phaseNach(f.phase).name }))
   const k = kriterienFuer(option)
@@ -25,6 +25,7 @@ export function verlaufsDiagramme(patient: Pick<Patient, 'opDatum' | 'geschlecht
       fehlend,
       korridor: zielkorridor(k.wert),
       bewertet: k.wert?.bezeichnung,
+      hinweis: option.hinweis,
       phasen: PHASEN_MONATE,
       abNull: true,
       nachkomma: option.einheit === 'N/kg' ? 2 : 1,
@@ -40,6 +41,7 @@ export function verlaufsDiagramme(patient: Pick<Patient, 'opDatum' | 'geschlecht
       fehlend,
       korridor: zielkorridor(k.zweites),
       bewertet: k.zweites?.bezeichnung,
+      hinweis: option.hinweis,
       phasen: PHASEN_MONATE,
       abNull: !lsi,
       nachkomma: 1,

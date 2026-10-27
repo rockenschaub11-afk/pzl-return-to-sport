@@ -40,6 +40,29 @@ describe('Verlauf', () => {
     expect(verlaufsDaten(patient, testungen, option('cmj:ct'))).toMatchObject([{ wert: 820 }])
   })
 
+  it('Bremsphase (Meloq): wählbar ohne Ziel und Ampel; CMJ links/rechts nach betroffener Seite, Werte relativ', () => {
+    const links = { ...patient, seite: 'links' as const }
+    const mitBremse = [
+      testung('c', '2026-08-20', {
+        cmj: { v1_hoehe: '31', z_peak_power_braking_l: '1400', z_peak_power_braking_r: '1540', z_net_peak_braking_force: '140' },
+        sl_cmj: { g1_hoehe: '15', b1_hoehe: '13', z_rfd_braking_g: '500', z_rfd_braking_b: '400' },
+      }),
+    ]
+    const leistung = option('cmj:z_peak_power_braking')
+    expect(leistung).toMatchObject({ name: 'CMJ – Peak Power (Braking)', einheit: 'W/kg', seiten: true, zweites: { name: 'Asymmetrie' } })
+    expect(leistung.hinweis).toMatch(/ohne Ziel und ohne Ampel/)
+    // betroffen = links: 1400 W / 70 kg = 20 W/kg, gesund rechts 22 W/kg
+    expect(verlaufsDaten(links, mitBremse, leistung)[0]).toMatchObject({ betroffen: 20, gesund: 22, ampelWert: null, ampelZweites: null })
+    expect(verlaufsDaten(links, mitBremse, option('cmj:z_net_peak_braking_force'))[0].wert).toBeCloseTo((140 * 9.81) / 70)
+    const rfd = verlaufsDaten(links, mitBremse, option('sl_cmj:z_rfd_braking'))[0]
+    expect(rfd).toMatchObject({ zweites: 80 })
+    expect(rfd.betroffen).toBeCloseTo(400 * 9.81)
+    expect(kriterienFuer(leistung)).toEqual({})
+    expect(verfuegbareOptionen(links, mitBremse).map((o) => o.id)).toEqual(expect.arrayContaining(['cmj:z_peak_power_braking', 'cmj:z_net_peak_braking_force', 'sl_cmj:z_rfd_braking']))
+    // Peak Velocity bleibt draußen (Richtung bei Meloq ungeklärt)
+    expect(VERLAUF_OPTIONEN.some((o) => o.id.includes('peak_velocity'))).toBe(false)
+  })
+
   it('bietet nur Größen mit Werten an', () => {
     expect(verfuegbareOptionen(patient, testungen).map((o) => o.id)).toEqual(['hhd_knie_ext', 'cmj', 'cmj:ct'])
   })
