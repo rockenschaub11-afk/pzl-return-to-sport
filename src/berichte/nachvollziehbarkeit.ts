@@ -3,7 +3,7 @@
 // Nichts davon ändert eine Rechnung oder Ampel – es macht nur sichtbar, was gespeichert ist.
 
 import { KATALOG, protokollNach } from '../katalog'
-import type { TestDef } from '../katalog/typen'
+import type { Protokoll, TestDef } from '../katalog/typen'
 import type { Seite } from '../patienten/stammdaten'
 import { bestwert, variationskoeffizient } from '../rechnen/versuche'
 import { ERFASSUNG, parseZahl, VERSUCHE, type Berechnung, type TestEingabe } from '../testung/erfassung'
@@ -25,12 +25,26 @@ function tatsaechlich(name: string, eingabe: string | undefined, standard: numbe
   return { text: `${name} ${zahl(w)}${einheit} – Standard ${zahl(standard)}${einheit}`, abweichend: true }
 }
 
+/** Standard-Boxhöhe am Tag der Testung – der SL-Drop-Jump hatte bis 28.10.2026 30 cm, danach 15 cm (ENTSCHEIDUNGEN 4). */
+export function boxStandard(p: Protokoll | undefined, datum: string): number | undefined {
+  if (p?.boxhoeheCm === undefined) return undefined
+  return p.boxhoeheFrueher && datum && datum <= p.boxhoeheFrueher.bisDatum ? p.boxhoeheFrueher.cm : p.boxhoeheCm
+}
+
+/** Tatsächliche Boxhöhe eines Tests: eingetragen, sonst der Standard am Tag der Testung; null ohne Box. */
+export function boxTatsaechlich(test: TestDef, e: TestEingabe, datum: string): number | null {
+  const std = boxStandard(test.protokoll ? protokollNach(test.protokoll) : undefined, datum)
+  if (std === undefined) return null
+  return parseZahl(e.box) ?? std
+}
+
 /** Messrelevante Angaben eines Tests: Winkel, Boxhöhe, Eingabe-Einheit, Hebelarm. Leer, wenn es nichts gibt. */
-export function protokollTeile(test: TestDef, e: TestEingabe): ProtokollTeil[] {
+export function protokollTeile(test: TestDef, e: TestEingabe, datum = ''): ProtokollTeil[] {
   const p = test.protokoll ? protokollNach(test.protokoll) : undefined
   const teile: ProtokollTeil[] = []
   if (p?.winkelGrad !== undefined) teile.push(tatsaechlich('Winkel', e.winkel, p.winkelGrad, '°'))
-  if (p?.boxhoeheCm !== undefined) teile.push(tatsaechlich('Box', e.box, p.boxhoeheCm, ' cm'))
+  const box = boxStandard(p, datum)
+  if (box !== undefined) teile.push(tatsaechlich('Box', e.box, box, ' cm'))
   const typ = ERFASSUNG[test.id]?.typ
   if (typ === 'kraft' || typ === 'imtp') teile.push({ text: `Eingabe in ${e.einheit === 'N' ? 'N' : 'kg'}`, abweichend: false })
   const hebel = parseZahl(e.hebel)

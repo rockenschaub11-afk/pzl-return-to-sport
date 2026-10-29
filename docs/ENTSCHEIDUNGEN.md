@@ -35,7 +35,7 @@ Dieses Dokument ist die **verbindliche Grundlage** für den Bau. Änderungen nur
 | Niveau Wettkampf / Freizeit | **Pflicht** | 9- vs. 12-Monats-Hinweis |
 | Geschlecht | optional | Frauen-Regel Absolutwerte, Normdaten |
 | Geburtsjahr | optional | Normdaten-Altersband (16–20 / 20–30 / 30+) |
-| Beinlänge | optional | Hops in % Beinlänge (Normdaten) |
+| Beinlänge | optional | Hops in % Beinlänge (Normdaten). **Messung (PZL-Festlegung 29.10.2026):** Rückenlage, Maßband SIAS bis Malleolus medialis, gesundes Bein, auf 0,5 cm – als Hilfetext im Formular |
 | Graft (BPTB / Hamstring / Quadrizeps) | optional | Interpretation |
 | Begleit-OP (Meniskus, Knorpel, LET, …) | optional | Interpretation |
 | Revision ja/nein, konservativ behandelt | optional | Interpretation |
@@ -92,7 +92,7 @@ Phase „Return to Competition“ (> 9 Monate).
 
 | Block | Test | Schwelle | Status | Quelle |
 |---|---|---|---|---|
-| Klinik | Erguss (Stroke-Test) | 0 oder Spur | **Pflicht** | Aspetar S. 12 |
+| Klinik | Erguss (Stroke-Test) | 0 oder Spur | **Pflicht** | Aspetar S. 12; Ablauf und Stufen 0 / Spur / 1+ / 2+ / 3+ als „i“ in der Testkarte (Sturgill et al., JOSPT 2009; 29.10.2026) |
 | | Extension | Defizit 0° | **Pflicht** | Aspetar S. 12, Read S. 59 |
 | | Flexion | ≥ 95 % Gegenseite | **Pflicht** | Read S. 13, Handbook S. 22 |
 | | SLR | kein Extensionslag | **Pflicht** | Read S. 59 |
@@ -139,10 +139,12 @@ Feldtests (5-0-5, Sprint, CMAS) sind **nicht** Teil der App (F19).
 | Knie-Extension (HHD) | Sitzend, **60° Knieflexion**, Dynamometer distal am Unterschenkel, mit Gurt, isometrisch 3–5 s | Quadrizeps-Defizite nach VKB-OP sind bei 50–80° am größten (Read S. 24); entspricht Aspetar (S. 11). Gurt: misst die Kraft der Pat., nicht der Therapeut:in |
 | Knie-Flexion (HHD) | Bauchlage, **90° Knieflexion**, Gurt, isometrisch | Hamstring-Defizite v. a. bei > 75° Flexion, besonders nach Hamstring-Graft (Read S. 25) |
 | Knie-Flexion 60° / 30° (HHD) | Sitzend, 60° bzw. 30°, Gurt, isometrisch (seit Etappe 12, s. 5.1) | H/Q variiert über das Bewegungsausmaß; 30° = Outer Range, Sprint-Schwungphase (Read S. 26) |
+
+**Nachtrag 29.10.2026 (Philipp):** Lage steht im Testnamen, damit man die Tests sofort unterscheidet: „Knie-Extension (HHD, sitzend)“, „Knie-Flexion 90° (HHD, Bauchlage)“, „Knie-Flexion 60° (HHD, sitzend)“, „Knie-Flexion 30° (HHD, sitzend)“. Gespeicherte Daten hängen an der Test-ID, nicht am Namen.
 | Hüft-Abduktion (HHD) | Rückenlage, langer Hebel, Dynamometer knapp proximal des Malleolus lateralis, isometrisch | Read-Referenzsetting (S. 35), gut standardisierbar |
 | Plantarflexion | Sitzend, Knie 90°, auf der Platte (Soleus) | Read S. 36 |
 | CMJ / SL-CMJ | Hände an den Hüften | Read S. 39 – keine Armschwung-Effekte |
-| SL-Drop-Jump | Box **30 cm** | Read-Konvention (S. 47); Normdaten-Report nutzt 15 cm → Boxhöhe immer mitspeichern |
+| SL-Drop-Jump | Box **15 cm** (ab 29.10.2026; bis 28.10.2026: 30 cm) | **Korrigiert 29.10.2026 (Philipp):** Read nennt für den einbeinigen Drop Jump keine Höhe – 30 cm nur beim beidbeinigen, und auch dort „not well established“ (S. 48); die frühere Angabe „Read-Konvention S. 47“ war falsch. 15 cm wie im Normdaten-Report (VALD) → direkt vergleichbar, schonender bei der einbeinigen Landung. Boxhöhe wird immer mitgespeichert; Testungen bis 28.10.2026 ohne eingetragene Box gelten als 30 cm (Stichtag im Katalog, keine Datenänderung) |
 | Kraftausdauer | Metronom 60 bpm, bis Ausbelastung/Technikverlust | Standardisiertes Tempo → vergleichbar über Testungen |
 | Allgemein | Gesundes Bein zuerst, 1 Probeversuch, 3 Messversuche, 30–60 s Pause | Betroffenes Bein nicht durch Lerneffekt benachteiligt; Read empfiehlt Familiarisierung (S. 32) |
 
@@ -293,7 +295,7 @@ Mittelwert (−1 SD / +1 SD), nur für die freigegebenen Bereiche (F24):
 | 12 Mo, w 16–20 | Hop-LSI 6 m 103 %, Single 99 %, Triple 87 %, Crossover 95 % |
 | 12 Mo, m 20–30 | CMJ 30,7 cm (26,1–35,3), ohne Verletzung 34,5 (30,5–38,5); SL-DJ 14 / 16 cm, RSI 0,37 / 0,46 |
 
-Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nur obige, plausible Werte verwenden. SL-DJ im Report mit 15 cm Box (PZL-Standard 30 cm) → Hinweis.
+Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nur obige, plausible Werte verwenden. SL-DJ im Report mit 15 cm Box → seit 29.10.2026 PZL-Standard; Hinweis „nur eingeschränkt vergleichbar“ nur noch, wenn mit anderer Boxhöhe gemessen.
 
 **Umsetzung (Nachtrag 26.10.2026, Etappe 7):** Werte in `config/normdaten.json`. Angezeigt nur, wenn **Geschlecht und Altersband genau passen** (16–20 = 16–19 Jahre, 20–30 = 20–29 Jahre, aus dem Geburtsjahr) und die Testung höchstens **1,5 Monate** vom Normzeitpunkt (6/9/12 Mo) entfernt ist – sonst „keine passenden Normdaten“ mit Grund. **Geklärt (Report S. 37, Fußnote S. 29):** „CMJ 30,7 / 34,5 cm“ bei 12 Mo, m 20–30 = Mittelwert nach VKB-OP („Injured“) bzw. Vergleichsgruppe ohne Verletzung („Uninjured“, beim beidbeinigen Sprung die Person). Beide werden angezeigt, die Vergleichsgruppe als eigene graue Zeile (Philipp, 26.10.2026).
 

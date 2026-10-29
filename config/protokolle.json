@@ -10,7 +10,7 @@
     },
     {
       "id": "knie_ext",
-      "name": "Knie-Extension (HHD)",
+      "name": "Knie-Extension (HHD, sitzend)",
       "ablauf": "Sitzend, Dynamometer distal am Unterschenkel, mit Gurt, isometrisch 3–5 s.",
       "winkelGrad": 60,
       "warum": "Quadrizeps-Defizite nach VKB-OP sind bei 50–80° Knieflexion am größten; entspricht Aspetar. Der Gurt misst die Kraft der Pat., nicht die der Therapeut:in.",
@@ -18,7 +18,7 @@
     },
     {
       "id": "knie_flex",
-      "name": "Knie-Flexion (HHD)",
+      "name": "Knie-Flexion 90° (HHD, Bauchlage)",
       "ablauf": "Bauchlage, Gurt, isometrisch. Gurt und Bank ca. 10° unter dem Zielwinkel einstellen – bei Maximalkraft verändert sich der Kniewinkel; schützt das Transplantat v. a. früh nach der OP.",
       "winkelGrad": 90,
       "warum": "Inner Range: Hamstring-Defizite zeigen sich v. a. bei > 75° Flexion, besonders nach Hamstring-Graft. In der Frühphase reicht dieser Winkel.",
@@ -26,7 +26,7 @@
     },
     {
       "id": "knie_flex_60",
-      "name": "Knie-Flexion 60° (HHD)",
+      "name": "Knie-Flexion 60° (HHD, sitzend)",
       "ablauf": "Sitzend, Dynamometer distal am Unterschenkel, Gurt, isometrisch 3–5 s. Gurt und Bank ca. 10° unter dem Zielwinkel einstellen – schützt das Transplantat.",
       "winkelGrad": 60,
       "warum": "Mittlerer Bereich: Der H/Q-Quotient ändert sich stark über das Bewegungsausmaß, ein Winkel allein zeigt nicht das ganze Kraftprofil. Früh nach der OP sind 90° und 60° die empfohlenen Winkel.",
@@ -34,7 +34,7 @@
     },
     {
       "id": "knie_flex_30",
-      "name": "Knie-Flexion 30° (HHD)",
+      "name": "Knie-Flexion 30° (HHD, sitzend)",
       "ablauf": "Sitzend, Dynamometer distal am Unterschenkel, Gurt, isometrisch 3–5 s. Gurt und Bank ca. 10° unter dem Zielwinkel einstellen – schützt das Transplantat.",
       "winkelGrad": 30,
       "warum": "Outer Range: tendenziell höhere Kraftwerte; entspricht der Anforderung in der späten Schwungphase beim Sprint, in der die Hamstrings exzentrisch bremsen.",
@@ -65,10 +65,11 @@
     {
       "id": "sl_dj",
       "name": "SL-Drop-Jump",
-      "ablauf": "Box 30 cm, einbeinige Landung und sofortiger Absprung.",
-      "boxhoeheCm": 30,
-      "warum": "Read-Konvention. Der Normdaten-Report nutzt 15 cm – darum wird die Boxhöhe immer mitgespeichert.",
-      "quelle": "Read S. 47"
+      "ablauf": "Box 15 cm, einbeinige Landung und sofortiger Absprung.",
+      "boxhoeheCm": 15,
+      "boxhoeheFrueher": { "cm": 30, "bisDatum": "2026-10-28" },
+      "warum": "Read nennt für den einbeinigen Drop Jump keine Boxhöhe (30 cm nur beim beidbeinigen, S. 48). 15 cm wie im Normdaten-Report (VALD) – direkt vergleichbar und schonender bei der einbeinigen Landung. Bis 28.10.2026 war der PZL-Standard 30 cm; die Boxhöhe wird immer mitgespeichert.",
+      "quelle": "PZL-Festlegung 29.10.2026; Read S. 48; Normdaten-Report (VALD)"
     },
     {
       "id": "kraftausdauer",

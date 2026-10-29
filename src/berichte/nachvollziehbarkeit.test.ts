@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { testNach } from '../katalog'
 import { berechne } from '../testung/erfassung'
-import { impulsRichtung, nachSeite, protokollTeile, richtung, rohdaten, streuungHinweis } from './nachvollziehbarkeit'
+import { boxTatsaechlich, impulsRichtung, nachSeite, protokollTeile, richtung, rohdaten, streuungHinweis } from './nachvollziehbarkeit'
 
 const test = (id: string) => testNach(id)!
 const rechne = (id: string, e: Record<string, string>) => berechne(test(id), e, { koerpergewichtKg: 78 })
@@ -17,7 +17,14 @@ describe('Protokoll je Test', () => {
       { text: 'Eingabe in N', abweichend: false },
       { text: 'Hebelarm 0,32 m', abweichend: false },
     ])
-    expect(protokollTeile(test('sl_dj'), { box: '30' })).toEqual([{ text: 'Box 30 cm', abweichend: false }])
+    // SL-Drop-Jump: Standard 15 cm ab 29.10.2026, davor 30 cm (alte Testungen ohne eingetragene Box bleiben richtig)
+    expect(protokollTeile(test('sl_dj'), {}, '2026-10-29')).toEqual([{ text: 'Box 15 cm (Standard)', abweichend: false }])
+    expect(protokollTeile(test('sl_dj'), {}, '2026-10-28')).toEqual([{ text: 'Box 30 cm (Standard)', abweichend: false }])
+    expect(protokollTeile(test('sl_dj'), { box: '30' }, '2026-05-02')).toEqual([{ text: 'Box 30 cm', abweichend: false }])
+    expect(protokollTeile(test('sl_dj'), { box: '30' }, '2026-11-02')).toEqual([{ text: 'Box 30 cm – Standard 15 cm', abweichend: true }])
+    expect(boxTatsaechlich(test('sl_dj'), {}, '2026-05-02')).toBe(30)
+    expect(boxTatsaechlich(test('sl_dj'), {}, '2026-11-02')).toBe(15)
+    expect(boxTatsaechlich(test('cmj'), {}, '2026-11-02')).toBeNull()
     expect(protokollTeile(test('single_hop'), { g1: '150' })).toEqual([])
   })
 })

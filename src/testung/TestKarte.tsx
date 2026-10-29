@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
+import { boxStandard } from '../berichte/nachvollziehbarkeit'
 import { protokollNach } from '../katalog'
 import type { TestDef } from '../katalog/typen'
 import type { KriteriumErgebnis, TestErgebnis } from '../rechnen/bewertung'
@@ -36,6 +37,8 @@ interface Props {
   hq?: ReturnType<typeof hqQuotient>
   /** Normdaten als graue Zusatzinfo (ohne Einfluss auf die Ampel) */
   normdaten?: NormAnzeige | null
+  /** Datum der Testung – für den Standard der Boxhöhe (bis 28.10.2026 30 cm) */
+  datum?: string
 }
 
 const zahl = (v: number, nachkomma = 1) =>
@@ -241,6 +244,26 @@ function KriteriumZeile({ e }: { e: KriteriumErgebnis }) {
   )
 }
 
+/** „i“ neben dem Testnamen: zeigt die Kurzinfo bei Maus, Fokus oder Tippen (z. B. Stufen des Stroke-Tests). */
+function TestInfo({ info }: { info: NonNullable<TestDef['info']> }) {
+  const [offen, setOffen] = useState(false)
+  const id = useId()
+  return (
+    <span className="test-info" onMouseLeave={() => setOffen(false)}>
+      <button type="button" className="test-info-knopf" aria-label={`Info: ${info.titel}`} aria-expanded={offen} aria-controls={id} onClick={() => setOffen((x) => !x)}>
+        i
+      </button>
+      <span id={id} role="note" className={`test-info-text${offen ? ' offen' : ''}`}>
+        <strong>{info.titel}</strong>
+        {info.zeilen.map((z) => (
+          <span key={z}>{z}</span>
+        ))}
+        <span className="kat-quelle">Quelle: {info.quelle}</span>
+      </span>
+    </span>
+  )
+}
+
 export default function TestKarte(props: Props) {
   const { test, eingabe: e, setze, berechnung: b, ergebnis, koerpergewichtFehlt } = props
   const protokoll = test.protokoll ? protokollNach(test.protokoll) : undefined
@@ -254,6 +277,7 @@ export default function TestKarte(props: Props) {
       <header className="test-kopf">
         <h4 id={`titel-${test.id}`}>
           {test.name}
+          {test.info && <TestInfo info={test.info} />}
           {test.optional && <span className="chip">optional</span>}
         </h4>
         <AmpelMarke ampel={ergebnis.ampel} text={ergebnis.ampel ? `${AMPEL_TEXT[ergebnis.ampel]}${ergebnis.vollstaendig ? '' : ' (unvollständig)'}` : undefined} />
@@ -345,7 +369,7 @@ export default function TestKarte(props: Props) {
                 {protokoll.boxhoeheCm !== undefined && (
                   <label className="protokoll-wert">
                     Boxhöhe tatsächlich
-                    <Zahl wert={e.box} onChange={(v) => setze('box', v)} label="Boxhöhe tatsächlich" einheit={`cm (Standard ${protokoll.boxhoeheCm} cm)`} />
+                    <Zahl wert={e.box} onChange={(v) => setze('box', v)} label="Boxhöhe tatsächlich" einheit={`cm (Standard ${boxStandard(protokoll, props.datum ?? '')} cm)`} />
                   </label>
                 )}
               </>

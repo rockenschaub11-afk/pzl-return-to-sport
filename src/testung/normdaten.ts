@@ -68,15 +68,20 @@ export function normzeitpunkt(monate: number | null): number | null {
   return Math.abs(naechster - monate) <= NORMDATEN.toleranzMonate ? naechster : null
 }
 
+/** Boxhöhe des SL-Drop-Jumps im Normdaten-Report (VALD) */
+const NORMDATEN_BOX_CM = 15
+
 /** null = für diesen Test gibt es überhaupt keine Normdaten (dann zeigt die App nichts). */
 export function normdatenFuer(
   testId: string,
   patient: Pick<Patient, 'geschlecht' | 'geburtsjahr'>,
   testDatum: string,
   monate: number | null,
+  /** tatsächliche Boxhöhe (SL-Drop-Jump) – mit 15 cm wie im Report entfällt der Hinweis */
+  boxCm: number | null = null,
 ): NormAnzeige | null {
   if (!NORMDATEN.gruppen.some((g) => g.werte.some((w) => w.test === testId))) return null
-  const hinweis = NORMDATEN.hinweise[testId]
+  const hinweis = testId === 'sl_dj' && boxCm === NORMDATEN_BOX_CM ? undefined : NORMDATEN.hinweise[testId]
   const keine = (grund: string): NormAnzeige => ({ kopf: '', zeilen: [], hinweis, keine: `Keine passenden Normdaten – ${grund}.` })
 
   if (patient.geschlecht !== 'weiblich' && patient.geschlecht !== 'maennlich') return keine('Geschlecht (w/m) in den Stammdaten fehlt')

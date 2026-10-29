@@ -59,6 +59,8 @@ export interface TestDef {
   phasen: PhaseId[]
   protokoll?: string
   hinweise?: string[]
+  /** Kurzinfo zum Test (i neben dem Namen), z. B. Ablauf und Stufen des Stroke-Tests */
+  info?: { titel: string; zeilen: string[]; quelle: string }
   kriterien: Kriterium[]
 }
 
@@ -68,6 +70,8 @@ export interface Protokoll {
   ablauf: string
   winkelGrad?: number
   boxhoeheCm?: number
+  /** Standard, der bis zu einem Datum galt (Testungen davor ohne eingetragene Boxhöhe) */
+  boxhoeheFrueher?: { cm: number; bisDatum: string }
   warum: string
   quelle: string
 }

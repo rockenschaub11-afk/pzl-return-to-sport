@@ -24,6 +24,7 @@ import KlinischAnders from '../testung/KlinischAnders'
 import { AmpelMarke } from '../testung/Ladebalken'
 import { useMeloqAuswahl } from '../testung/meloqAuswahl'
 import { normdatenFuer } from '../testung/normdaten'
+import { boxTatsaechlich } from '../berichte/nachvollziehbarkeit'
 import { pflichtStatus, rtsVorschlag } from '../testung/rts'
 import RtsKasten from '../testung/RtsKasten'
 import TestKarte, { type Seitennamen } from '../testung/TestKarte'
@@ -293,7 +294,8 @@ export default function TestungErfassen() {
                           ]}
                           infos={stammdatenHinweise(t.id, patient)}
                           hq={t.id === 'hhd_knie_flex' ? hqQuotient(a.berechnung, auswertung.get('hhd_knie_ext')?.berechnung) : null}
-                          normdaten={normdatenFuer(t.id, patient, testung.datum, monate)}
+                          normdaten={normdatenFuer(t.id, patient, testung.datum, monate, boxTatsaechlich(t, testung.eingaben[t.id] ?? {}, testung.datum))}
+                          datum={testung.datum}
                           fuss={
                             p && ph.art === 'endtestung' ? (
                               <KlinischAnders

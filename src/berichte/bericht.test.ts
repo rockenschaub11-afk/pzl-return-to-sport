@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { beispielAnlegen } from '../beispiel'
 import { db, type Testung } from '../db'
-import type { Patient } from '../patienten/stammdaten'
+import { datumDeutsch, type Patient } from '../patienten/stammdaten'
 import { auswahlBereinigen } from '../testung/meloqAuswahl'
 import { arztBericht, bewertungText, kriteriumAlltag, patBericht, verlaufTabelle, zeitVergleich } from './bericht'
 import { lsiUebersicht } from './lsiZeilen'
@@ -91,7 +91,7 @@ describe('Arztbericht', () => {
   it('Verlaufstabelle: Pflicht-Tests über alle Testungen bis zu dieser, Ampel als Zeichen', () => {
     const v = verlaufTabelle(patient, testungen, ende)
     expect(v.spalten.map((s) => s.phase)).toEqual(['Mitte', 'Spät', '> 9 Mo'])
-    const ext = v.zeilen.find((z) => z.name === 'Knie-Extension (HHD)')!
+    const ext = v.zeilen.find((z) => z.name === 'Knie-Extension (HHD, sitzend)')!
     expect(ext.kriterium).toBe('LSI')
     expect(ext.werte[2].wert).toMatch(/✓$/)
     expect(ext.werte[0].wert).toMatch(/✗$/)
@@ -104,7 +104,7 @@ describe('Arztbericht', () => {
     const cmj = v.zeilen.find((z) => z.name === 'CMJ')!
     expect(cmj.werte.map((w) => w.ziel)).toEqual(['< 13,4 %', '< 13,4 %', '< 10 %'])
     expect(cmj.werte[1].wert).toBe('11,7 % ✓')
-    const ext = v.zeilen.find((z) => z.name === 'Knie-Extension (HHD)')!
+    const ext = v.zeilen.find((z) => z.name === 'Knie-Extension (HHD, sitzend)')!
     expect(ext.werte.every((w) => w.ziel === null)).toBe(true)
     expect(v.zeilen.find((z) => z.name === 'Erguss (Stroke-Test)')?.kriterium).toBe('')
   })
@@ -133,7 +133,7 @@ describe('Arztbericht', () => {
     const cmj = tests.find((t) => t.test.id === 'cmj')!
     expect(cmj.kriterien.find((k) => k.bezeichnung === 'Net-Impulse-Asymmetrie')?.wertHinweis).toBe('betroffene Seite stärker')
     expect(cmj.meloq.find((m) => m.name.startsWith('Peak Force'))).toMatchObject({ wert: expect.stringMatching(/^L \(betroffen\) 98 · R 92 kg/), vergleich: 'Asymmetrie 6,1 % – betroffene Seite stärker' })
-    expect(b.protokolle.map((p) => p.name)).toEqual(expect.arrayContaining(['Allgemein', 'Knie-Extension (HHD)', 'SL-Drop-Jump']))
+    expect(b.protokolle.map((p) => p.name)).toEqual(expect.arrayContaining(['Allgemein', 'Knie-Extension (HHD, sitzend)', 'SL-Drop-Jump']))
     expect(b.rohdaten.map((r) => r.id)).toEqual(expect.arrayContaining(['hhd_knie_ext', 'cmj', 'single_hop', 'imtp']))
     expect(b.rohdaten.some((r) => r.id === 'sl_bridge')).toBe(false)
   })
@@ -142,7 +142,7 @@ describe('Arztbericht', () => {
     const mitte = arztBericht(patient, testungen[0])
     expect(mitte.stand.titel).toBe('Stand der Phase Mitte')
     expect(mitte.stand.zeile).toMatch(/^\d+ von \d+ Pflicht-Tests erfüllt · \d+ nicht erfüllt/)
-    expect(mitte.stand.offen.some((o) => o.startsWith('Knie-Extension (HHD): '))).toBe(true)
+    expect(mitte.stand.offen.some((o) => o.startsWith('Knie-Extension (HHD, sitzend): '))).toBe(true)
     const e = arztBericht(patient, ende)
     expect(e.stand.zeile).toMatch(/ von \d+ Pflicht-Tests erfüllt · 1 nicht erfüllt$/)
     expect(e.stand.offen).toEqual(['SL-Drop-Jump: LSI Sprunghöhe 89,7 % – Ziel ≥ 90 %'])
@@ -150,7 +150,7 @@ describe('Arztbericht', () => {
 
   it('Verlaufstabelle: Seitenwerte je Zelle und Veränderung zur vorigen Testung', () => {
     const v = verlaufTabelle(patient, testungen, ende)
-    const ext = v.zeilen.find((z) => z.name === 'Knie-Extension (HHD)')!
+    const ext = v.zeilen.find((z) => z.name === 'Knie-Extension (HHD, sitzend)')!
     expect(ext.werte[2].seiten).toBe('b 7,8 · g 8,3 N/kg')
     expect(ext.werte[0].seiten).toBe('b 4,9 · g 7,1 N/kg')
     expect(ext.veraenderung).toBe('+10,6 Pkt. · betroffen +1,4 N/kg')
@@ -179,7 +179,7 @@ describe('Arztbericht', () => {
     const b = arztBericht(patient, ohne)
     const ext = b.bloecke.flatMap((x) => x.tests).find((t) => t.test.id === 'hhd_knie_ext')!
     expect(ext.kriterien.find((k) => k.bezeichnung === 'Kraft relativ')?.bewertung).toEqual({ ampel: null, text: 'Körpergewicht fehlt – keine N/kg' })
-    expect(b.rts?.wasFehlt).toContain('Knie-Extension (HHD): Körpergewicht fehlt – keine N/kg bzw. Ns/kg')
+    expect(b.rts?.wasFehlt).toContain('Knie-Extension (HHD, sitzend): Körpergewicht fehlt – keine N/kg bzw. Ns/kg')
     expect(patBericht(patient, ohne).wasFehlt).toContain('Kraft Oberschenkel vorne (Knie strecken): Körpergewicht fehlt noch für die Auswertung')
   })
 })
@@ -204,7 +204,7 @@ describe('Pat./Trainer-Bericht', () => {
     const pat = patBericht(patient, ende, testungen)
     const z = lsiUebersicht(arztBericht(patient, ende, auswahlBereinigen(undefined)), pat)
     const ext = z.find((x) => x.id === 'hhd_knie_ext')!
-    expect(ext).toMatchObject({ name: 'Knie-Extension (HHD)', lsi: 93.9, ampel: 'gruen', wuenschenswert: false })
+    expect(ext).toMatchObject({ name: 'Knie-Extension (HHD, sitzend)', lsi: 93.9, ampel: 'gruen', wuenschenswert: false })
     expect(ext.vorige).toBe(pat.zeilen.find((x) => x.id === 'hhd_knie_ext')!.vorige)
     expect(z.find((x) => x.id === 'sl_dj')).toMatchObject({ name: 'SL-Drop-Jump – Sprunghöhe', lsi: 89.7, ampel: 'gelb' })
     expect(z.find((x) => x.id === 'sl_calf_raise')?.wuenschenswert).toBe(true)
@@ -261,7 +261,8 @@ describe('Pat./Trainer-Bericht', () => {
 
   it('Fortschritt: LSI der vorigen Testung, nur wo es beide gibt (Audit Punkt 16)', () => {
     const b = patBericht(patient, ende, testungen)
-    expect(b.vorigeDatum).toBe('02.05.2026')
+    // Beispiel-Daten liegen relativ zu heute – Datum der mittleren Testung
+    expect(b.vorigeDatum).toBe(datumDeutsch(testungen[1].datum))
     expect(b.zeilen.find((z) => z.id === 'hhd_knie_ext')?.vorige).toBe(83.3)
     // SL-Drop-Jump gab es bei „Spät“ nicht
     expect(b.zeilen.find((z) => z.id === 'sl_dj')?.vorige).toBeNull()

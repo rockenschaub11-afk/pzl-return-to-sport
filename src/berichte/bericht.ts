@@ -28,6 +28,7 @@ import {
   impulsRichtung,
   nachSeite,
   protokollTeile,
+  boxTatsaechlich,
   richtung,
   RICHTUNG_ARZT,
   RICHTUNG_PAT,
@@ -288,7 +289,7 @@ function seitenSpalten(test: TestDef, b: TestAuswertung['berechnung'], kg: numbe
 
 /** Normdaten wie in der Testkarte – nur bei passender Gruppe, sonst nichts (Audit Punkt 11, Frage 3a). */
 function normdatenText(test: TestDef, patient: Patient, testung: Testung): string | null {
-  const n = normdatenFuer(test.id, patient, testung.datum, monateBisTestung(patient.opDatum, testung.datum))
+  const n = normdatenFuer(test.id, patient, testung.datum, monateBisTestung(patient.opDatum, testung.datum), boxTatsaechlich(test, testung.eingaben[test.id] ?? {}, testung.datum))
   if (!n || n.keine || n.zeilen.length === 0) return null
   return `${n.kopf}: ${n.zeilen.join(' · ')}${n.hinweis ? ` – ${n.hinweis}` : ''}`
 }
@@ -352,7 +353,7 @@ function arztTest(
     gemessen,
     seiten: seitenText(test, b, kg),
     seitenSpalten: seitenSpalten(test, b, kg),
-    protokoll: gemessen ? protokollTeile(test, eingabe) : [],
+    protokoll: gemessen ? protokollTeile(test, eingabe, testung.datum) : [],
     normdaten: gemessen ? normdatenText(test, patient, testung) : null,
     kriterien,
     meloq: meloqWerte(test, testung, a, auswahl, seite),

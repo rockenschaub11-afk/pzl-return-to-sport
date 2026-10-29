@@ -54,7 +54,7 @@ describe('App-Rahmen', () => {
   it('zeigt unter Einstellungen/Info den Testkatalog mit Schwellen und Quellen', () => {
     zeige('/info')
     expect(screen.getByRole('heading', { level: 3, name: 'Testkatalog & Schwellen' })).toBeInTheDocument()
-    expect(screen.getByRole('rowheader', { name: /^Knie-Extension \(HHD\)/ })).toBeInTheDocument()
+    expect(screen.getByRole('rowheader', { name: /^Knie-Extension \(HHD, sitzend\)/ })).toBeInTheDocument()
     expect(screen.getAllByText('Read S. 59').length).toBeGreaterThan(5)
     expect(screen.queryByRole('alert')).not.toBeInTheDocument() // Katalog fehlerfrei
   })

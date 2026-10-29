@@ -10,6 +10,18 @@
     {
       "id": "erguss",
       "name": "Erguss (Stroke-Test)",
+      "info": {
+        "titel": "Stroke-Test (modifiziert)",
+        "zeilen": [
+          "Rückenlage, Knie gestreckt und locker. 2–3 Mal innen von der Gelenklinie nach oben zum Recessus streichen, dann außen am Oberschenkel nach unten streichen und innen auf eine Flüssigkeitswelle achten.",
+          "0 – keine Welle beim Abstreichen",
+          "Spur – kleine Welle innen beim Abstreichen",
+          "1+ – größere Vorwölbung innen beim Abstreichen",
+          "2+ – Flüssigkeit kommt nach dem Hochstreichen von selbst nach innen zurück (ohne Abstreichen)",
+          "3+ – Flüssigkeit lässt sich innen nicht wegstreichen"
+        ],
+        "quelle": "Sturgill et al., JOSPT 2009"
+      },
       "block": "klinik",
       "messgeraet": "klinisch",
       "seitenvergleich": false,
@@ -105,7 +117,7 @@
     },
     {
       "id": "hhd_knie_ext",
-      "name": "Knie-Extension (HHD)",
+      "name": "Knie-Extension (HHD, sitzend)",
       "block": "hhd",
       "messgeraet": "dynamo",
       "seitenvergleich": true,
@@ -131,7 +143,7 @@
     },
     {
       "id": "hhd_knie_flex",
-      "name": "Knie-Flexion (HHD)",
+      "name": "Knie-Flexion 90° (HHD, Bauchlage)",
       "block": "hhd",
       "messgeraet": "dynamo",
       "seitenvergleich": true,
@@ -157,7 +169,7 @@
     },
     {
       "id": "hhd_knie_flex_60",
-      "name": "Knie-Flexion 60° (HHD)",
+      "name": "Knie-Flexion 60° (HHD, sitzend)",
       "block": "hhd",
       "messgeraet": "dynamo",
       "seitenvergleich": true,
@@ -172,7 +184,7 @@
     },
     {
       "id": "hhd_knie_flex_30",
-      "name": "Knie-Flexion 30° (HHD)",
+      "name": "Knie-Flexion 30° (HHD, sitzend)",
       "block": "hhd",
       "messgeraet": "dynamo",
       "seitenvergleich": true,

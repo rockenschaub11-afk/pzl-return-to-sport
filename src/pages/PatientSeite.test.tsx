@@ -31,7 +31,7 @@ describe('Seite eines Kürzels', () => {
     expect(stand).toHaveTextContent('SL-Drop-Jump')
     expect(stand).toHaveTextContent('ACL-RSI')
     expect(stand).toHaveTextContent('Ersetzt keine ärztliche Freigabe')
-    expect(screen.getByRole('region', { name: 'LSI Knie-Extension (HHD)' })).toHaveTextContent('93,9')
+    expect(screen.getByRole('region', { name: 'LSI Knie-Extension (HHD, sitzend)' })).toHaveTextContent('93,9')
   })
 
   it('Reiter wechseln, Eingaben im Formular bleiben erhalten', async () => {

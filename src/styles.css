@@ -4582,3 +4582,61 @@ fieldset:disabled .test-hinzu {
   border-color: var(--aktion);
   background: var(--aktion);
 }
+
+/* Kurzinfo „i“ neben dem Testnamen (z. B. Stroke-Test) – bei Maus, Fokus oder Tippen */
+.test-info {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.5rem;
+  vertical-align: 2px;
+}
+
+.test-info-knopf {
+  display: inline-grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  border: 1.5px solid var(--text-leise);
+  border-radius: 50%;
+  background: none;
+  color: var(--text-leise);
+  font: 600 0.75rem var(--schrift);
+  cursor: help;
+}
+
+.test-info-knopf:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.test-info-text {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: -0.5rem;
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: min(24rem, 80vw);
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius);
+  background: var(--tief);
+  color: #eef1f4;
+  box-shadow: var(--schatten-hoch);
+  font: 400 0.8125rem/1.4 var(--schrift);
+}
+
+.test-info-text strong {
+  font-weight: 600;
+}
+
+.test-info-text .kat-quelle {
+  color: #a4adb8;
+}
+
+.test-info:hover .test-info-text,
+.test-info:focus-within .test-info-text,
+.test-info-text.offen {
+  display: flex;
+}

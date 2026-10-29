@@ -50,7 +50,7 @@ describe('RTS-Vorschlag', () => {
   it('gelb zählt als nicht erfüllt – mit Grund in „Was fehlt noch?“', () => {
     const v = vorschlag({ ...GRUEN, hhd_knie_ext: { g1: '70', b1: '59,5' } }) // 8,3 N/kg, LSI 85 %
     expect(v.erfuellt).toBe(false)
-    expect(v.wasFehlt).toEqual(['Knie-Extension (HHD): LSI 85,0 % – Ziel ≥ 90 %'])
+    expect(v.wasFehlt).toEqual(['Knie-Extension (HHD, sitzend): LSI 85,0 % – Ziel ≥ 90 %'])
   })
 
   it('fehlender Pflicht-Test: „noch nicht gemessen“', () => {

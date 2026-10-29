@@ -32,10 +32,11 @@ describe('Anzeige je Test', () => {
     expect(n.zeilen).toEqual(['Sprunghöhe: 29,7 cm (±1 SD 24,6–34,8)'])
   })
 
-  it('SL-Drop-Jump: immer mit Hinweis auf die 15-cm-Box', () => {
-    const n = normdatenFuer('sl_dj', mann25, '2026-10-26', 9)!
+  it('SL-Drop-Jump: Hinweis auf die 15-cm-Box nur, wenn mit anderer Boxhöhe gemessen', () => {
+    const n = normdatenFuer('sl_dj', mann25, '2026-10-26', 9, 30)!
     expect(n.zeilen).toContain('Sprunghöhe betroffen: 9,2 cm')
     expect(n.hinweis).toContain('15-cm-Box')
+    expect(normdatenFuer('sl_dj', mann25, '2026-10-26', 9, 15)!.hinweis).toBeUndefined()
   })
 
   it('keine genaue Gruppe → nichts Falsches, sondern ein Grund', () => {

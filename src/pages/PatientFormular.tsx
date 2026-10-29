@@ -188,7 +188,7 @@ export default function PatientFormular({ eingebettet = false }: { eingebettet?:
               aria-invalid={!!zeigeFehler('geburtsjahr')}
             />
           </Feld>
-          <Feld label="Beinlänge (cm)" fehler={zeigeFehler('beinlaengeCm')} hilfe="Für Hops in % der Beinlänge (im Arztbericht nur als Info, ohne Bewertung).">
+          <Feld label="Beinlänge (cm)" fehler={zeigeFehler('beinlaengeCm')} hilfe="Rückenlage, Maßband von der Spina iliaca anterior superior (SIAS) bis zum Innenknöchel (Malleolus medialis), gesundes Bein, auf 0,5 cm genau. Für Hops in % der Beinlänge (im Arztbericht nur als Info, ohne Bewertung).">
             <input
               inputMode="decimal"
               value={daten.beinlaengeCm}
