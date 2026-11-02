@@ -372,6 +372,15 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - „Weniger Bewegung“: nichts wandert oder verschiebt sich; Farb- und Deckkraft-Wechsel bleiben als Rückmeldung.
 - Bewusst nicht: Seitenwechsel, Reiter, Einblenden von Listen und Karten. Das bremst nur bei der täglichen Arbeit.
 
+**Nachtrag 02.11.2026 (Performance-Diagnostik, gezielte Verbesserungen):** Designsystem unverändert, keine neuen Werte oder Berechnungen.
+- Kürzel-Seite: Status zeigt „Pflicht erfüllt“ und „Tests erfasst“ als Kennzahlen (Werte wie in der Pat.-Liste). Kopfkarte trägt die letzte Testung und den Weg zu allen Testungen, kein Leerraum mehr.
+- Verlauf: Zielkante als feine Linie an der Schwelle, Phasenlinien gepunktet und ruhiger, letzter Wert direkt am Linienende. Diese Zahlen sind dieselben wie in „Zuletzt: …“.
+- Seitenvergleich: Linie bei 90 % als Zielkante (auch im Bericht), Zeile hebt sich beim Überfahren ab.
+- Testungen-Liste in festen Spalten; Berichte-Liste mit derselben Suche wie die Pat.-Liste, Kopf „Berichte“ rechtsbündig über den Knöpfen.
+- Testung: Sprungleiste markiert den aktuellen Block; kg/N als zusammenhängender Umschalter.
+- Start: Bühne niedriger, Arbeitsbereich früher sichtbar. Versatz der Einstiegskarten behoben (kam aus dem Feinschliff, `.karte + .karte` griff im Raster).
+- Berichte: Aufbau und Seitenzahl unverändert (Muster freigegeben), nur die Zielkante kommt hinzu.
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.

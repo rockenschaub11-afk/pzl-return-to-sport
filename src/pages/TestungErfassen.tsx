@@ -102,6 +102,20 @@ export default function TestungErfassen() {
   }, [id])
 
   const kg = parseZahl(testung?.koerpergewichtKg)
+  const geladen = Boolean(testung && patient)
+  const [aktiverBlock, setAktiverBlock] = useState<string | null>(null)
+  useEffect(() => {
+    if (!geladen || typeof IntersectionObserver === 'undefined') return
+    const beobachter = new IntersectionObserver(
+      (eintraege) => {
+        for (const e of eintraege) if (e.isIntersecting) setAktiverBlock(e.target.id)
+      },
+      { rootMargin: '-90px 0px -75% 0px' },
+    )
+    document.querySelectorAll('.testung-block').forEach((b) => beobachter.observe(b))
+    return () => beobachter.disconnect()
+  }, [geladen])
+
   const ph = useMemo(() => (testung && patient ? phasenStand(testung, patient.opDatum) : null), [testung, patient])
   const auswertung = useMemo(
     () => (testung && ph ? werteAus(testung, ph.phase, patient?.geschlecht) : new Map<string, TestAuswertung>()),
@@ -312,7 +326,7 @@ export default function TestungErfassen() {
           const tests = sichtbar.filter((t) => t.block === b)
           const erfasst = tests.filter((t) => hatEingabe(testung.eingaben[t.id])).length
           return (
-            <a key={b} href={`#block-${b}`} onClick={(e) => springen(e, `block-${b}`)} aria-label={`${BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}: ${erfasst} von ${tests.length} erfasst`}>
+            <a key={b} href={`#block-${b}`} aria-current={aktiverBlock === `block-${b}` ? 'location' : undefined} onClick={(e) => springen(e, `block-${b}`)} aria-label={`${BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}: ${erfasst} von ${tests.length} erfasst`}>
               {BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}
               <span className={`sprung-zahl${erfasst === tests.length ? ' sprung-fertig' : ''}`}>
                 {erfasst}/{tests.length}

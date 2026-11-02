@@ -50,7 +50,7 @@ interface Props {
 }
 
 const H = 250
-const R = { links: 46, rechts: 16, oben: 28, unten: 40 }
+const R = { links: 46, rechts: 44, oben: 28, unten: 40 }
 const SYMBOL: Record<Ampel, string> = { gruen: '✓', gelb: '~', rot: '✗' }
 const AMPEL_FARBE: Record<Ampel, string> = { gruen: 'var(--erfuellt)', gelb: 'var(--knapp)', rot: 'var(--nicht-erfuellt)' }
 
@@ -122,6 +122,18 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
     return teile.filter((t) => t.length > 1)
   })
 
+  // Letzter Wert direkt am Linienende; liegen zwei zu nah, rücken sie auseinander
+  const enden = reihen.flatMap((r, ri) => {
+    const p = mitZeit.filter((q) => q.werte[ri] !== null).at(-1)
+    return p ? [{ name: r.name, farbe: r.farbe, m: p.monate!, wert: p.werte[ri]!, py: y(p.werte[ri]!) }] : []
+  })
+  if (enden.length === 2 && Math.abs(enden[0].py - enden[1].py) < 15) {
+    const mitte = (enden[0].py + enden[1].py) / 2
+    const [oben, tiefer] = enden[0].py <= enden[1].py ? enden : [enden[1], enden[0]]
+    oben.py = mitte - 7.5
+    tiefer.py = mitte + 7.5
+  }
+
   const ziele_ = [...mitZeit.map((p, i) => ({ art: 'punkt' as const, i, m: p.monate! })), ...fehlend.map((f, i) => ({ art: 'fehlt' as const, i, m: f.monate }))]
   const info = aktiv === null ? null : ziele_[aktiv]
 
@@ -166,7 +178,12 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
           const ys = y(Math.min(Math.max(s.wert, yMin), yMax))
           const y1 = korridor.richtung === 'oben' ? (korridor.grenze ? y(Math.min(korridor.grenze, yMax)) : R.oben) : ys
           const y2 = korridor.richtung === 'oben' ? ys : unten
-          return <rect key={s.von} x={von} y={y1} width={bis - von} height={Math.max(0, y2 - y1)} className="diagramm-korridor" />
+          return (
+            <g key={s.von}>
+              <rect x={von} y={y1} width={bis - von} height={Math.max(0, y2 - y1)} className="diagramm-korridor" />
+              <line x1={von} x2={bis} y1={ys} y2={ys} className="diagramm-ziel" />
+            </g>
+          )
         })}
 
         {/* Phasen als feine senkrechte Linien mit Namen */}
@@ -238,6 +255,12 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
             )
           }),
         )}
+
+        {enden.map((e) => (
+          <text key={e.name} x={x(e.m) + 11} y={e.py + 4} className="diagramm-ende" style={{ fill: e.farbe }}>
+            {zahl(e.wert, nachkomma)}
+          </text>
+        ))}
 
         {/* Bereiche für Maus und Tastatur – zeigen das Info-Fenster */}
         {ziele_.map((z, i) =>

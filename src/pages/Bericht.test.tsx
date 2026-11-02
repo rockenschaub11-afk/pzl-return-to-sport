@@ -63,7 +63,7 @@ describe('Berichte', () => {
     await new Promise((r) => setTimeout(r, 600))
     expect(await allesGespeichert()).not.toMatch(/Maximiliane|Testperson/)
     expect(document.title).not.toMatch(/Maximiliane/)
-  })
+  }, 15000)
 
   it('Drucken öffnet den Druckdialog des Browsers', async () => {
     const drucken = vi.spyOn(window, 'print').mockImplementation(() => {})

@@ -32,6 +32,7 @@ export default function LsiUebersicht({ zeilen, vorigeDatum, zeile: ZEILE = 15, 
       >
         {zeilen.map((_, i) => (i % 2 === 0 ? <rect key={i} x={0} y={OBEN + i * ZEILE} width={B} height={ZEILE} className="lsi-streifen" /> : null))}
         <rect x={x(90)} y={OBEN - 4} width={x(110) - x(90)} height={H - OBEN} className="lsi-korridor" />
+        <line x1={x(90)} x2={x(90)} y1={OBEN - 4} y2={H - 4} className="lsi-ziel" />
         {TICKS.map((t) => (
           <g key={t}>
             <line x1={x(t)} x2={x(t)} y1={OBEN - 4} y2={H - 2} className={t === 100 ? 'lsi-raster lsi-raster-100' : 'lsi-raster'} />
@@ -52,7 +53,8 @@ export default function LsiUebersicht({ zeilen, vorigeDatum, zeile: ZEILE = 15, 
           const y = OBEN + i * ZEILE + ZEILE / 2
           const a = z.ampel
           return (
-            <g key={z.id}>
+            <g key={z.id} className="lsi-zeile">
+              <rect x={0} y={OBEN + i * ZEILE} width={B} height={ZEILE} className="lsi-treffer" />
               <text x={0} y={y + 3.5} className="lsi-name">
                 {z.name}
               </text>

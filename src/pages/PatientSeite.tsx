@@ -7,8 +7,8 @@ import { lsiUebersicht } from '../berichte/lsiZeilen'
 import { db, type Testung } from '../db'
 import Laedt from '../Laedt'
 import { phaseNach } from '../katalog'
-import { letzterStand, nachDatum } from '../patienten/uebersicht'
-import { BEGLEIT_OPS, GRAFTS, monateSeit, NIVEAUS, type Patient } from '../patienten/stammdaten'
+import { letzterStand, nachDatum, pflichtKurz } from '../patienten/uebersicht'
+import { BEGLEIT_OPS, datumDeutsch, GRAFTS, monateSeit, NIVEAUS, type Patient } from '../patienten/stammdaten'
 import { phaseAusMonaten } from '../testung/ablauf'
 import { einheitFest } from '../testung/erfassung'
 import { AmpelMarke } from '../testung/Ladebalken'
@@ -121,6 +121,7 @@ export default function PatientSeite() {
 
 function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; testungen: Testung[]; zuTestungen: () => void }) {
   const stand = letzterStand(patient, testungen)
+  const pflicht = pflichtKurz(patient, testungen)
   const letzte = nachDatum(testungen)[0]
   // Alle Seitenvergleiche der letzten Testung statt einzelner Kennzahlen (UI-Audit Punkt 6) – Werte wie im Arztbericht
   const lsi = useMemo(() => (letzte ? lsiUebersicht(arztBericht(patient, letzte), patBericht(patient, letzte, testungen)) : []), [patient, letzte, testungen])
@@ -134,9 +135,26 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
             <span className="status-herkunft">{stand.herkunft}</span>
             <h2 className="status-titel">{stand.aussage}</h2>
             <span className="status-herkunft">
-              {stand.titel} · {stand.fortschritt.erfasst} von {stand.fortschritt.gesamt} Tests erfasst ·{' '}
-              <span className={`status${stand.abgeschlossen ? '' : ' status-arbeit'}`}>{stand.abgeschlossen ? 'abgeschlossen' : 'in Arbeit'}</span>
+              {stand.titel} · <span className={`status${stand.abgeschlossen ? '' : ' status-arbeit'}`}>{stand.abgeschlossen ? 'abgeschlossen' : 'in Arbeit'}</span>
             </span>
+            <dl className="status-zahlen">
+              {pflicht && (
+                <div>
+                  <dt>Pflicht erfüllt</dt>
+                  <dd>
+                    {pflicht.erfuellt}
+                    <span> / {pflicht.gesamt}</span>
+                  </dd>
+                </div>
+              )}
+              <div>
+                <dt>Tests erfasst</dt>
+                <dd>
+                  {stand.fortschritt.erfasst}
+                  <span> / {stand.fortschritt.gesamt}</span>
+                </dd>
+              </div>
+            </dl>
             {stand.endtestung && <span className="status-herkunft">Ersetzt keine ärztliche Freigabe.</span>}
             {stand.warnung && <p className="status-warnung">⚠ {stand.warnung} – blockiert nicht.</p>}
           </div>
@@ -172,14 +190,7 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
       )}
 
       <div className="dashboard-raster">
-        <div className="dashboard-spalte">
-          <Kopfkarte patient={patient} letzte={letzte} />
-          {testungen.length > 0 && (
-            <button type="button" className="knopf" onClick={zuTestungen}>
-              <span>Alle {testungen.length} Testungen ansehen</span>
-            </button>
-          )}
-        </div>
+        <Kopfkarte patient={patient} letzte={letzte} anzahl={testungen.length} zuTestungen={zuTestungen} />
         <section className="karte block seitenvergleich" aria-label="Seitenvergleich">
           <h2 className="block-titel">Seitenvergleich der letzten Testung</h2>
           {lsi.length > 0 ? <LsiUebersicht zeilen={lsi} vorigeDatum={vorigeDatum} zeile={21} bewegt /> : <p className="hinweis-leise">Sobald Tests mit Seitenvergleich erfasst sind, erscheint hier der LSI je Test.</p>}
@@ -190,7 +201,7 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
   )
 }
 
-function Kopfkarte({ patient: p, letzte }: { patient: Patient; letzte?: { tegnerAktuell: string; koerpergewichtKg: string } }) {
+function Kopfkarte({ patient: p, letzte, anzahl, zuTestungen }: { patient: Patient; letzte?: { datum: string; tegnerAktuell: string; koerpergewichtKg: string }; anzahl: number; zuTestungen: () => void }) {
   const monate = monateSeit(p.opDatum)
   const begleit = [...p.begleitOps.map((b) => BEGLEIT_OPS[b]), p.begleitOpAndere].filter(Boolean).join(', ')
   const fakten: [string, string][] = [
@@ -201,6 +212,7 @@ function Kopfkarte({ patient: p, letzte }: { patient: Patient; letzte?: { tegner
   if (begleit) fakten.push(['Begleit-OP', begleit])
   if (p.tegner !== '' || letzte?.tegnerAktuell) fakten.push(['Tegner', `${p.tegner || '–'} → aktuell ${letzte?.tegnerAktuell || '–'}`])
   if (letzte?.koerpergewichtKg) fakten.push(['Gewicht', `${letzte.koerpergewichtKg} kg`])
+  if (letzte) fakten.push(['Letzte Testung', datumDeutsch(letzte.datum)])
 
   return (
     <section className="karte kopfkarte" aria-label="Kopfdaten">
@@ -219,6 +231,11 @@ function Kopfkarte({ patient: p, letzte }: { patient: Patient; letzte?: { tegner
           </div>
         ))}
       </dl>
+      {anzahl > 0 && (
+        <button type="button" className="kopfkarte-link" onClick={zuTestungen}>
+          Alle {anzahl} Testungen ansehen
+        </button>
+      )}
     </section>
   )
 }

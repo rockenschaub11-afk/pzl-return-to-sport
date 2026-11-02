@@ -49,8 +49,9 @@ export default function PatientTestungen({ patientId, mitKnopf = true }: { patie
               <li key={t.id}>
                 <Link to={`/testung/${t.id}`} className="testung-zeile">
                   <span>
-                    {ART_TEXT[ph.art]} · {KATALOG.phasen.find((x) => x.id === ph.phase)?.name} · {datumDeutsch(t.datum)}
+                    {ART_TEXT[ph.art]} · {KATALOG.phasen.find((x) => x.id === ph.phase)?.name}
                   </span>
+                  <span className="testung-datum">{datumDeutsch(t.datum)}</span>
                   <span className={`status${t.status === 'abgeschlossen' ? '' : ' status-arbeit'}`}>{statusText(t)}</span>
                   <span className="testung-fortschritt">
                     {f.erfasst} / {f.gesamt} Tests

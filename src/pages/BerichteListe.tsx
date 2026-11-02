@@ -30,7 +30,7 @@ export default function BerichteListe() {
       </div>
 
       <div className="karte block">
-        <label className="feld feld-inline">
+        <label className="suche">
           <span className="sr-only">Kürzel suchen</span>
           <input type="search" value={suche} onChange={(e) => setSuche(e.target.value)} placeholder="Kürzel suchen …" autoComplete="off" />
         </label>
