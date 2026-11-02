@@ -33,7 +33,7 @@ export default function PatientTestungen({ patientId, mitKnopf = true }: { patie
   return (
     <div className="karte block">
       <div className="block-kopf">
-        <h3 className="block-titel">Testungen</h3>
+        <h2 className="block-titel">Testungen</h2>
         {mitKnopf && (
           <button type="button" className="knopf knopf-haupt" onClick={starten}>
             <span>Neue Testung</span>

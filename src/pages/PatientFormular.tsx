@@ -1,5 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useEffect, useState, type ReactNode } from 'react'
+import Frage from '../Frage'
+import { useUngespeichertWarnung } from '../patienten/ungespeichert'
+import { useRef, useEffect, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Laedt from '../Laedt'
 import { db, KuerzelVergebenFehler, loeschePatient, speicherePatient } from '../db'
@@ -35,11 +37,15 @@ export default function PatientFormular({ eingebettet = false }: { eingebettet?:
   const [versucht, setVersucht] = useState(false)
   const [loeschenFragen, setLoeschenFragen] = useState(false)
   const [speicherFehler, setSpeicherFehler] = useState('')
+  const ursprung = useRef(JSON.stringify(LEER))
+  useUngespeichertWarnung(geladen && JSON.stringify(daten) !== ursprung.current)
 
   useEffect(() => {
     if (gespeichert && !geladen) {
       const { id: _id, kuerzelNorm: _k, angelegtAm: _a, geaendertAm: _g, ...stamm } = gespeichert
-      setDaten({ ...LEER, ...stamm })
+      const stand = { ...LEER, ...stamm }
+      ursprung.current = JSON.stringify(stand)
+      setDaten(stand)
       setGeladen(true)
     }
   }, [gespeichert, geladen])
@@ -71,9 +77,14 @@ export default function PatientFormular({ eingebettet = false }: { eingebettet?:
     e.preventDefault()
     setVersucht(true)
     setSpeicherFehler('')
-    if (Object.keys(fehler).length > 0) return
+    if (Object.keys(fehler).length > 0) {
+      // erstes Fehlerfeld ansteuern, sobald die Fehler markiert sind
+      setTimeout(() => document.querySelector<HTMLElement>('form [aria-invalid="true"]')?.focus())
+      return
+    }
     try {
       await speicherePatient(daten, id)
+      ursprung.current = JSON.stringify(daten)
       navigate('/patienten')
     } catch (err) {
       setSpeicherFehler(err instanceof KuerzelVergebenFehler ? err.message : 'Speichern hat nicht geklappt. Bitte nochmals versuchen.')
@@ -91,14 +102,14 @@ export default function PatientFormular({ eingebettet = false }: { eingebettet?:
   }
 
   return (
-    <form onSubmit={speichern} noValidate>
+    <form onSubmit={speichern} noValidate autoComplete="off">
       {!eingebettet && (
         <div className="seitenkopf">
           <div>
             <p className="seitenzusatz">
               <Link to="/patienten">← Pat.-Liste</Link>
             </p>
-            <h2 className="seitentitel">{neu ? 'Neues Kürzel' : normalisiereKuerzel(daten.kuerzel) || 'Kürzel'}</h2>
+            <h1 className="seitentitel">{neu ? 'Neues Kürzel' : normalisiereKuerzel(daten.kuerzel) || 'Kürzel'}</h1>
           </div>
         </div>
       )}
@@ -278,7 +289,7 @@ export default function PatientFormular({ eingebettet = false }: { eingebettet?:
       </div>
 
       {loeschenFragen && (
-        <div className="meldung meldung-fehler loeschen-frage" role="alertdialog" aria-label="Löschen bestätigen">
+        <Frage className="meldung meldung-fehler loeschen-frage" label="Löschen bestätigen" onAbbrechen={() => setLoeschenFragen(false)}>
           <p>
             <strong>{gespeichert?.kuerzel}</strong> samt allen Testungen endgültig von diesem Laptop löschen?
           </p>
@@ -286,11 +297,11 @@ export default function PatientFormular({ eingebettet = false }: { eingebettet?:
             <button type="button" className="knopf knopf-gefahr" onClick={loeschen}>
               <span>Ja, endgültig löschen</span>
             </button>
-            <button type="button" className="knopf" onClick={() => setLoeschenFragen(false)}>
+            <button type="button" className="knopf" data-abbrechen onClick={() => setLoeschenFragen(false)}>
               <span>Nein, behalten</span>
             </button>
           </div>
-        </div>
+        </Frage>
       )}
     </form>
   )

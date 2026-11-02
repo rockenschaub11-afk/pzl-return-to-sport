@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Frage from '../Frage'
 import type { Entscheidung, Testung } from '../db'
 import { HINWEIS } from '../navigation'
 import { datumDeutsch } from '../patienten/stammdaten'
@@ -46,7 +47,7 @@ export default function ErgebnisEntscheidung({ testung, vorschlag: v, setzeEntsc
 
   return (
     <section id="ergebnis" className="karte ergebnis">
-      <h3 className="testung-block-titel">Ergebnis & Entscheidung</h3>
+      <h2 className="testung-block-titel">Ergebnis & Entscheidung</h2>
 
       <div className={`ergebnis-vorschlag ${vorschlagErfuellt ? 'rts-erfuellt' : 'rts-offen'}`}>
         <span className="rts-titel">Vorschlag der App</span>
@@ -58,7 +59,7 @@ export default function ErgebnisEntscheidung({ testung, vorschlag: v, setzeEntsc
 
       {v.wasFehlt.length > 0 && (
         <>
-          <h4>Was fehlt noch?</h4>
+          <h3>Was fehlt noch?</h3>
           <ul className="ergebnis-liste">
             {v.wasFehlt.map((w) => (
               <li key={w}>{w}</li>
@@ -69,7 +70,7 @@ export default function ErgebnisEntscheidung({ testung, vorschlag: v, setzeEntsc
 
       {v.wuenschenswertNichtErreicht.length > 0 && (
         <>
-          <h4>Wünschenswert, nicht erreicht (blockiert nicht)</h4>
+          <h3>Wünschenswert, nicht erreicht (blockiert nicht)</h3>
           <ul className="ergebnis-liste ergebnis-leise">
             {v.wuenschenswertNichtErreicht.map((w) => (
               <li key={w}>{w}</li>
@@ -84,7 +85,7 @@ export default function ErgebnisEntscheidung({ testung, vorschlag: v, setzeEntsc
         </p>
       ))}
 
-      <h4>Entscheidung der Therapeut:in</h4>
+      <h3>Entscheidung der Therapeut:in</h3>
       {abgeschlossen ? (
         <div className="entscheidung-fertig">
           <p>
@@ -100,17 +101,17 @@ export default function ErgebnisEntscheidung({ testung, vorschlag: v, setzeEntsc
               <span>Wieder öffnen …</span>
             </button>
           ) : (
-            <div className="meldung meldung-warnung" role="alertdialog" aria-label="Wieder öffnen bestätigen">
+            <Frage className="meldung meldung-warnung" label="Wieder öffnen bestätigen" onAbbrechen={() => setOeffnenFragen(false)}>
               <p>Testung wieder bearbeitbar machen? Die Entscheidung wird dabei zurückgesetzt und muss neu getroffen werden.</p>
               <div className="aktionen">
                 <button type="button" className="knopf knopf-haupt" onClick={wiederOeffnen}>
                   <span>Ja, wieder öffnen</span>
                 </button>
-                <button type="button" className="knopf" onClick={() => setOeffnenFragen(false)}>
+                <button type="button" className="knopf" data-abbrechen onClick={() => setOeffnenFragen(false)}>
                   <span>Abbrechen</span>
                 </button>
               </div>
-            </div>
+            </Frage>
           )}
         </div>
       ) : (
@@ -169,7 +170,7 @@ export function AbschlussVerlauf({ testung, setzeEntscheidung, abschliessen, wie
   const fehlt = !e.therapeut.trim()
   return (
     <section id="ergebnis" className="karte ergebnis">
-      <h3 className="testung-block-titel">Abschluss</h3>
+      <h2 className="testung-block-titel">Abschluss</h2>
       <p className="hinweis-leise">Verlaufstest – ohne RTS-Vorschlag. Die Ampel je Test gilt mit den Schwellen der Phase.</p>
       {testung.status === 'abgeschlossen' ? (
         <div className="entscheidung-fertig">
@@ -181,17 +182,17 @@ export function AbschlussVerlauf({ testung, setzeEntscheidung, abschliessen, wie
               <span>Wieder öffnen …</span>
             </button>
           ) : (
-            <div className="meldung meldung-warnung" role="alertdialog" aria-label="Wieder öffnen bestätigen">
+            <Frage className="meldung meldung-warnung" label="Wieder öffnen bestätigen" onAbbrechen={() => setOeffnenFragen(false)}>
               <p>Verlaufstest wieder bearbeitbar machen?</p>
               <div className="aktionen">
                 <button type="button" className="knopf knopf-haupt" onClick={wiederOeffnen}>
                   <span>Ja, wieder öffnen</span>
                 </button>
-                <button type="button" className="knopf" onClick={() => setOeffnenFragen(false)}>
+                <button type="button" className="knopf" data-abbrechen onClick={() => setOeffnenFragen(false)}>
                   <span>Abbrechen</span>
                 </button>
               </div>
-            </div>
+            </Frage>
           )}
         </div>
       ) : (

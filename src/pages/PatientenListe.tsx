@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { db, type Testung } from '../db'
 import Laedt from '../Laedt'
 import { datumDeutsch, monateSeit, NIVEAUS, passtZurSuche } from '../patienten/stammdaten'
@@ -11,8 +11,20 @@ export default function PatientenListe() {
   const navigate = useNavigate()
   const patienten = useLiveQuery(() => db.patienten.orderBy('geaendertAm').reverse().toArray())
   const testungen = useLiveQuery(() => db.testungen.toArray())
-  const [suche, setSuche] = useState('')
-  const [nurArbeit, setNurArbeit] = useState(false)
+  const [adresse, setAdresse] = useSearchParams()
+  const suche = adresse.get('suche') ?? ''
+  const nurArbeit = adresse.get('filter') === 'arbeit'
+  const setze = (feld: string, wert: string) =>
+    setAdresse(
+      (a) => {
+        if (wert) a.set(feld, wert)
+        else a.delete(feld)
+        return a
+      },
+      { replace: true },
+    )
+  // nur neu rechnen, wenn sich Daten ändern – nicht bei jedem Tastendruck in der Suche
+  const staende = useMemo(() => new Map((patienten ?? []).map((p) => [p.id, pflichtKurz(p, (testungen ?? []).filter((t) => t.patientId === p.id))])), [patienten, testungen])
 
   if (!patienten || !testungen) return <Laedt />
   const letzte = new Map<string, Testung>()
@@ -23,7 +35,7 @@ export default function PatientenListe() {
     <section>
       <div className="seitenkopf">
         <div>
-          <h2 className="seitentitel">Pat.-Liste</h2>
+          <h1 className="seitentitel">Pat.-Liste</h1>
           <p className="seitenzusatz">
             {patienten.length === 1 ? '1 Kürzel' : `${patienten.length} Kürzel`} auf diesem Laptop
           </p>
@@ -42,10 +54,10 @@ export default function PatientenListe() {
         <div className="karte">
           <label className="suche">
             <span className="sr-only">Suchen</span>
-            <input type="search" placeholder="Kürzel oder Sportart suchen …" value={suche} onChange={(e) => setSuche(e.target.value)} />
+            <input type="search" placeholder="Kürzel oder Sportart suchen …" value={suche} onChange={(e) => setze('suche', e.target.value)} autoComplete="off" />
           </label>
           <label className="liste-filter">
-            <input type="checkbox" checked={nurArbeit} onChange={(e) => setNurArbeit(e.target.checked)} />
+            <input type="checkbox" checked={nurArbeit} onChange={(e) => setze('filter', e.target.checked ? 'arbeit' : '')} />
             Nur mit Testung in Arbeit
           </label>
 
@@ -56,24 +68,24 @@ export default function PatientenListe() {
               <table className="liste-tabelle">
                 <thead>
                   <tr>
-                    <th>Kürzel</th>
-                    <th>OP / Verletzung</th>
-                    <th>Merkmale</th>
-                    <th>Phase</th>
-                    <th>Pflicht</th>
-                    <th>Letzte Testung</th>
+                    <th scope="col">Kürzel</th>
+                    <th scope="col">OP / Verletzung</th>
+                    <th scope="col">Merkmale</th>
+                    <th scope="col">Phase</th>
+                    <th scope="col">Pflicht</th>
+                    <th scope="col">Letzte Testung</th>
                   </tr>
                 </thead>
                 <tbody>
                   {treffer.map((p) => {
                     const monate = monateSeit(p.opDatum)
                     const t = letzte.get(p.id)
-                    const stand = pflichtKurz(p, testungen.filter((x) => x.patientId === p.id))
+                    const stand = staende.get(p.id)
                     return (
                       // ganze Zeile anklickbar; per Tastatur über den Link im Kürzel
                       <tr key={p.id} onClick={() => navigate(`/patienten/${p.id}`)}>
                         <td>
-                          <Link to={`/patienten/${p.id}`} className="liste-kuerzel">
+                          <Link to={`/patienten/${p.id}`} className="liste-kuerzel" translate="no">
                             <span className="seiten-marke" title={`Betroffen: ${p.seite}`} aria-label={`betroffen: ${p.seite}`}>
                               {p.seite === 'links' ? 'L' : 'R'}
                             </span>

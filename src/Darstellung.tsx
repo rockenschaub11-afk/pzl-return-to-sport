@@ -17,6 +17,7 @@ export function gespeicherteDarstellung(): Darstellung {
 
 export function setzeDarstellung(d: Darstellung): void {
   document.documentElement.dataset.theme = d
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', d === 'hell' ? '#eceff3' : '#22252b')
   try {
     localStorage.setItem(DARSTELLUNG_SCHLUESSEL, d)
   } catch {

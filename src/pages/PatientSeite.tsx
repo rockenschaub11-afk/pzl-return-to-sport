@@ -1,6 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useMemo } from 'react'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { arztBericht, patBericht } from '../berichte/bericht'
 import LsiUebersicht from '../berichte/LsiUebersicht'
 import { lsiUebersicht } from '../berichte/lsiZeilen'
@@ -10,6 +10,7 @@ import { phaseNach } from '../katalog'
 import { letzterStand, nachDatum } from '../patienten/uebersicht'
 import { BEGLEIT_OPS, GRAFTS, monateSeit, NIVEAUS, type Patient } from '../patienten/stammdaten'
 import { phaseAusMonaten } from '../testung/ablauf'
+import { einheitFest } from '../testung/erfassung'
 import { AmpelMarke } from '../testung/Ladebalken'
 import PatientTestungen, { useNeueTestung } from '../testung/PatientTestungen'
 import VerlaufBereich from '../testung/VerlaufBereich'
@@ -27,7 +28,26 @@ export default function PatientSeite() {
   const { id = '' } = useParams()
   const patient = useLiveQuery(async () => (await db.patienten.get(id)) ?? null, [id])
   const testungen = useLiveQuery(() => db.testungen.where('patientId').equals(id).toArray(), [id])
-  const [reiter, setReiter] = useState<ReiterId>('uebersicht')
+  // Reiter steht in der Adresse: „Zurück“ aus einer Testung landet wieder am selben Ort
+  const [adresse, setAdresse] = useSearchParams()
+  const reiter: ReiterId = REITER.find(([r]) => r === adresse.get('reiter'))?.[0] ?? 'uebersicht'
+  const setReiter = (r: ReiterId) =>
+    setAdresse(
+      (a) => {
+        if (r === 'uebersicht') a.delete('reiter')
+        else a.set('reiter', r)
+        return a
+      },
+      { replace: true },
+    )
+  const reiterTaste = (e: React.KeyboardEvent, i: number) => {
+    const ziel = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: REITER.length - 1 }[e.key]
+    if (ziel === undefined) return
+    e.preventDefault()
+    const [r] = REITER[(ziel + REITER.length) % REITER.length]
+    setReiter(r)
+    document.getElementById(`reiter-${r}`)?.focus()
+  }
   const starten = useNeueTestung(id)
 
   if (patient === undefined) return <Laedt />
@@ -53,7 +73,7 @@ export default function PatientSeite() {
             <Link to="/patienten">← Pat.-Liste</Link>
           </p>
           <div className="seitenkopf-zeile">
-            <h2 className="seitentitel">{patient.kuerzel}</h2>
+            <h1 className="seitentitel" translate="no">{patient.kuerzel}</h1>
             <span className="chip">betroffen: {patient.seite === 'links' ? 'links' : 'rechts'}</span>
             {phaseHeute && <span className="chip">heute: {phaseHeute.name}</span>}
           </div>
@@ -69,7 +89,7 @@ export default function PatientSeite() {
       </div>
 
       <div className="reiter" role="tablist" aria-label="Bereiche des Kürzels">
-        {REITER.map(([rid, name]) => (
+        {REITER.map(([rid, name], i) => (
           <button
             key={rid}
             type="button"
@@ -77,7 +97,9 @@ export default function PatientSeite() {
             id={`reiter-${rid}`}
             aria-selected={reiter === rid}
             aria-controls={`bereich-${rid}`}
+            tabIndex={reiter === rid ? 0 : -1}
             onClick={() => setReiter(rid)}
+            onKeyDown={(e) => reiterTaste(e, i)}
           >
             {name}
           </button>
@@ -110,7 +132,7 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
         <section className="karte karte-laut status-letzte" aria-label="Stand der letzten Testung">
           <div className="status-aussage">
             <span className="status-herkunft">{stand.herkunft}</span>
-            <h3 className="status-titel">{stand.aussage}</h3>
+            <h2 className="status-titel">{stand.aussage}</h2>
             <span className="status-herkunft">
               {stand.titel} · {stand.fortschritt.erfasst} von {stand.fortschritt.gesamt} Tests erfasst ·{' '}
               <span className={`status${stand.abgeschlossen ? '' : ' status-arbeit'}`}>{stand.abgeschlossen ? 'abgeschlossen' : 'in Arbeit'}</span>
@@ -119,13 +141,13 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
             {stand.warnung && <p className="status-warnung">⚠ {stand.warnung} – blockiert nicht.</p>}
           </div>
           <div>
-            <h3 className="block-titel">{stand.endtestung ? 'Was fehlt noch?' : 'Noch nicht erfüllt oder offen'}</h3>
+            <h2 className="block-titel">{stand.endtestung ? 'Was fehlt noch?' : 'Noch nicht erfüllt oder offen'}</h2>
             {stand.offen.length > 0 ? (
               <ul className="status-offen">
                 {stand.offen.map((o) => (
                   <li key={o.text}>
                     <AmpelMarke ampel={o.ampel} />
-                    <span>{o.text}</span>
+                    <span>{einheitFest(o.text)}</span>
                   </li>
                 ))}
               </ul>
@@ -159,7 +181,7 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
           )}
         </div>
         <section className="karte block seitenvergleich" aria-label="Seitenvergleich">
-          <h3 className="block-titel">Seitenvergleich der letzten Testung</h3>
+          <h2 className="block-titel">Seitenvergleich der letzten Testung</h2>
           {lsi.length > 0 ? <LsiUebersicht zeilen={lsi} vorigeDatum={vorigeDatum} zeile={21} /> : <p className="hinweis-leise">Sobald Tests mit Seitenvergleich erfasst sind, erscheint hier der LSI je Test.</p>}
         </section>
       </div>

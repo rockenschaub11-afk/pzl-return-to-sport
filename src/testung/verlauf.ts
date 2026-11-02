@@ -6,7 +6,7 @@ import { nachSeite } from '../berichte/nachvollziehbarkeit'
 import type { Testung } from '../db'
 import { KATALOG, phaseNach, testNach } from '../katalog'
 import { istMeloqTest, zusatzFuer } from '../katalog/meloq'
-import type { Kriterium, PhaseId } from '../katalog/typen'
+import { BLOCK_NAMEN, type Kriterium, type PhaseId } from '../katalog/typen'
 import type { Patient } from '../patienten/stammdaten'
 import { schwelleFuer, type Ampel } from '../rechnen/bewertung'
 import { alsNewton, nProKg } from '../rechnen/einheiten'
@@ -272,6 +272,17 @@ export function fehlendeMessungen(
 /** Nur Verlaufsgrößen, zu denen es mindestens einen Wert gibt. */
 export function verfuegbareOptionen(patient: Pick<Patient, 'opDatum' | 'geschlecht'> & Partial<Pick<Patient, 'seite'>>, testungen: readonly Testung[]): VerlaufOption[] {
   return VERLAUF_OPTIONEN.filter((o) => verlaufsDaten(patient, testungen, o).length > 0)
+}
+
+/** Auswahl nach Block gruppiert (Reihenfolge wie im Katalog). */
+export function nachBloecken(optionen: readonly VerlaufOption[]): { name: string; optionen: VerlaufOption[] }[] {
+  const gruppen = new Map<string, VerlaufOption[]>()
+  for (const o of optionen) {
+    const block = testNach(o.id.split(':')[0])?.block
+    const name = block ? BLOCK_NAMEN[block] : 'Weitere'
+    gruppen.set(name, [...(gruppen.get(name) ?? []), o])
+  }
+  return [...gruppen].map(([name, liste]) => ({ name, optionen: liste }))
 }
 
 /** Phasengrenzen in Monaten seit OP (für die Zeitachse der Diagramme). */

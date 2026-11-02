@@ -76,7 +76,7 @@ export default function Seitenleiste({ mitLogo }: { mitLogo: boolean }) {
     <aside className="leiste">
       {mitLogo ? (
         <Link to="/" className="leiste-logo" aria-label="Zur Startseite">
-          <img src={logoUrl} alt="Physio Zentrum Linz" />
+          <img src={logoUrl} alt="Physio Zentrum Linz" width={480} height={180} />
         </Link>
       ) : (
         <span className="leiste-logo-platz" />
@@ -86,14 +86,14 @@ export default function Seitenleiste({ mitLogo }: { mitLogo: boolean }) {
         {BEREICHE.map((b) => (
           <NavLink key={b.pfad} to={b.pfad} end={b.pfad === '/'} className={`leiste-link${HANDY_LEISTE.includes(b.pfad) ? '' : ' nur-breit'}`}>
             <Symbol>{SYMBOLE[b.pfad]}</Symbol>
-            {b.pfad === '/sicherung' && sicherungFaellig && <span className="leiste-punkt" title="Sicherung fällig" />}
+            {b.pfad === '/sicherung' && sicherungFaellig && <span className="leiste-punkt" title="Sicherung fällig"><span className="sr-only">Sicherung fällig</span></span>}
             <span aria-hidden={b.kurz ? true : undefined}>{b.kurz ?? b.titel}</span>
             {b.kurz && <span className="sr-only">{b.titel}</span>}
           </NavLink>
         ))}
         <button type="button" className="leiste-link leiste-mehr" aria-expanded={mehrOffen} aria-controls="leiste-mehr" onClick={() => setMehrOffen((o) => !o)}>
           <Symbol>{MEHR}</Symbol>
-          {sicherungFaellig && <span className="leiste-punkt" title="Sicherung fällig" />}
+          {sicherungFaellig && <span className="leiste-punkt" title="Sicherung fällig"><span className="sr-only">Sicherung fällig</span></span>}
           <span>Mehr</span>
         </button>
       </nav>

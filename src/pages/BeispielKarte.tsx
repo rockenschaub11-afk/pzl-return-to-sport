@@ -12,7 +12,7 @@ export default function BeispielKarte() {
 
   return (
     <div className="karte kat-regeln">
-      <h3>Beispiel-Pat. zum Ausprobieren</h3>
+      <h2>Beispiel-Pat. zum Ausprobieren</h2>
       <p>
         Legt das Fantasie-Kürzel <strong>{BEISPIEL_KUERZEL}</strong> an (männlich, Fußball, OP vor 12 Monaten) mit einem Verlaufstest „Mitte“ und
         „Spät“ (abgeschlossen) und einer fast fertigen Endtestung (in Arbeit) – ideal für Verlauf, RTS-Vorschlag und Entscheidung. Keine echten Daten.

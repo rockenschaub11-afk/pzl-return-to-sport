@@ -4,7 +4,7 @@ export default function Platzhalter({ bereich }: { bereich: Bereich }) {
   return (
     <section>
       <div className="seitenkopf">
-        <h2 className="seitentitel">{bereich.titel}</h2>
+        <h1 className="seitentitel">{bereich.titel}</h1>
       </div>
       <div className="karte">
         <p>{bereich.beschreibung}</p>

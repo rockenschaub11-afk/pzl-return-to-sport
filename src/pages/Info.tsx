@@ -39,7 +39,7 @@ export default function Info() {
     <section>
       <div className="seitenkopf">
         <div>
-          <h2 className="seitentitel">Einstellungen/Info</h2>
+          <h1 className="seitentitel">Einstellungen/Info</h1>
           <p className="seitenzusatz">Einstellungen folgen in späteren Etappen. Hier der Testkatalog zum Gegenlesen.</p>
         </div>
       </div>
@@ -47,7 +47,7 @@ export default function Info() {
       <BeispielKarte />
 
       <div className="karte kat-regeln kat-block">
-        <h3>Meloq-Metriken (persönlicher Standard)</h3>
+        <h2>Meloq-Metriken (persönlicher Standard)</h2>
         <p>
           Welche weiteren Meloq-Werte in der Testung zum Eintragen angeboten werden. Der Kern-Satz ist immer dabei. Die Auswahl gilt für diesen
           Laptop und lässt sich auch direkt in der Testung unter „Metriken wählen“ ändern.
@@ -57,7 +57,7 @@ export default function Info() {
           <div className="meloq-einstellung">
             {MELOQ_TESTS.map((t) => (
               <div key={t}>
-                <h4>{KATALOG.tests.find((x) => x.id === t)?.name}</h4>
+                <h3>{KATALOG.tests.find((x) => x.id === t)?.name}</h3>
                 <p className="hinweis-leise">Kern-Satz: {MELOQ.kern[t].map((k) => k.name).join(' · ')}</p>
                 <MetrikWahl test={t} auswahl={meloqAuswahl} />
               </div>
@@ -68,7 +68,7 @@ export default function Info() {
       </div>
 
       <div className="karte kat-regeln kat-block">
-        <h3>Testkatalog & Schwellen</h3>
+        <h2>Testkatalog & Schwellen</h2>
         <p>
           Alle Schwellen sind fest in der App hinterlegt (Änderung nur per Update). Jede Schwelle trägt ihre Quelle.
         </p>
@@ -82,8 +82,8 @@ export default function Info() {
             <strong>Asymmetrie</strong> wie Meloq: (stärker − schwächer) / stärker × 100.
           </li>
           <li>
-            <strong>Gesamt-Ampel</strong> eines Tests = die schlechtere aus Absolutwert und LSI. Nur „Pflicht“ und „wünschenswert“ zählen,
-            „Warnung“ gibt einen Hinweis, „Info“ hat keine Ampel.
+            <strong>Status im Kartenkopf</strong> eines Tests = das schlechteste Pflicht-Kriterium. Wünschenswerte Kriterien sind neutral markiert und
+            blockieren nicht, „Warnung“ gibt einen Hinweis, „Info“ hat keine Ampel.
           </li>
           <li>
             <strong>Frauen:</strong> {regeln.frauenHinweis} (in der Tabelle mit ♀ markiert)
@@ -110,7 +110,7 @@ export default function Info() {
         const tests = KATALOG.tests.filter((t) => t.block === block)
         return (
           <div key={block} className="karte kat-block">
-            <h3>{BLOCK_NAMEN[block]}</h3>
+            <h2>{BLOCK_NAMEN[block]}</h2>
             <div className="kat-tabelle-huelle">
               <table className="kat-tabelle">
                 <colgroup>
@@ -123,14 +123,14 @@ export default function Info() {
                 </colgroup>
                 <thead>
                   <tr>
-                    <th>Test / Kriterium</th>
+                    <th scope="col">Test / Kriterium</th>
                     {phasen.map((p) => (
                       <th key={p.id} title={p.lang}>
                         {p.name}
                       </th>
                     ))}
-                    <th>Status</th>
-                    <th>Quelle</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Quelle</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -186,7 +186,7 @@ export default function Info() {
       })}
 
       <div className="karte kat-block">
-        <h3>Protokolle</h3>
+        <h2>Protokolle</h2>
         <dl className="kat-protokolle">
           {KATALOG.protokolle.map((p) => (
             <div key={p.id}>

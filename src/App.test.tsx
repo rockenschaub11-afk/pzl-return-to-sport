@@ -39,7 +39,7 @@ describe('App-Rahmen', () => {
 
   it('öffnet die Seite „Sicherung“', async () => {
     zeige('/sicherung')
-    expect(await screen.findByRole('heading', { level: 2, name: 'Sicherung' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: 'Sicherung' })).toBeInTheDocument()
   })
 
   it('zeigt auf der Startseite Titel, Messfenster und die Einstiege (Nachtrag 26.10.2026)', async () => {
@@ -53,7 +53,7 @@ describe('App-Rahmen', () => {
 
   it('zeigt unter Einstellungen/Info den Testkatalog mit Schwellen und Quellen', () => {
     zeige('/info')
-    expect(screen.getByRole('heading', { level: 3, name: 'Testkatalog & Schwellen' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Testkatalog & Schwellen' })).toBeInTheDocument()
     expect(screen.getByRole('rowheader', { name: /^Knie-Extension \(HHD, sitzend\)/ })).toBeInTheDocument()
     expect(screen.getAllByText('Read S. 59').length).toBeGreaterThan(5)
     expect(screen.queryByRole('alert')).not.toBeInTheDocument() // Katalog fehlerfrei
@@ -77,7 +77,7 @@ describe('Endtestung', () => {
     zeige(`/patienten/${patientId}`)
 
     await user.click(await screen.findByRole('button', { name: 'Neue Testung' }))
-    expect(await screen.findByRole('heading', { level: 2, name: 'Endtestung TT-1999' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: 'Endtestung TT-1999' })).toBeInTheDocument()
 
     await user.type(screen.getByPlaceholderText('z. B. 72,5'), '80')
     const karte = within(document.getElementById('test-hhd_knie_ext')!)
@@ -145,7 +145,7 @@ describe('Verlaufstest (Etappe 7)', () => {
     zeige(`/patienten/${patientId}`)
 
     await user.click(await screen.findByRole('button', { name: 'Neue Testung' }))
-    expect(await screen.findByRole('heading', { level: 2, name: 'Verlaufstest TT-1999' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: 'Verlaufstest TT-1999' })).toBeInTheDocument()
     expect(screen.getByText('Phase: Mitte (3–5 Monate)')).toBeInTheDocument()
     expect(screen.getByRole('article', { name: /^SL-CMJ/ })).toBeInTheDocument()
     expect(screen.queryByRole('article', { name: /^SL-Drop-Jump/ })).not.toBeInTheDocument()

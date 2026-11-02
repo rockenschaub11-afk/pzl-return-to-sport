@@ -220,7 +220,7 @@ export default function Start() {
     <section className="start" aria-labelledby="start-titel">
       <header className="start-kopf">
         <Link to="/" className="start-marke" aria-label="Startseite">
-          <img src={logoUrl} alt="Physio Zentrum Linz" />
+          <img src={logoUrl} alt="Physio Zentrum Linz" width={480} height={180} />
         </Link>
         {/* Pat.-Liste, Testung, Berichte stehen unten als Karten – oben nur, was sonst nicht erreichbar wäre */}
         <nav className="start-nav" aria-label="Weitere Bereiche">

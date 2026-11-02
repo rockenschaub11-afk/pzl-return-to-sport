@@ -67,8 +67,8 @@ export default function MeloqBereich({ test, eingabe: e, setze, seiten, berechnu
               {spalten.map((s) => (
                 <th key={s}>{s}</th>
               ))}
-              <th>relativ</th>
-              <th>{test === 'cmj' ? 'Asymmetrie' : 'LSI'}</th>
+              <th scope="col">relativ</th>
+              <th scope="col">{test === 'cmj' ? 'Asymmetrie' : 'LSI'}</th>
             </tr>
           </thead>
           <tbody>
@@ -122,7 +122,7 @@ function Feld({ wert, onChange, label, einheit }: { wert?: string; onChange: (v:
   const falsch = istKeineZahl(wert)
   return (
     <label className={`zahl-feld${falsch ? ' zahl-falsch' : ''}`}>
-      <input inputMode="decimal" value={wert ?? ''} onChange={(e) => onChange(e.target.value)} aria-label={label} aria-invalid={falsch || undefined} placeholder="–" />
+      <input inputMode="decimal" value={wert ?? ''} onChange={(e) => onChange(e.target.value)} aria-label={label} aria-invalid={falsch || undefined} placeholder="–" autoComplete="off" />
       {einheit && <span className="zahl-einheit">{einheit}</span>}
       {falsch && (
         <span className="zahl-fehler" role="alert">

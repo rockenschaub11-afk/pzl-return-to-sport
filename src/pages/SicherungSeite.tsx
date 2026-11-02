@@ -56,7 +56,7 @@ export default function SicherungSeite() {
     <section className="sicherung">
       <div className="seitenkopf">
         <div>
-          <h2 className="seitentitel">Sicherung</h2>
+          <h1 className="seitentitel">Sicherung</h1>
           <p className="seitenzusatz">
             Alle Daten liegen nur in diesem Browser. Sicherungs- und Exportdateien sind immer mit Passwort verschlüsselt – ohne Passwort kann sie niemand öffnen, auch
             nicht die App.
@@ -97,9 +97,9 @@ function GesamtExport({ stand, anzahl }: { stand: { tage: number | null; faellig
   return (
     <form className={`karte block${stand.faellig ? ' karte-laut' : ''}`} onSubmit={sichern} aria-labelledby="titel-gesamt">
       <div className="block-kopf">
-        <h3 className="block-titel" id="titel-gesamt">
+        <h2 className="block-titel" id="titel-gesamt">
           Gesamtsicherung
-        </h3>
+        </h2>
         <span className={`status${stand.faellig ? ' status-arbeit' : ''}`}>
           {stand.letzte ? `Letzte Sicherung ${datumDeutsch(stand.letzte.slice(0, 10))}${stand.tage !== null ? ` (vor ${stand.tage} ${stand.tage === 1 ? 'Tag' : 'Tagen'})` : ''}` : 'Noch nie gesichert'}
         </span>
@@ -112,7 +112,7 @@ function GesamtExport({ stand, anzahl }: { stand: { tage: number | null; faellig
         <button type="submit" className="knopf knopf-haupt" disabled={!passwortOk(pw) || laeuft || anzahl === 0}>
           <span>{laeuft ? 'Verschlüsselt …' : 'Sicherung herunterladen'}</span>
         </button>
-        {anzahl === 0 && <span className="hinweis-leise">Noch keine Daten zum Sichern.</span>}
+        {anzahl === 0 ? <span className="hinweis-leise">Noch keine Daten zum Sichern.</span> : !passwortOk(pw) && <span className="hinweis-leise">Passwort eingeben und wiederholen.</span>}
       </div>
       {meldung && (
         <p className={`meldung ${meldung.ok ? 'meldung-info' : 'meldung-fehler'}`} role="status">
@@ -148,9 +148,9 @@ function KuerzelExport({ patienten, vorwahl }: { patienten: { id: string; kuerze
 
   return (
     <form className="karte block" onSubmit={exportieren} aria-labelledby="titel-kuerzel">
-      <h3 className="block-titel" id="titel-kuerzel">
+      <h2 className="block-titel" id="titel-kuerzel">
         Kürzel übergeben
-      </h3>
+      </h2>
       <p className="hinweis-leise">Ein Kürzel mit allen Testungen als Datei – z. B. für eine Kollegin oder einen Kollegen. Die Datei enthält keinen Namen.</p>
       <label className="feld">
         <span className="feld-label">Kürzel</span>
@@ -165,7 +165,7 @@ function KuerzelExport({ patienten, vorwahl }: { patienten: { id: string; kuerze
       </label>
       <PasswortDoppelt wert={pw} setWert={setPw} id="pw-kuerzel" />
       <div className="aktionen">
-        <button type="submit" className="knopf knopf-haupt" disabled={!wahl || !passwortOk(pw) || laeuft}>
+        <button type="submit" className="knopf knopf-haupt" disabled={!wahl || !passwortOk(pw) || laeuft} title={!wahl ? 'Zuerst ein Kürzel wählen' : !passwortOk(pw) ? 'Passwort eingeben und wiederholen' : undefined}>
           <span>{laeuft ? 'Verschlüsselt …' : 'Datei für Kürzel herunterladen'}</span>
         </button>
       </div>
@@ -246,9 +246,9 @@ function Import() {
 
   return (
     <div className="karte block" aria-labelledby="titel-import" role="group">
-      <h3 className="block-titel" id="titel-import">
+      <h2 className="block-titel" id="titel-import">
         Datei importieren
-      </h3>
+      </h2>
       <p className="hinweis-leise">Eine Gesamtsicherung oder eine Kürzel-Datei öffnen. Vor dem Übernehmen zeigt die App, was sich ändert – gelöscht wird nichts ohne Rückfrage.</p>
 
       {!offen && (
@@ -264,7 +264,7 @@ function Import() {
             </label>
           </div>
           <div className="aktionen">
-            <button type="submit" className="knopf knopf-haupt" disabled={!datei || !pw || laeuft}>
+            <button type="submit" className="knopf knopf-haupt" disabled={!datei || !pw || laeuft} title={!datei ? 'Zuerst eine Datei wählen' : !pw ? 'Passwort der Datei eingeben' : undefined}>
               <span>{laeuft ? 'Entschlüsselt …' : 'Datei öffnen'}</span>
             </button>
           </div>

@@ -111,6 +111,24 @@
   box-sizing: border-box;
 }
 
+html {
+  /* stehende Leisten dürfen das fokussierte Feld nicht verdecken */
+  scroll-padding-top: 6rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.karte,
+.bericht,
+.meldung {
+  overflow-wrap: break-word;
+}
+
 body {
   margin: 0;
   background: var(--hintergrund);
@@ -122,6 +140,7 @@ a {
 }
 
 /* Titel in Montserrat (DESIGNKONZEPT 10.2) */
+h1,
 h1,
 h2,
 h3 {
@@ -266,8 +285,8 @@ h3 {
     inset: auto 0 0 0;
     flex-direction: row;
     width: auto;
-    height: 64px;
-    padding: 0 4px;
+    height: calc(64px + env(safe-area-inset-bottom));
+    padding: 0 4px env(safe-area-inset-bottom);
   }
 
   .leiste-logo,
@@ -395,6 +414,7 @@ h3 {
 }
 
 .seitentitel {
+  text-wrap: balance;
   margin: 0;
   font-weight: 600;
   font-size: 1.75rem;
@@ -517,7 +537,7 @@ h3 {
   font: inherit;
 }
 
-.suche input:focus {
+.suche input:focus-visible {
   outline: none;
   border-color: var(--pzl-tuerkis);
   box-shadow: 0 0 0 2px var(--fokus);
@@ -775,7 +795,7 @@ h3 {
   max-width: 40rem;
 }
 
-.feld input:focus,
+.feld input:focus-visible,
 .feld select:focus {
   outline: none;
   border-color: var(--fokus);
@@ -1015,6 +1035,15 @@ h3 {
   text-decoration: none;
 }
 
+.block-sprung a:hover {
+  text-decoration: underline;
+}
+
+.test-info-knopf:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+
 .testung-raster {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 290px;
@@ -1054,7 +1083,7 @@ h3 {
   gap: 0.5rem;
 }
 
-.test-kopf h4 {
+.test-kopf h3 {
   margin: 0;
   color: var(--text);
   font-family: var(--schrift-titel);
@@ -1138,7 +1167,7 @@ h3 {
   font-variant-numeric: tabular-nums;
 }
 
-.zahl-feld input:focus {
+.zahl-feld input:focus-visible {
   outline: none;
   border-color: var(--fokus);
   box-shadow: 0 0 0 1px var(--fokus);
@@ -1409,7 +1438,7 @@ h3 {
   background: var(--flaeche);
 }
 
-.testung-uebersicht h3 {
+.testung-uebersicht h2 {
   margin: 0 0 0.5rem;
   font-size: 1.0625rem;
   font-weight: 600;
@@ -1823,7 +1852,7 @@ h3 {
   resize: vertical;
 }
 
-.feld textarea:focus {
+.feld textarea:focus-visible {
   outline: none;
   border-color: var(--fokus);
   box-shadow: 0 0 0 1px var(--fokus);
@@ -1914,7 +1943,7 @@ h3 {
   margin: 1rem 0;
 }
 
-.ergebnis h4 {
+.ergebnis h3 {
   margin: 1.1rem 0 0.4rem;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -2151,7 +2180,7 @@ fieldset:disabled .test-hinzu {
   margin-top: 1rem;
 }
 
-.meloq-einstellung h4 {
+.meloq-einstellung h3 {
   margin: 0;
   font-size: 0.9375rem;
   font-weight: 600;
@@ -2182,8 +2211,8 @@ fieldset:disabled .test-hinzu {
 
 /* ---------- Testkatalog (Info) ---------- */
 
-.kat-regeln h3,
-.kat-block h3 {
+.kat-regeln h2,
+.kat-block h2 {
   margin: 0 0 0.75rem;
   font-size: 1.0625rem;
   font-weight: 600;
@@ -2686,6 +2715,7 @@ fieldset:disabled .test-hinzu {
   }
 
   .seitentitel {
+  text-wrap: balance;
     font-size: 1.375rem;
   }
 
@@ -2815,6 +2845,7 @@ fieldset:disabled .test-hinzu {
 }
 
 .bericht-logo {
+  width: auto;
   height: 9mm;
 }
 
@@ -3517,6 +3548,7 @@ fieldset:disabled .test-hinzu {
 }
 
 .bericht-pat .bericht-titel {
+  margin-bottom: 0;
   font-size: 17pt;
 }
 

@@ -147,7 +147,7 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
         {einheit && <span className="diagramm-einheit">, {einheit}</span>}
       </figcaption>
       {stand && <p className="diagramm-stand">{stand}</p>}
-      <svg viewBox={`0 0 ${B} ${H}`} width={B} height={H} role="img" aria-label={`${titel} (${einheit})`}>
+      <svg viewBox={`0 0 ${B} ${H}`} width={B} height={H} role="group" aria-label={`${titel} (${einheit})`}>
         {/* Raster nur waagrecht */}
         {striche.map((s) => (
           <g key={s}>
@@ -250,8 +250,12 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
                 height={unten - R.oben}
                 className="diagramm-zone"
                 tabIndex={0}
-                role="button"
-                aria-label={`Werte vom ${datumDeutsch(z.art === 'punkt' ? mitZeit[z.i].datum : fehlend[z.i].datum)}`}
+                role="img"
+                aria-label={
+                  z.art === 'punkt'
+                    ? `Werte vom ${datumDeutsch(mitZeit[z.i].datum)}: ${reihen.map((r, ri) => `${r.name} ${mitZeit[z.i].werte[ri] === null ? 'nicht gemessen' : wertText(mitZeit[z.i].werte[ri]!)}`).join(', ')} ${einheit}`
+                    : `${datumDeutsch(fehlend[z.i].datum)}: nicht gemessen`
+                }
                 onMouseEnter={() => setAktiv(i)}
                 onMouseLeave={() => setAktiv(null)}
                 onFocus={() => setAktiv(i)}

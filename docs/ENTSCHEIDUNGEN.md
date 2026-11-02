@@ -356,6 +356,14 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 
 **Nachtrag 02.11.2026 (Web-Interface-Audit K1–K3, H1):** Testung speichert beim Verlassen und Schließen sofort, was noch wartet; Speicherfehler zeigen „! nicht gespeichert – wird wiederholt“ und werden alle 3 s wiederholt. Anzeigefehler landen im Auffangnetz statt auf einer leeren Seite. Ampel- und Textfarben so nachgezogen, dass auch Chips auf getönter Fläche mindestens 4,5 : 1 erreichen (hell auf allen Flächen, dunkel auf Fläche und Feld).
 
+**Nachtrag 02.11.2026 (Web-Interface-Audit, restliche Punkte):**
+- Eine `h1` je Seite, darunter `h2`/`h3` lückenlos; im Bericht ist das Kürzel `h2`.
+- Reiter der Kürzel-Seite mit Pfeiltasten; Reiter, Verlaufswahl sowie Suche/Filter der Pat.-Liste stehen in der Adresse.
+- Stammdaten: Rückfrage beim Verlassen mit ungespeicherten Änderungen (Links und Schließen), erstes Fehlerfeld bekommt den Fokus.
+- Rückfragen (Löschen, Wieder öffnen): Fokus auf die sichere Antwort, Esc bricht ab.
+- Versuchs-Spalten tragen die Einheit im Kopf; Verlaufsauswahl nach Block gruppiert; Zahl und Einheit bleiben in Texten zusammen.
+- Beibehalten: `datumDeutsch` (feste österreichische Schreibweise) und das klickbare Messfenster der Startseite (reine Zier). Absende-Knöpfe in Sicherung bleiben bis zur gültigen Eingabe gesperrt, mit Hinweis auf den Grund.
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.

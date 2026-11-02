@@ -1,24 +1,33 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { db } from '../db'
 import { phaseNach } from '../katalog'
 import { datumDeutsch, type Patient } from '../patienten/stammdaten'
 import LinienDiagramm from './LinienDiagramm'
-import { verfuegbareOptionen } from './verlauf'
+import { nachBloecken, verfuegbareOptionen } from './verlauf'
 import { verlaufsDiagramme } from './verlaufDiagramme'
 const zahl = (v: number | null) => (v === null ? '–' : v.toLocaleString('de-AT', { maximumFractionDigits: 1 }))
 
 /** Verlauf über alle Testungen eines Kürzels (Etappe-7-Frage 6). */
 export default function VerlaufBereich({ patient }: { patient: Patient }) {
   const testungen = useLiveQuery(() => db.testungen.where('patientId').equals(patient.id).toArray(), [patient.id])
-  const [wahl, setWahl] = useState('')
+  const [adresse, setAdresse] = useSearchParams()
+  const wahl = adresse.get('verlauf') ?? ''
+  const setWahl = (w: string) =>
+    setAdresse(
+      (a) => {
+        a.set('verlauf', w)
+        return a
+      },
+      { replace: true },
+    )
   if (!testungen) return null
 
   const optionen = verfuegbareOptionen(patient, testungen)
   if (optionen.length === 0) {
     return (
       <div className="karte block">
-        <h3 className="block-titel">Verlauf</h3>
+        <h2 className="block-titel">Verlauf</h2>
         <p className="hinweis-leise">Sobald Werte erfasst sind, erscheinen hier die Verlaufsdiagramme.</p>
       </div>
     )
@@ -29,14 +38,18 @@ export default function VerlaufBereich({ patient }: { patient: Patient }) {
   return (
     <div className="karte block verlauf">
       <div className="block-kopf">
-        <h3 className="block-titel">Verlauf</h3>
+        <h2 className="block-titel">Verlauf</h2>
         <label className="feld feld-inline">
           <span className="sr-only">Test für den Verlauf</span>
           <select value={option.id} onChange={(e) => setWahl(e.target.value)}>
-            {optionen.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.name}
-              </option>
+            {nachBloecken(optionen).map((g) => (
+              <optgroup key={g.name} label={g.name}>
+                {g.optionen.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </label>
@@ -53,17 +66,17 @@ export default function VerlaufBereich({ patient }: { patient: Patient }) {
         <table className="eingabe-raster verlauf-tabelle">
           <thead>
             <tr>
-              <th>Datum</th>
-              <th>Phase</th>
+              <th scope="col">Datum</th>
+              <th scope="col">Phase</th>
               {option.seiten ? (
                 <>
-                  <th>gesund</th>
-                  <th>betroffen</th>
+                  <th scope="col">gesund</th>
+                  <th scope="col">betroffen</th>
                 </>
               ) : (
-                <th>Wert</th>
+                <th scope="col">Wert</th>
               )}
-              {option.zweites && <th>{option.zweites.name}</th>}
+              {option.zweites && <th scope="col">{option.zweites.name}</th>}
             </tr>
           </thead>
           <tbody>

@@ -1,4 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
+import Frage from '../Frage'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { db, loescheTestung, speichereEinstellung, speichereTestung, type Entscheidung, type Testung } from '../db'
@@ -187,9 +188,9 @@ export default function TestungErfassen() {
           <p className="seitenzusatz">
             <Link to={`/patienten/${patient.id}`}>← {patient.kuerzel}</Link>
           </p>
-          <h2 className="seitentitel">
+          <h1 className="seitentitel">
             {ART_TEXT[ph.art]} {patient.kuerzel}
-          </h2>
+          </h1>
           <p className="seitenzusatz">
             Betroffen: {patient.seite === 'links' ? 'links' : 'rechts'} · {patient.konservativ ? 'Verletzung' : 'OP'} {datumDeutsch(patient.opDatum)}
             {monate !== null && ` · ${monate} Monate bis zur Testung`}
@@ -237,7 +238,7 @@ export default function TestungErfassen() {
               <span className="feld-label">
                 Körpergewicht (kg) <span className="block-marke">Pflicht</span>
               </span>
-              <input inputMode="decimal" value={testung.koerpergewichtKg} onChange={(e) => aendern({ koerpergewichtKg: e.target.value })} placeholder="z. B. 72,5" />
+              <input inputMode="decimal" value={testung.koerpergewichtKg} onChange={(e) => aendern({ koerpergewichtKg: e.target.value })} placeholder="z. B. 72,5" autoComplete="off" />
               {istKeineZahl(testung.koerpergewichtKg) ? <span className="feld-meldung">Das ist keine Zahl – bitte z. B. 72,5 eingeben.</span> : kgFehlt && <span className="feld-meldung">Ohne Körpergewicht keine N/kg- und Ns/kg-Werte.</span>}
             </label>
           </div>
@@ -330,7 +331,7 @@ export default function TestungErfassen() {
               return (
                 <div key={block} id={`block-${block}`} className="testung-block">
                   <div className="testung-block-kopf">
-                    <h3 className="testung-block-titel">{BLOCK_NAMEN[block]}</h3>
+                    <h2 className="testung-block-titel">{BLOCK_NAMEN[block]}</h2>
                     {anzeigen.length > 0 && (
                       <button type="button" className="knopf-leise" onClick={() => setKlappen((k) => ({ ...k, ...Object.fromEntries(anzeigen.map((t) => [t.id, !anzeigen.every((x) => istOffen(x.id))])) }))}>
                         {anzeigen.every((t) => istOffen(t.id)) ? 'Alle zuklappen' : 'Alle aufklappen'}
@@ -443,7 +444,7 @@ export default function TestungErfassen() {
             )}
           </div>
           {loeschenFragen && (
-            <div className="meldung meldung-fehler loeschen-frage" role="alertdialog" aria-label="Löschen bestätigen">
+            <Frage className="meldung meldung-fehler loeschen-frage" label="Löschen bestätigen" onAbbrechen={() => setLoeschenFragen(false)}>
               <p>
                 {ART_TEXT[ph.art]} vom {datumDeutsch(testung.datum)} mit allen Werten endgültig löschen?
               </p>
@@ -451,17 +452,17 @@ export default function TestungErfassen() {
                 <button type="button" className="knopf knopf-gefahr" onClick={loeschen}>
                   <span>Ja, endgültig löschen</span>
                 </button>
-                <button type="button" className="knopf" onClick={() => setLoeschenFragen(false)}>
+                <button type="button" className="knopf" data-abbrechen onClick={() => setLoeschenFragen(false)}>
                   <span>Nein, behalten</span>
                 </button>
               </div>
-            </div>
+            </Frage>
           )}
         </div>
 
         <aside className="testung-uebersicht" aria-label="Übersicht">
           {vorschlag && <RtsKasten v={vorschlag} mindestMonate={KATALOG.regeln.rts.mindestMonate} onDetails={() => springen(null, 'ergebnis')} />}
-          <h3>Übersicht</h3>
+          <h2>Übersicht</h2>
           {BLOECKE.map((block) => {
             const tests = sichtbar.filter((t) => t.block === block)
             if (tests.length === 0) return null

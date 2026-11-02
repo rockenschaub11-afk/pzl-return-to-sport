@@ -3,7 +3,7 @@ import { boxStandard } from '../berichte/nachvollziehbarkeit'
 import { protokollNach } from '../katalog'
 import type { TestDef } from '../katalog/typen'
 import type { KriteriumErgebnis, TestErgebnis } from '../rechnen/bewertung'
-import { ERFASSUNG, HQ_HINWEIS, istKeineZahl, KOOS_SUBSKALEN, VERSUCHE, type Berechnung, type hqQuotient, type TestEingabe } from './erfassung'
+import { einheitFest, ERFASSUNG, HQ_HINWEIS, istKeineZahl, KOOS_SUBSKALEN, VERSUCHE, type Berechnung, type hqQuotient, type TestEingabe } from './erfassung'
 import type { KartenStatus } from './kartenStatus'
 import { istMeloqTest } from '../katalog/meloq'
 import Ladebalken, { AmpelMarke } from './Ladebalken'
@@ -58,7 +58,7 @@ function Zahl({ wert, onChange, label, einheit, breit = false }: { wert?: string
   return (
     <label className={`zahl-feld${breit ? ' zahl-feld-breit' : ''}${falsch ? ' zahl-falsch' : ''}`}>
       <span className="sr-only">{label}</span>
-      <input inputMode="decimal" value={wert ?? ''} onChange={(e) => onChange(e.target.value)} aria-label={label} aria-invalid={falsch || undefined} placeholder="–" />
+      <input inputMode="decimal" value={wert ?? ''} onChange={(e) => onChange(e.target.value)} aria-label={label} aria-invalid={falsch || undefined} placeholder="–" autoComplete="off" />
       {einheit && <span className="zahl-einheit">{einheit}</span>}
       {falsch && (
         <span className="zahl-fehler" role="alert">
@@ -178,12 +178,12 @@ function Eingaben({ test, eingabe: e, setze, seiten, berechnung }: Props) {
       return (
         <>
           {einheitWahl}
-          <Raster kopf={['Versuch 1', 'Versuch 2', 'Versuch 3', 'Bestwert']} zeilen={seitenVersuche(einheit)} />
+          <Raster kopf={[...VERSUCHE.map((n) => `Versuch ${n} (${einheit})`), 'Bestwert']} zeilen={seitenVersuche(einheit)} />
         </>
       )
     }
     case 'versuche':
-      return <Raster kopf={['Versuch 1', 'Versuch 2', 'Versuch 3', 'Bestwert']} zeilen={seitenVersuche(art.einheit)} />
+      return <Raster kopf={[...VERSUCHE.map((n) => `Versuch ${n} (${art.einheit})`), 'Bestwert']} zeilen={seitenVersuche(art.einheit)} />
     case 'imtp': {
       const einheit = e.einheit === 'N' ? 'N' : 'kg'
       return (
@@ -224,7 +224,7 @@ function kriteriumWert(e: KriteriumErgebnis): string {
   const k = e.kriterium
   const nachkomma = k.art === 'lsi' ? 1 : (k.nachkomma ?? 1)
   const einheit = k.einheit === '%' ? ' %' : k.einheit ? ` ${k.einheit}` : ''
-  return typeof e.wert === 'number' ? `${zahl(e.wert, nachkomma)}${einheit}` : typeof e.wert === 'boolean' ? (e.wert ? 'ja' : 'nein') : (e.wert ?? '–')
+  return typeof e.wert === 'number' ? einheitFest(`${zahl(e.wert, nachkomma)}${einheit}`) : typeof e.wert === 'boolean' ? (e.wert ? 'ja' : 'nein') : (e.wert ?? '–')
 }
 
 /** Kernwerte für die zugeklappte Karte: Pflicht zuerst, höchstens drei. */
@@ -303,11 +303,11 @@ export default function TestKarte(props: Props) {
   return (
     <article className="test-karte" id={`test-${test.id}`} aria-labelledby={`titel-${test.id}`}>
       <header className="test-kopf">
-        <h4 id={`titel-${test.id}`}>
+        <h3 id={`titel-${test.id}`}>
           {test.name}
           {test.info && <TestInfo info={test.info} />}
           {test.optional && <span className="chip">optional</span>}
-        </h4>
+        </h3>
         <span className="test-kopf-rechts">
           {props.status.wuenschenswertOffen && <span className="ampel-marke ampel-offen">wünschenswert nicht erreicht</span>}
           <AmpelMarke ampel={props.status.ampel} text={props.status.text} />

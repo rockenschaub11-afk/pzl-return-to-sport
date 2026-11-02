@@ -12,10 +12,11 @@ import { HINWEIS } from '../navigation'
 import { datumDeutsch, type Patient } from '../patienten/stammdaten'
 import { KATALOG, testNach } from '../katalog'
 import type { RohTest } from '../berichte/nachvollziehbarkeit'
+import { einheitFest } from '../testung/erfassung'
 import { NORMDATEN } from '../testung/normdaten'
 import LinienDiagramm from '../testung/LinienDiagramm'
 import { useMeloqAuswahl } from '../testung/meloqAuswahl'
-import { verfuegbareOptionen } from '../testung/verlauf'
+import { nachBloecken, verfuegbareOptionen } from '../testung/verlauf'
 import { verlaufsDiagramme } from '../testung/verlaufDiagramme'
 
 const logoUrl = `${import.meta.env.BASE_URL}logo-pzl.svg`
@@ -65,7 +66,7 @@ export default function Bericht() {
             <p className="seitenzusatz">
               <Link to={`/testung/${testung.id}`}>← Zur Testung</Link> · <Link to="/berichte">Alle Berichte</Link>
             </p>
-            <h2 className="seitentitel">Bericht {patient.kuerzel}</h2>
+            <h1 className="seitentitel">Bericht {patient.kuerzel}</h1>
           </div>
           <nav className="bericht-umschalter" aria-label="Berichtsart">
             <NavLink to={`/berichte/${testung.id}/arzt`} className="umschalter-knopf">
@@ -126,10 +127,14 @@ function VerlaufWahl({ patient, testungen, wahl, setWahl }: { patient: Patient; 
     <label className="feld">
       <span className="feld-label">Diagramm im Verlauf</span>
       <select value={waehleOption(optionen, wahl).id} onChange={(e) => setWahl(e.target.value)}>
-        {optionen.map((o) => (
-          <option key={o.id} value={o.id}>
-            {o.name}
-          </option>
+        {nachBloecken(optionen).map((g) => (
+          <optgroup key={g.name} label={g.name}>
+            {g.optionen.map((o) => (
+              <option key={o.id} value={o.id}>
+                {o.name}
+              </option>
+            ))}
+          </optgroup>
         ))}
       </select>
     </label>
@@ -181,7 +186,7 @@ function Kopf({ titel, kuerzel, name, unter, entwurf, kontext }: { titel: string
     <header className="bericht-kopf">
       <div className="bericht-kopfzeile">
         <div className="bericht-marke">
-          <img src={logoUrl} alt={PRAXIS} className="bericht-logo" />
+          <img src={logoUrl} alt={PRAXIS} width={480} height={180} className="bericht-logo" />
           <span className="bericht-praxis">{PRAXIS}</span>
         </div>
         <div className="bericht-art">
@@ -190,7 +195,7 @@ function Kopf({ titel, kuerzel, name, unter, entwurf, kontext }: { titel: string
         </div>
       </div>
       <div className="bericht-titelzeile">
-        <h1 className="bericht-titel">{kuerzel}</h1>
+        <h2 className="bericht-titel" translate="no">{kuerzel}</h2>
         {name.trim() && (
           <span className="bericht-name">
             <Symbol name="person" />
@@ -328,7 +333,7 @@ function ArztAnsicht({
                 <Tafel titel="Nicht erfüllt" symbol="liste">
                   <ul>
                     {b.stand.offen.map((w) => (
-                      <li key={w}>{w}</li>
+                      <li key={w}>{einheitFest(w)}</li>
                     ))}
                   </ul>
                 </Tafel>
@@ -376,7 +381,7 @@ function ArztAnsicht({
                 <Tafel titel="Was fehlt noch?" symbol="liste">
                   <ul>
                     {b.rts.wasFehlt.map((w) => (
-                      <li key={w}>{w}</li>
+                      <li key={w}>{einheitFest(w)}</li>
                     ))}
                   </ul>
                 </Tafel>
@@ -385,7 +390,7 @@ function ArztAnsicht({
                 <Tafel titel="Wünschenswert, nicht erreicht (blockiert nicht)" symbol="kreis" className="bericht-leise">
                   <ul>
                     {b.rts.wuenschenswert.map((w) => (
-                      <li key={w}>{w}</li>
+                      <li key={w}>{einheitFest(w)}</li>
                     ))}
                   </ul>
                 </Tafel>
@@ -456,12 +461,12 @@ function ArztAnsicht({
             </colgroup>
             <thead>
               <tr>
-                <th>Test / Kriterium</th>
-                <th className="bericht-zahl">gesund</th>
-                <th className="bericht-zahl">betroffen</th>
-                <th className="bericht-zahl">Wert</th>
-                <th className="bericht-zahl">Ziel</th>
-                <th>Bewertung</th>
+                <th scope="col">Test / Kriterium</th>
+                <th scope="col" className="bericht-zahl">gesund</th>
+                <th scope="col" className="bericht-zahl">betroffen</th>
+                <th scope="col" className="bericht-zahl">Wert</th>
+                <th scope="col" className="bericht-zahl">Ziel</th>
+                <th scope="col">Bewertung</th>
               </tr>
             </thead>
             {b.bloecke.map((block) => (
@@ -610,12 +615,12 @@ function RohdatenAnhang({ rohdaten }: { rohdaten: RohTest[] }) {
         <table className="bericht-tabelle bericht-roh">
           <thead>
             <tr>
-              <th>Test</th>
-              <th>Seite</th>
-              <th className="bericht-zahl">Versuch 1</th>
-              <th className="bericht-zahl">Versuch 2</th>
-              <th className="bericht-zahl">Versuch 3</th>
-              <th className="bericht-zahl">CV</th>
+              <th scope="col">Test</th>
+              <th scope="col">Seite</th>
+              <th scope="col" className="bericht-zahl">Versuch 1</th>
+              <th scope="col" className="bericht-zahl">Versuch 2</th>
+              <th scope="col" className="bericht-zahl">Versuch 3</th>
+              <th scope="col" className="bericht-zahl">CV</th>
             </tr>
           </thead>
           <tbody>
@@ -784,7 +789,7 @@ function VerlaufAbschnitt({ nr, patient, testungen, tabelle, wahl }: { nr: numbe
           <table className="bericht-tabelle bericht-verlauf-tabelle">
             <thead>
               <tr>
-                <th>
+                <th scope="col">
                   Pflicht-Test<small>Kriterium</small>
                 </th>
                 {tabelle.spalten.map((s, i) => (
@@ -794,7 +799,7 @@ function VerlaufAbschnitt({ nr, patient, testungen, tabelle, wahl }: { nr: numbe
                   </th>
                 ))}
                 {mitVeraenderung && (
-                  <th className="bericht-zahl">
+                  <th scope="col" className="bericht-zahl">
                     Veränderung<small>zur vorigen Testung</small>
                   </th>
                 )}
@@ -940,7 +945,7 @@ function PatAnsicht({ patient, testung, alle, name }: { patient: Patient; testun
                   return (
                     <li key={w}>
                       {kopf && <b>{kopf}</b>}
-                      {text}
+                      {einheitFest(text)}
                     </li>
                   )
                 })}

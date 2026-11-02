@@ -5,13 +5,16 @@
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="/logo-pzl.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
-    <meta name="theme-color" content="#191b20" />
+    <meta name="theme-color" content="#22252b" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PZL Return-to-Sport</title>
     <script>
       // Hell/Dunkel sofort setzen, damit beim Start nichts aufblitzt (keine Pat.-Daten, nur die Darstellung)
       try {
-        if (localStorage.getItem('pzl-darstellung') === 'hell') document.documentElement.dataset.theme = 'hell'
+        if (localStorage.getItem('pzl-darstellung') === 'hell') {
+          document.documentElement.dataset.theme = 'hell'
+          document.querySelector('meta[name="theme-color"]').content = '#eceff3'
+        }
       } catch (e) {}
     </script>
   </head>

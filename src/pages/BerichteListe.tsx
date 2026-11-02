@@ -24,7 +24,7 @@ export default function BerichteListe() {
     <section>
       <div className="seitenkopf">
         <div>
-          <h2 className="seitentitel">Berichte</h2>
+          <h1 className="seitentitel">Berichte</h1>
           <p className="seitenzusatz">Arztbericht und Pat./Trainer-Bericht je Testung – drucken oder „Als PDF speichern“. Der Name wird nur beim Drucken eingetippt und nie gespeichert.</p>
         </div>
       </div>
@@ -51,10 +51,10 @@ export default function BerichteListe() {
             <table className="liste-tabelle">
               <thead>
                 <tr>
-                  <th>Kürzel</th>
-                  <th>Testung</th>
-                  <th>Stand</th>
-                  <th className="liste-rechts">Berichte</th>
+                  <th scope="col">Kürzel</th>
+                  <th scope="col">Testung</th>
+                  <th scope="col">Stand</th>
+                  <th scope="col" className="liste-rechts">Berichte</th>
                 </tr>
               </thead>
               <tbody>
@@ -63,7 +63,7 @@ export default function BerichteListe() {
                   const ph = phasenStand(t, p.opDatum)
                   return (
                     <tr key={t.id}>
-                      <td className="liste-kuerzel">{p.kuerzel}</td>
+                      <td className="liste-kuerzel" translate="no">{p.kuerzel}</td>
                       <td>
                         {ART_TEXT[ph.art]} · {phaseNach(ph.phase).name} · <span className="liste-zahl">{datumDeutsch(t.datum)}</span>
                       </td>

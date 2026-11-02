@@ -36,13 +36,13 @@ export default function TestungListe() {
     <section>
       <div className="seitenkopf">
         <div>
-          <h2 className="seitentitel">Testung</h2>
+          <h1 className="seitentitel">Testung</h1>
           <p className="seitenzusatz">Phase und Testset ergeben sich aus OP-Datum und Datum der Testung.</p>
         </div>
       </div>
 
       <div className="karte block">
-        <h3 className="block-titel">Neue Testung</h3>
+        <h2 className="block-titel">Neue Testung</h2>
         {patienten.length === 0 ? (
           <p className="hinweis-leise">
             Zuerst ein Kürzel anlegen: <Link to="/patienten/neu">+ Neues Kürzel</Link>
@@ -67,7 +67,7 @@ export default function TestungListe() {
       </div>
 
       <div className="karte">
-        <h3 className="block-titel">In Arbeit</h3>
+        <h2 className="block-titel">In Arbeit</h2>
         {offen.length === 0 ? (
           <p className="hinweis-leise">Keine angefangenen Testungen.</p>
         ) : (
@@ -75,16 +75,16 @@ export default function TestungListe() {
             <table className="liste-tabelle">
               <thead>
                 <tr>
-                  <th>Kürzel</th>
-                  <th>Testung</th>
-                  <th>Fortschritt</th>
+                  <th scope="col">Kürzel</th>
+                  <th scope="col">Testung</th>
+                  <th scope="col">Fortschritt</th>
                 </tr>
               </thead>
               <tbody>
                 {offen.map((t) => (
                   <tr key={t.id} onClick={() => navigate(`/testung/${t.id}`)}>
                     <td>
-                      <Link to={`/testung/${t.id}`} className="liste-kuerzel">
+                      <Link to={`/testung/${t.id}`} className="liste-kuerzel" translate="no">
                         {kuerzel.get(t.patientId) ?? '?'}
                       </Link>
                     </td>
@@ -103,21 +103,21 @@ export default function TestungListe() {
 
       {fertig.length > 0 && (
         <div className="karte block">
-          <h3 className="block-titel">Zuletzt abgeschlossen</h3>
+          <h2 className="block-titel">Zuletzt abgeschlossen</h2>
           <div className="liste-rahmen">
             <table className="liste-tabelle">
               <thead>
                 <tr>
-                  <th>Kürzel</th>
-                  <th>Testung</th>
-                  <th>Stand</th>
+                  <th scope="col">Kürzel</th>
+                  <th scope="col">Testung</th>
+                  <th scope="col">Stand</th>
                 </tr>
               </thead>
               <tbody>
                 {fertig.map((t) => (
                   <tr key={t.id} onClick={() => navigate(`/testung/${t.id}`)}>
                     <td>
-                      <Link to={`/testung/${t.id}`} className="liste-kuerzel">
+                      <Link to={`/testung/${t.id}`} className="liste-kuerzel" translate="no">
                         {kuerzel.get(t.patientId) ?? '?'}
                       </Link>
                     </td>
