@@ -92,7 +92,8 @@ export function parseZahl(text: string | undefined): number | null {
 }
 
 /** Zahl und Einheit in Fließtexten mit geschütztem Leerzeichen, damit „89,7 %“ nicht am Zeilenende reißt. */
-export const einheitFest = (text: string) => text.replace(/(\d) (%|°|N\/kg|Ns\/kg|Nm\/kg|W\/kg|N\/s|kg|cm|ms|Wdh\.|Punkte|Monate)(?![\p{L}])/gu, '$1\u00a0$2')
+export const einheitFest = (text: string) =>
+  text.replace(/(\d) (%|°|N\/kg|Ns\/kg|Nm\/kg|W\/kg|N\/s|kg|cm|ms|Wdh\.|Punkte|Monate)(?![\p{L}])/gu, '$1\u00a0$2').replace(/([<>≥≤]) (\d)/g, '$1\u00a0$2')
 
 /** Etwas eingetippt, das keine Zahl ist („abc“) – ein angefangenes „-“ oder „,“ zählt noch nicht als Fehler. */
 export function istKeineZahl(text: string | undefined): boolean {

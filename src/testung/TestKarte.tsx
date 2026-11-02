@@ -233,7 +233,7 @@ function kernwerte(ergebnis: TestErgebnis): string {
   const sortiert = [...mitWert.filter((e) => e.kriterium.status === 'pflicht'), ...mitWert.filter((e) => e.kriterium.status !== 'pflicht')]
   return sortiert
     .slice(0, 3)
-    .map((e) => `${e.kriterium.bezeichnung} ${kriteriumWert(e)}`)
+    .map((e) => (e.wert === true ? e.kriterium.bezeichnung : `${e.kriterium.bezeichnung} ${kriteriumWert(e)}`))
     .join(' · ')
 }
 
@@ -312,7 +312,9 @@ export default function TestKarte(props: Props) {
           {props.status.wuenschenswertOffen && <span className="ampel-marke ampel-offen">wünschenswert nicht erreicht</span>}
           <AmpelMarke ampel={props.status.ampel} text={props.status.text} />
           <button type="button" className="test-klapp" aria-expanded={props.offen} aria-label={`${test.name} ${props.offen ? 'zuklappen' : 'aufklappen'}`} onClick={props.onKlappen}>
-            <span aria-hidden="true">{props.offen ? '▾' : '▸'}</span>
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="m6 3.5 4.5 4.5L6 12.5" />
+            </svg>
           </button>
         </span>
       </header>

@@ -364,6 +364,8 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - Versuchs-Spalten tragen die Einheit im Kopf; Verlaufsauswahl nach Block gruppiert; Zahl und Einheit bleiben in Texten zusammen.
 - Beibehalten: `datumDeutsch` (feste österreichische Schreibweise) und das klickbare Messfenster der Startseite (reine Zier). Absende-Knöpfe in Sicherung bleiben bis zur gültigen Eingabe gesperrt, mit Hinweis auf den Grund.
 
+**Nachtrag 02.11.2026 (Feinschliff):** Alte Farbnamen im CSS entfernt, nur noch Tokens aus DESIGNKONZEPT 10.1. Rundungen nur Karte 14, Feld/Knopf 10, Klein 4, Pille; ein Schatten für Info-Fenster. Knöpfe mit Active-Zustand, Pfeil der Testkarte gezeichnet und drehend. Tippziele 44 px auf Touch und am Handy. Text-Auswahl, Scrollbalken, Platzhalter, Häkchen und Datei-Knopf folgen dem Thema. Bewusst beibehalten: farbige linke Kante an Status-Karten und Meldungen (DESIGNKONZEPT 5, 10.4), Raster im Messfenster der Startseite.
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.

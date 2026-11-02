@@ -42,7 +42,7 @@ describe('Rückfrage', () => {
 
 describe('Anzeige-Helfer', () => {
   it('hält Zahl und Einheit zusammen, ändert sonst nichts', () => {
-    expect(einheitFest('LSI 89,7 % – Ziel ≥ 90 %')).toBe('LSI 89,7 % – Ziel ≥ 90 %')
+    expect(einheitFest('LSI 89,7 % – Ziel ≥ 90 %')).toBe('LSI 89,7 % – Ziel ≥ 90 %')
     expect(einheitFest('7,8 N/kg')).toBe('7,8 N/kg')
     expect(einheitFest('12 von 13')).toBe('12 von 13')
     expect(einheitFest('Box 15 kgfoo')).toBe('Box 15 kgfoo')

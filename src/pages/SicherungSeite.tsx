@@ -152,7 +152,7 @@ function KuerzelExport({ patienten, vorwahl }: { patienten: { id: string; kuerze
         Kürzel übergeben
       </h2>
       <p className="hinweis-leise">Ein Kürzel mit allen Testungen als Datei – z. B. für eine Kollegin oder einen Kollegen. Die Datei enthält keinen Namen.</p>
-      <label className="feld">
+      <label className="feld feld-halb">
         <span className="feld-label">Kürzel</span>
         <select value={wahl} onChange={(e) => setWahl(e.target.value)}>
           <option value="">Kürzel wählen …</option>

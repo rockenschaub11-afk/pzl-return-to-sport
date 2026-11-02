@@ -175,7 +175,7 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
         <div className="dashboard-spalte">
           <Kopfkarte patient={patient} letzte={letzte} />
           {testungen.length > 0 && (
-            <button type="button" className="knopf kennzahl-testungen" onClick={zuTestungen}>
+            <button type="button" className="knopf" onClick={zuTestungen}>
               <span>Alle {testungen.length} Testungen ansehen</span>
             </button>
           )}

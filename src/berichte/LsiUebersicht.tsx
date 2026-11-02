@@ -8,7 +8,7 @@ import type { LsiZeile } from './lsiZeilen'
 const B = 640
 const OBEN = 20
 const X0 = 170
-const X1 = 440
+const X1 = 430
 const WORT = { gruen: '', gelb: 'knapp', rot: 'nicht erfüllt' } as const
 
 const zahl = (v: number) => `${v.toLocaleString('de-AT', { maximumFractionDigits: 1 })} %`

@@ -178,7 +178,7 @@ Prinzipien: Präzision statt Dekoration · klare Hierarchie statt Kartenflut · 
 | `--fokus` | #eef1f4 | #1c222b | Fokus-Ring |
 
 Berichte/Druck: eigenes, festes helles Set (der dunkle Modus kommt nie aufs Papier).
-Übergang: Bis die Bausteine umgestellt sind (Etappe 9b, Schritt 3), bleiben die alten Namen (`--pzl-blau`, `--rand`, `--fehler` = „nicht erfüllt“ …) als Übersetzung bestehen.
+Alte Namen (`--pzl-blau`, `--rand` …) sind seit 02.11.2026 entfernt.
 
 ### 10.2 Schrift
 Kennzahl 34/40 · Titel 28/34 · Abschnitt 22/28 · Karte 17/24 (Montserrat 600) · Text 15/22 · Klein 13/18 · Mini 12/16 (Barlow 400/500/600). Ziffern gleich breit, Zahlen in Tabellen rechtsbündig, Einheit klein/leise am Wert oder im Spaltenkopf, keine Großbuchstaben-Etiketten.

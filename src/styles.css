@@ -27,22 +27,7 @@
   --korridor: rgb(238 241 244 / 0.11);
   --fokus: #eef1f4;
 
-  --pzl-blau: #5ea8ea;
-  --pzl-blau-dunkel: #8cc2f0;
-  --pzl-tuerkis: #36c5d6;
-  --pzl-tuerkis-dunkel: #36c5d6;
-  --pzl-tuerkis-hell: rgb(54 197 214 / 0.14);
-  --nacht: #f5f7f9;
-  --hintergrund: #22252b;
-  --rand: #3b4048;
-  --rand-stark: #4a505a;
-  --raster: #343940;
-  --gruen: #4fc48d;
-  --gelb: #e9b23f;
-  --warnung: #e9b23f;
-  --warnung-hell: rgb(233 178 63 / 0.12);
   --fehler: #ff8fb1;
-  --fehler-hell: rgb(255 143 177 / 0.12);
   --karten-rand: transparent;
   --schatten: none;
   --schatten-hoch: 0 8px 24px rgb(0 0 0 / 0.35);
@@ -73,22 +58,7 @@
   --korridor: rgb(28 34 43 / 0.08);
   --fokus: #1c222b;
 
-  --pzl-blau: #1d71b8;
-  --pzl-blau-dunkel: #155a94;
-  --pzl-tuerkis: #00b5cb;
-  --pzl-tuerkis-dunkel: #008a9c;
-  --pzl-tuerkis-hell: #e3f6f9;
-  --nacht: #0a1f3c;
-  --hintergrund: #eceff3;
-  --rand: #d9dee5;
-  --rand-stark: #c2cad4;
-  --raster: #e6ebf1;
-  --gruen: #206a42;
-  --gelb: #855600;
-  --warnung: #9a6200;
-  --warnung-hell: #fff5e0;
   --fehler: #b3124e;
-  --fehler-hell: #fbe8ef;
   --karten-rand: #d9dee5;
   --schatten: 0 1px 2px rgb(10 31 60 / 0.06);
   --schatten-hoch: 0 4px 16px rgb(10 31 60 / 0.1);
@@ -97,6 +67,7 @@
 :root {
   --radius: 10px;
   --radius-karte: 14px;
+  --radius-klein: 4px;
 
   --schrift-titel: 'Montserrat', 'Barlow', system-ui, sans-serif;
   --schrift: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -104,7 +75,7 @@
   font-family: var(--schrift);
   line-height: 1.5;
   color: var(--text);
-  background: var(--hintergrund);
+  background: var(--grund);
 }
 
 * {
@@ -131,7 +102,7 @@ img {
 
 body {
   margin: 0;
-  background: var(--hintergrund);
+  background: var(--grund);
   font-size: 0.9375rem;
 }
 
@@ -183,7 +154,7 @@ h3 {
   width: 64px;
   margin-bottom: 16px;
   padding: 6px;
-  border-radius: 10px;
+  border-radius: var(--radius);
   background: #fff;
 }
 
@@ -212,7 +183,7 @@ h3 {
   width: 76px;
   padding: 10px 0;
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--radius);
   background: none;
   color: inherit;
   font: inherit;
@@ -242,7 +213,7 @@ h3 {
   bottom: 12px;
   left: -6px;
   width: 3px;
-  border-radius: 3px;
+  border-radius: var(--radius-klein);
   background: #36c5d6;
 }
 
@@ -332,14 +303,14 @@ h3 {
     gap: 4px;
     min-width: 220px;
     padding: 8px;
-    border-radius: 14px;
+    border-radius: var(--radius-karte);
     background: var(--tief);
-    box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+    box-shadow: var(--schatten-hoch);
   }
 
   .leiste-mehr-menue a {
     padding: 12px;
-    border-radius: 10px;
+    border-radius: var(--radius);
     color: #eef1f4;
     text-decoration: none;
   }
@@ -419,7 +390,7 @@ h3 {
   font-weight: 600;
   font-size: 1.75rem;
   line-height: 1.15;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 .seitenzusatz {
@@ -430,6 +401,15 @@ h3 {
 .seitenzusatz a {
   text-decoration: none;
   font-weight: 500;
+}
+
+.karte + .karte {
+  margin-top: 1.25rem;
+}
+
+.block + .karte,
+.block + .block {
+  margin-top: 0;
 }
 
 .karte {
@@ -505,7 +485,7 @@ h3 {
 
 .knopf-gefahr:hover {
   border-color: var(--fehler);
-  background: var(--fehler-hell);
+  background: color-mix(in srgb, var(--fehler) 12%, transparent);
 }
 
 .text-knopf {
@@ -528,7 +508,7 @@ h3 {
   max-width: 28rem;
   margin-bottom: 1.25rem;
   padding: 0.6rem 1rem 0.6rem 2.5rem;
-  border: 1px solid var(--rand-stark);
+  border: 1px solid var(--linie-stark);
   border-radius: var(--radius);
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%2352627a' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m12.5 12.5 4 4'/%3E%3C/svg%3E")
@@ -539,51 +519,8 @@ h3 {
 
 .suche input:focus-visible {
   outline: none;
-  border-color: var(--pzl-tuerkis);
+  border-color: var(--text-leise);
   box-shadow: 0 0 0 2px var(--fokus);
-}
-
-.pat-raster {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15.5rem, 1fr));
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.pat-karte {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.15rem 0.75rem;
-  height: 100%;
-  padding: 1rem 1.1rem;
-  border: 1px solid var(--rand);
-  border-radius: var(--radius);
-  background: var(--flaeche);
-  box-shadow: var(--schatten);
-  color: inherit;
-  text-decoration: none;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.pat-karte:hover,
-.pat-karte:focus-visible {
-  border-color: var(--pzl-tuerkis);
-  box-shadow: var(--schatten-hoch);
-  outline: none;
-}
-
-.pat-kuerzel {
-  grid-column: 1;
-  grid-row: 1;
-  font-weight: 700;
-  font-size: 1.375rem;
-  line-height: 1.2;
-  color: var(--nacht);
-  font-variant-numeric: tabular-nums;
 }
 
 .seiten-marke {
@@ -606,17 +543,6 @@ h3 {
 
 .seite-rechts {
   /* siehe .seite-links */
-}
-
-.pat-info {
-  grid-column: 1;
-  color: var(--text-leise);
-  font-size: 0.9375rem;
-}
-
-.pat-info strong {
-  color: var(--text);
-  font-weight: 600;
 }
 
 .pat-chips {
@@ -684,7 +610,7 @@ h3 {
   margin-top: 0;
   font-weight: 600;
   font-size: 1.375rem;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 /* ---------- Formular ---------- */
@@ -701,7 +627,7 @@ h3 {
   padding: 0;
   font-weight: 600;
   font-size: 1.0625rem;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 .block-titel + * {
@@ -886,14 +812,14 @@ h3 {
 }
 
 .meldung-warnung {
-  border-color: color-mix(in srgb, var(--warnung) 45%, transparent);
-  background: var(--warnung-hell);
+  border-color: color-mix(in srgb, var(--knapp) 45%, transparent);
+  background: color-mix(in srgb, var(--knapp) 12%, transparent);
 }
 
 .meldung-fehler {
   margin-top: 0;
   border-color: color-mix(in srgb, var(--fehler) 45%, transparent);
-  background: var(--fehler-hell);
+  background: color-mix(in srgb, var(--fehler) 12%, transparent);
 }
 
 .aktionen {
@@ -956,19 +882,13 @@ h3 {
   align-items: center;
   gap: 0.5rem 1rem;
   padding: 0.6rem 0.25rem;
-  border-bottom: 1px solid var(--raster);
+  border-bottom: 1px solid var(--linie);
   color: inherit;
   text-decoration: none;
 }
 
 .testung-zeile:hover {
-  background: var(--hintergrund);
-}
-
-.testung-kuerzel {
-  min-width: 7rem;
-  font-weight: 700;
-  color: var(--nacht);
+  background: var(--grund);
 }
 
 .testung-fortschritt {
@@ -988,7 +908,7 @@ h3 {
 }
 
 .speicher-laeuft {
-  background: var(--raster);
+  background: var(--linie);
   color: var(--text-leise);
 }
 
@@ -999,7 +919,7 @@ h3 {
 
 .block-sprung {
   position: sticky;
-  top: 8px;
+  top: 0;
   z-index: 5;
   display: flex;
   flex-wrap: wrap;
@@ -1009,8 +929,7 @@ h3 {
   padding: 0.55rem 1rem;
   border: 1px solid var(--linie);
   border-radius: var(--radius);
-  background: color-mix(in srgb, var(--flaeche) 96%, transparent);
-  backdrop-filter: blur(6px);
+  background: var(--flaeche);
 }
 
 .sprung-kontext {
@@ -1060,7 +979,7 @@ h3 {
   margin: 0 0 0.6rem;
   font-size: 1.375rem;
   font-weight: 600;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 .test-huelle {
@@ -1219,7 +1138,7 @@ h3 {
 .raster-seite {
   display: block;
   margin-top: 0.4rem;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 .raster-versuch {
@@ -1232,7 +1151,7 @@ h3 {
   display: inline-block;
   min-width: 5.5rem;
   font-weight: 700;
-  color: var(--nacht);
+  color: var(--text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -1313,14 +1232,14 @@ h3 {
 .ladebalken-spur {
   position: relative;
   height: 8px;
-  border-radius: 4px;
-  background: var(--raster);
+  border-radius: 999px;
+  background: var(--linie);
 }
 
 .ladebalken-fuellung {
   position: absolute;
   inset: 0 auto 0 0;
-  border-radius: 4px;
+  border-radius: 999px;
   transition:
     width 0.5s ease-out,
     background 0.3s ease;
@@ -1351,18 +1270,15 @@ h3 {
   background: var(--text);
 }
 
-.ampel-gruen .ladebalken-fuellung,
-.ampel-punkt.ampel-gruen {
-  background: var(--gruen);
+.ampel-gruen .ladebalken-fuellung {
+  background: var(--erfuellt);
 }
 
-.ampel-gelb .ladebalken-fuellung,
-.ampel-punkt.ampel-gelb {
-  background: var(--gelb);
+.ampel-gelb .ladebalken-fuellung {
+  background: var(--knapp);
 }
 
-.ampel-rot .ladebalken-fuellung,
-.ampel-punkt.ampel-rot {
+.ampel-rot .ladebalken-fuellung {
   background: var(--nicht-erfuellt);
 }
 
@@ -1415,18 +1331,6 @@ h3 {
   content: '○';
 }
 
-.ampel-punkt {
-  display: inline-block;
-  flex: none;
-  width: 0.65rem;
-  height: 0.65rem;
-  border-radius: 50%;
-}
-
-.ampel-punkt.ampel-offen {
-  border: 2px solid var(--rand-stark);
-}
-
 .testung-uebersicht {
   position: sticky;
   top: 72px;
@@ -1442,7 +1346,7 @@ h3 {
   margin: 0 0 0.5rem;
   font-size: 1.0625rem;
   font-weight: 600;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 .uebersicht-block {
@@ -1539,7 +1443,7 @@ h3 {
 .fragebogen-item input {
   width: 3.6rem;
   padding: 0.3rem 0.4rem;
-  border: 1px solid var(--rand-stark);
+  border: 1px solid var(--linie-stark);
   border-radius: var(--radius);
   font: inherit;
   text-align: right;
@@ -1593,7 +1497,7 @@ h3 {
 .normdaten {
   margin-top: 0.6rem;
   padding: 0.5rem 0.75rem;
-  border-left: 3px solid var(--rand-stark);
+  border-left: 3px solid var(--linie-stark);
   background: var(--feld);
   color: var(--text-leise);
   font-size: 0.8125rem;
@@ -1728,10 +1632,10 @@ h3 {
   z-index: 5;
   min-width: 220px;
   padding: 0.75rem 0.9rem;
-  border-radius: 12px;
+  border-radius: var(--radius);
   background: #191b20;
   color: #eef1f4;
-  box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+  box-shadow: var(--schatten-hoch);
   font-size: 0.9375rem;
   pointer-events: none;
 }
@@ -1805,7 +1709,7 @@ h3 {
 
 .diagramm-legende .diagramm-legende-korridor {
   height: 0.6rem;
-  border-radius: 3px;
+  border-radius: var(--radius-klein);
   background: var(--korridor);
   outline: 1px solid var(--linie);
 }
@@ -1896,7 +1800,7 @@ h3 {
 
 .rts-erfuellt .rts-ergebnis,
 .ergebnis-vorschlag.rts-erfuellt strong {
-  color: var(--gruen);
+  color: var(--erfuellt);
 }
 
 .rts-punkte {
@@ -1914,7 +1818,7 @@ h3 {
 
 .rts-punkte li.ok::before {
   content: '✓';
-  color: var(--gruen);
+  color: var(--erfuellt);
 }
 
 .rts-punkte li.nein::before {
@@ -1924,7 +1828,7 @@ h3 {
 
 .rts-punkte li.warnung::before {
   content: '⚠';
-  color: var(--warnung);
+  color: var(--knapp);
 }
 
 .rts-hinweis {
@@ -1947,7 +1851,7 @@ h3 {
   margin: 1.1rem 0 0.4rem;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 .ergebnis-vorschlag {
@@ -1961,7 +1865,7 @@ h3 {
 
 .ergebnis-vorschlag strong {
   font-size: 1.375rem;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 .ergebnis-acl {
@@ -1999,7 +1903,7 @@ h3 {
   gap: 0.6rem;
   max-width: 34rem;
   padding: 0.55rem 0.8rem;
-  border: 1px solid var(--rand-stark);
+  border: 1px solid var(--linie-stark);
   border-radius: var(--radius);
   cursor: pointer;
 }
@@ -2019,7 +1923,7 @@ h3 {
 }
 
 .klinisch-anders.klinisch-aktiv summary {
-  color: var(--warnung);
+  color: var(--knapp);
 }
 
 .klinisch-anders .auswahl-knopf {
@@ -2058,7 +1962,7 @@ fieldset:disabled .test-hinzu {
   width: 1.2rem;
   height: 1.2rem;
   border: 1px solid var(--linie-stark);
-  border-radius: 4px;
+  border-radius: var(--radius-klein);
   color: var(--text-leise);
   font-size: 0.75rem;
   font-weight: 700;
@@ -2093,7 +1997,7 @@ fieldset:disabled .test-hinzu {
 .ods-erklaerung[open] {
   padding: 0.5rem 0.75rem;
   border-radius: var(--radius);
-  background: var(--hintergrund);
+  background: var(--grund);
 }
 
 .ods-erklaerung ul {
@@ -2121,7 +2025,7 @@ fieldset:disabled .test-hinzu {
   min-width: 13rem;
   margin: 0;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--rand);
+  border: 1px solid var(--linie);
   border-radius: var(--radius);
 }
 
@@ -2138,7 +2042,7 @@ fieldset:disabled .test-hinzu {
 .meloq-bereich {
   margin-top: 0.75rem;
   padding: 0.6rem 0.75rem;
-  border: 1px dashed var(--rand-stark);
+  border: 1px dashed var(--linie-stark);
   border-radius: var(--radius);
   overflow-x: auto;
 }
@@ -2155,7 +2059,7 @@ fieldset:disabled .test-hinzu {
   margin: 0;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 .meloq-kopf .hinweis-leise {
@@ -2184,7 +2088,7 @@ fieldset:disabled .test-hinzu {
   margin: 0;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 .meloq-einstellung .hinweis-leise {
@@ -2199,7 +2103,7 @@ fieldset:disabled .test-hinzu {
   padding: 0.75rem 1rem;
   border: 2px solid var(--fehler);
   border-radius: var(--radius);
-  background: var(--fehler-hell);
+  background: color-mix(in srgb, var(--fehler) 12%, transparent);
   color: var(--fehler);
 }
 
@@ -2216,7 +2120,7 @@ fieldset:disabled .test-hinzu {
   margin: 0 0 0.75rem;
   font-size: 1.0625rem;
   font-weight: 600;
-  color: var(--nacht);
+  color: var(--text);
 }
 
 .kat-regeln p {
@@ -2252,13 +2156,13 @@ fieldset:disabled .test-hinzu {
 .kat-tabelle th,
 .kat-tabelle td {
   padding: 0.4rem 0.6rem;
-  border-bottom: 1px solid var(--raster);
+  border-bottom: 1px solid var(--linie);
   text-align: left;
   vertical-align: top;
 }
 
 .kat-tabelle thead th {
-  border-bottom: 2px solid var(--rand-stark);
+  border-bottom: 2px solid var(--linie-stark);
   color: var(--text-leise);
   font-size: 0.8125rem;
   font-weight: 600;
@@ -2279,8 +2183,8 @@ fieldset:disabled .test-hinzu {
 
 .kat-test th {
   padding-top: 0.9rem;
-  background: var(--hintergrund);
-  color: var(--nacht);
+  background: var(--grund);
+  color: var(--text);
   font-weight: 600;
 }
 
@@ -2376,7 +2280,7 @@ fieldset:disabled .test-hinzu {
 
 .hinweis {
   padding: 0.6rem 1.5rem;
-  border-top: 1px solid var(--rand);
+  border-top: 1px solid var(--linie);
   color: var(--text-leise);
   font-size: 0.9375rem;
   font-weight: 500;
@@ -2626,7 +2530,7 @@ fieldset:disabled .test-hinzu {
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 0.25rem;
-  border-radius: 8px;
+  border-radius: var(--radius);
   color: var(--text);
   text-decoration: none;
 }
@@ -2705,11 +2609,6 @@ fieldset:disabled .test-hinzu {
     margin: 0 -0.5rem;
   }
 
-  .nav-link {
-    min-height: 44px;
-    padding: 0 0.5rem;
-  }
-
   .inhalt {
     padding: 1.25rem 1rem 2rem;
   }
@@ -2749,15 +2648,6 @@ fieldset:disabled .test-hinzu {
   gap: 0.75rem;
 }
 
-.bericht-liste-zeile {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 1rem;
-  padding: 0.6rem 0.25rem;
-  border-bottom: 1px solid var(--raster);
-}
-
 .bericht-liste-knoepfe {
   display: flex;
   gap: 0.5rem;
@@ -2770,7 +2660,7 @@ fieldset:disabled .test-hinzu {
 
 .bericht-umschalter {
   display: inline-flex;
-  border: 1px solid var(--rand-stark);
+  border: 1px solid var(--linie-stark);
   border-radius: var(--radius);
   overflow: hidden;
 }
@@ -2783,7 +2673,7 @@ fieldset:disabled .test-hinzu {
 }
 
 .umschalter-knopf + .umschalter-knopf {
-  border-left: 1px solid var(--rand-stark);
+  border-left: 1px solid var(--linie-stark);
 }
 
 .umschalter-knopf.active {
@@ -3770,7 +3660,7 @@ fieldset:disabled .test-hinzu {
 .netz-ring,
 .netz-achse {
   fill: none;
-  stroke: var(--rand);
+  stroke: var(--linie);
 }
 
 .netz-gesund {
@@ -4067,6 +3957,7 @@ fieldset:disabled .test-hinzu {
 }
 
 .karte-laut {
+  padding-left: calc(1.25rem - 3px);
   border-left: 4px solid var(--aktion);
 }
 
@@ -4127,12 +4018,13 @@ fieldset:disabled .test-hinzu {
 .dashboard-raster {
   display: grid;
   grid-template-columns: minmax(250px, 1fr) minmax(0, 2.4fr);
-  align-items: start;
+  align-items: stretch;
   gap: 1.25rem;
 }
 
 .dashboard-spalte {
   display: grid;
+  grid-template-rows: 1fr auto;
   gap: 1.25rem;
   min-width: 0;
 }
@@ -4194,50 +4086,6 @@ fieldset:disabled .test-hinzu {
 .kopfkarte-fakten dd {
   margin: 0;
   font-weight: 600;
-}
-
-.kennzahl-kopf {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.kennzahl-name {
-  color: var(--text-leise);
-  font-size: 0.8125rem;
-}
-
-.kennzahl-zahl {
-  margin: 0.25rem 0 0.6rem;
-  font-family: var(--schrift-titel);
-  font-size: 2.125rem;
-  font-weight: 600;
-  line-height: 1.15;
-  font-variant-numeric: tabular-nums;
-}
-
-.kennzahl-zahl small {
-  margin-left: 0.2rem;
-  color: var(--text-leise);
-  font-family: var(--schrift);
-  font-size: 0.9375rem;
-  font-weight: 500;
-}
-
-.kennzahl-bezug {
-  margin: 0.6rem 0 0;
-  color: var(--text-sehr-leise);
-  font-size: 0.75rem;
-}
-
-.kennzahl-testungen {
-  justify-self: start;
-}
-
-.platzhalter-karte {
-  min-height: 12rem;
-  background: var(--feld);
 }
 
 @media (max-width: 1060px) {
@@ -4309,7 +4157,7 @@ fieldset:disabled .test-hinzu {
 .liste-kuerzel:focus-visible {
   outline: 2px solid var(--fokus);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: var(--radius-klein);
 }
 
 .liste-kuerzel .seiten-marke {
@@ -4870,6 +4718,11 @@ fieldset:disabled .test-hinzu {
 }
 
 /* Pat.-Liste */
+.liste-filter input {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
 .liste-filter {
   display: inline-flex;
   align-items: center;
@@ -4951,4 +4804,126 @@ fieldset:disabled .test-hinzu {
 
 .auffangnetz p {
   color: var(--text-leise);
+}
+
+/* ---------- Feinschliff: Browser-Flächen, Zustände, Tippziele ---------- */
+:root {
+  accent-color: var(--aktion);
+  scrollbar-color: var(--linie-stark) transparent;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--text) 22%, transparent);
+}
+
+::placeholder {
+  color: var(--text-sehr-leise);
+  opacity: 1;
+}
+
+a:focus-visible,
+summary:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+  border-radius: var(--radius-klein);
+}
+
+.knopf,
+.auswahl-knopf {
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease-out;
+}
+
+.knopf:active:not(:disabled),
+.auswahl-knopf:active,
+.test-klapp:active,
+.reiter button:active {
+  transform: scale(0.98);
+}
+
+input::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--linie-stark);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  font: 600 0.8125rem var(--schrift);
+  cursor: pointer;
+}
+
+input::file-selector-button:hover {
+  background: var(--flaeche-hoch);
+}
+
+/* Zahlen in der Verlaufstabelle rechtsbündig untereinander */
+.verlauf-tabelle th:nth-child(n + 3),
+.verlauf-tabelle td:nth-child(n + 3) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tippziele: 44 px auf Touch-Geräten (DESIGNKONZEPT 10.3) */
+@media (pointer: coarse), screen and (max-width: 720px) {
+  .knopf,
+  .auswahl-knopf,
+  .reiter button,
+  .feld input:not([type='checkbox']):not([type='radio']),
+  .feld select,
+  .zahl-feld input {
+    min-height: 2.75rem;
+  }
+
+  .test-klapp {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .test-info-knopf {
+    position: relative;
+  }
+
+  .test-info-knopf::after {
+    content: '';
+    position: absolute;
+    inset: -0.625rem;
+  }
+
+  .knopf-leise {
+    min-height: 2.75rem;
+  }
+
+  .block-sprung a {
+    padding: 0.6rem 0;
+  }
+
+  .liste-filter {
+    min-height: 2.75rem;
+  }
+}
+
+.test-klapp svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.15s ease-out;
+}
+
+.test-klapp[aria-expanded='true'] svg {
+  transform: rotate(90deg);
+}
+
+.dashboard-raster > .karte {
+  margin: 0;
+}
+
+.feld-halb select {
+  max-width: 24rem;
 }

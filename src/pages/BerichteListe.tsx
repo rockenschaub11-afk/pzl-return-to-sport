@@ -63,7 +63,11 @@ export default function BerichteListe() {
                   const ph = phasenStand(t, p.opDatum)
                   return (
                     <tr key={t.id}>
-                      <td className="liste-kuerzel" translate="no">{p.kuerzel}</td>
+                      <td>
+                        <span className="liste-kuerzel" translate="no">
+                          {p.kuerzel}
+                        </span>
+                      </td>
                       <td>
                         {ART_TEXT[ph.art]} · {phaseNach(ph.phase).name} · <span className="liste-zahl">{datumDeutsch(t.datum)}</span>
                       </td>
