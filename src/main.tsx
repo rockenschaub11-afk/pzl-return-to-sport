@@ -8,6 +8,7 @@ import '@fontsource/barlow/600.css'
 import '@fontsource/barlow/700.css'
 import '@fontsource/montserrat/600.css'
 import App from './App'
+import Auffangnetz from './Auffangnetz'
 import { dauerhaftenSpeicherAnfragen } from './db'
 import { updatesEinrichten } from './updates'
 import './styles.css'
@@ -18,8 +19,10 @@ updatesEinrichten()
 // HashRouter: Adressen wie „…/#/testung“ funktionieren auf GitHub Pages ohne Server-Einstellungen.
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <HashRouter>
-      <App />
-    </HashRouter>
+    <Auffangnetz>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </Auffangnetz>
   </StrictMode>,
 )

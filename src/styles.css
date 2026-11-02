@@ -23,7 +23,7 @@
   --seite-gesund: #36c5d6;
   --erfuellt: #4fc48d;
   --knapp: #e9b23f;
-  --nicht-erfuellt: #f7765f;
+  --nicht-erfuellt: #ff8b77;
   --korridor: rgb(238 241 244 / 0.11);
   --fokus: #eef1f4;
 
@@ -60,16 +60,16 @@
   --linie-stark: #c2cad4;
   --text: #1c222b;
   --text-leise: #56606d;
-  --text-sehr-leise: #6c7683;
+  --text-sehr-leise: #616b78;
   --aktion: #1f2329;
   --aktion-hover: #3a414b;
   --aktion-text: #ffffff;
   --auf-akzent: #ffffff;
   --seite-betroffen: #1d71b8;
   --seite-gesund: #00808f;
-  --erfuellt: #2a7f50;
-  --knapp: #9a6400;
-  --nicht-erfuellt: #c62828;
+  --erfuellt: #206a42;
+  --knapp: #855600;
+  --nicht-erfuellt: #b21f1f;
   --korridor: rgb(28 34 43 / 0.08);
   --fokus: #1c222b;
 
@@ -83,8 +83,8 @@
   --rand: #d9dee5;
   --rand-stark: #c2cad4;
   --raster: #e6ebf1;
-  --gruen: #2a7f50;
-  --gelb: #9a6400;
+  --gruen: #206a42;
+  --gelb: #855600;
   --warnung: #9a6200;
   --warnung-hell: #fff5e0;
   --fehler: #b3124e;
@@ -4893,4 +4893,30 @@ fieldset:disabled .test-hinzu {
 .kuerzel-wahl input {
   width: 17rem;
   max-width: 100%;
+}
+
+/* Speicherfehler und Auffangnetz (Web-Interface-Audit K2, K3) */
+.speicher-status.speicher-fehler,
+.sprung-speicher.speicher-fehler {
+  color: var(--fehler);
+  font-weight: 600;
+}
+
+.auffangnetz {
+  max-width: 36rem;
+  margin: 15vh auto;
+  padding: 1.5rem;
+  border-radius: var(--radius-karte);
+  background: var(--flaeche);
+  color: var(--text);
+  font-family: var(--schrift);
+}
+
+.auffangnetz h1 {
+  margin: 0 0 0.5rem;
+  font: 600 1.375rem var(--schrift-titel);
+}
+
+.auffangnetz p {
+  color: var(--text-leise);
 }

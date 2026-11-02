@@ -30,6 +30,7 @@ import RtsKasten from '../testung/RtsKasten'
 import TestKarte, { type Seitennamen } from '../testung/TestKarte'
 
 const SPEICHER_VERZOEGERUNG_MS = 400
+const SPEICHER_WIEDERHOLUNG_MS = 3000
 const THERAPEUT_SCHLUESSEL = 'therapeutKuerzel'
 
 export default function TestungErfassen() {
@@ -40,6 +41,10 @@ export default function TestungErfassen() {
   const patient = useLiveQuery(() => (gespeichert ? db.patienten.get(gespeichert.patientId) : undefined), [gespeichert?.patientId])
   const [testung, setTestung] = useState<Testung | null>(null)
   const [speichert, setSpeichert] = useState(false)
+  const [speicherFehler, setSpeicherFehler] = useState(false)
+  const [versuch, setVersuch] = useState(0)
+  /** noch nicht geschriebener Stand */
+  const offen = useRef<Testung | null>(null)
   const [loeschenFragen, setLoeschenFragen] = useState(false)
   const zuletzt = useRef<string>('')
   // Beim Öffnen sind ruhige Karten zu; was hier angeklickt wird, gilt bis zum Verlassen. Eine gerade ausgefüllte Karte klappt nie von selbst zu.
@@ -57,19 +62,43 @@ export default function TestungErfassen() {
     }
   }, [gespeichert, testung])
 
-  // automatisch speichern, kurz nach der letzten Eingabe
+  // automatisch speichern, kurz nach der letzten Eingabe; schlägt es fehl, sichtbar melden und wiederholen
   useEffect(() => {
     if (!testung) return
     const stand = JSON.stringify(testung)
     if (stand === zuletzt.current) return
+    offen.current = testung
     setSpeichert(true)
-    const t = setTimeout(async () => {
-      await speichereTestung(testung)
-      zuletzt.current = stand
-      setSpeichert(false)
-    }, SPEICHER_VERZOEGERUNG_MS)
+    const t = setTimeout(
+      async () => {
+        try {
+          await speichereTestung(testung)
+          zuletzt.current = stand
+          if (offen.current === testung) offen.current = null
+          setSpeicherFehler(false)
+        } catch {
+          setSpeicherFehler(true)
+          setVersuch((v) => v + 1)
+        }
+        setSpeichert(false)
+      },
+      speicherFehler ? SPEICHER_WIEDERHOLUNG_MS : SPEICHER_VERZOEGERUNG_MS,
+    )
     return () => clearTimeout(t)
-  }, [testung])
+  }, [testung, versuch])
+
+  // Was noch wartet, beim Verlassen der Seite sofort schreiben – auch beim Schließen des Fensters
+  useEffect(() => {
+    const sichern = () => {
+      if (offen.current) void speichereTestung(offen.current).catch(() => {})
+      offen.current = null
+    }
+    window.addEventListener('pagehide', sichern)
+    return () => {
+      window.removeEventListener('pagehide', sichern)
+      sichern()
+    }
+  }, [id])
 
   const kg = parseZahl(testung?.koerpergewichtKg)
   const ph = useMemo(() => (testung && patient ? phasenStand(testung, patient.opDatum) : null), [testung, patient])
@@ -98,6 +127,7 @@ export default function TestungErfassen() {
   const phase = ph.phase
   const seiten = seitennamen(patient)
   const sichtbar = sichtbareTests(testung, phase)
+  const speicherText = speicherFehler ? '! nicht gespeichert – wird wiederholt' : speichert ? 'speichert …' : '✓ gespeichert'
   const statusVon = (id: string) => kartenStatus(auswertung.get(id)!.ergebnis, hatEingabe(testung.eingaben[id]))
   if (startOffen.current.id !== testung.id) startOffen.current = { id: testung.id, karten: {} }
   for (const t of sichtbar) {
@@ -145,6 +175,7 @@ export default function TestungErfassen() {
 
   async function loeschen() {
     if (!testung) return
+    offen.current = null // sonst käme die Testung beim Verlassen der Seite zurück
     await loescheTestung(testung.id)
     navigate(`/patienten/${patient!.id}`)
   }
@@ -165,8 +196,8 @@ export default function TestungErfassen() {
           </p>
         </div>
         <div className="testung-kopf-aktionen">
-          <span className={`speicher-status${speichert ? ' speicher-laeuft' : ''}`} aria-live="polite">
-            {speichert ? 'speichert …' : '✓ gespeichert'}
+          <span className={`speicher-status${speichert ? ' speicher-laeuft' : ''}${speicherFehler ? ' speicher-fehler' : ''}`} aria-live="polite">
+            {speicherText}
           </span>
           <Link to={`/berichte/${testung.id}/arzt`} className="knopf">
             <span>Bericht</span>
@@ -268,7 +299,7 @@ export default function TestungErfassen() {
       <nav className="block-sprung" aria-label="Blöcke">
         <span className="sprung-kontext">
           <strong>{patient.kuerzel}</strong> · {ART_TEXT[ph.art]} · {phaseNach(phase).name}
-          <span className="sprung-speicher">{speichert ? 'speichert …' : '✓ gespeichert'}</span>
+          <span className={`sprung-speicher${speicherFehler ? ' speicher-fehler' : ''}`}>{speicherText}</span>
         </span>
         {BLOECKE.filter((b) => sichtbar.some((t) => t.block === b) || zumHinzufuegen.optional.some((t) => t.block === b)).map((b) => {
           const tests = sichtbar.filter((t) => t.block === b)

@@ -354,6 +354,8 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - **Bedienung:** Link „Zum Inhalt“, Handy ohne seitlichen Seitenüberlauf (Tabellen scrollen in der Karte, Sprungleiste wischbar), größere Tippziele.
 - Punkt 9 (Startseite) bewusst nicht umgesetzt.
 
+**Nachtrag 02.11.2026 (Web-Interface-Audit K1–K3, H1):** Testung speichert beim Verlassen und Schließen sofort, was noch wartet; Speicherfehler zeigen „! nicht gespeichert – wird wiederholt“ und werden alle 3 s wiederholt. Anzeigefehler landen im Auffangnetz statt auf einer leeren Seite. Ampel- und Textfarben so nachgezogen, dass auch Chips auf getönter Fläche mindestens 4,5 : 1 erreichen (hell auf allen Flächen, dunkel auf Fläche und Feld).
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.
