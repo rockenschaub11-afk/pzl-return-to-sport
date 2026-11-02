@@ -4640,3 +4640,106 @@ fieldset:disabled .test-hinzu {
 .test-info-text.offen {
   display: flex;
 }
+
+/* Eingabe prüfen (UI-Audit Punkt 1) */
+.zahl-falsch {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.zahl-falsch input {
+  border-color: var(--fehler);
+}
+
+.zahl-fehler {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--fehler);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.zahl-fehler::before {
+  content: '!';
+  font-weight: 700;
+}
+
+/* Karten zuklappen (UI-Audit Punkt 4) */
+.test-kopf-rechts {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.test-klapp {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text-leise);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.test-klapp:hover {
+  background: var(--flaeche-hoch);
+  color: var(--text);
+}
+
+.test-klapp:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.test-kurz {
+  margin: 0.25rem 0 0;
+  color: var(--text-leise);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.testung-block-kopf {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.knopf-leise {
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text-leise);
+  font: 500 0.8125rem var(--schrift);
+  cursor: pointer;
+}
+
+.knopf-leise:hover {
+  color: var(--text);
+}
+
+.knopf-leise:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.uebersicht-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.uebersicht-w {
+  color: var(--text-leise);
+  font-size: 0.75rem;
+  font-weight: 600;
+}

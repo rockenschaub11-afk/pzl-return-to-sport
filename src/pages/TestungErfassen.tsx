@@ -5,7 +5,6 @@ import { db, loescheTestung, speichereEinstellung, speichereTestung, type Entsch
 import { KATALOG, phaseNach, protokollNach } from '../katalog'
 import { BLOCK_NAMEN, BLOECKE, PHASEN_IDS, type PhaseId, type TestDef } from '../katalog/typen'
 import { datumDeutsch, TEGNER_STUFEN, type Patient } from '../patienten/stammdaten'
-import type { TestErgebnis } from '../rechnen/bewertung'
 import {
   ART_TEXT,
   hinzufuegbar,
@@ -18,7 +17,8 @@ import {
 } from '../testung/ablauf'
 import Laedt from '../Laedt'
 import ErgebnisEntscheidung, { AbschlussVerlauf } from '../testung/ErgebnisEntscheidung'
-import { hatEingabe, hqQuotient, parseZahl } from '../testung/erfassung'
+import { hatEingabe, hqQuotient, istKeineZahl, parseZahl } from '../testung/erfassung'
+import { kartenStatus, type KartenStatus } from '../testung/kartenStatus'
 import { stammdatenHinweise } from '../testung/stammdatenHinweise'
 import KlinischAnders from '../testung/KlinischAnders'
 import { AmpelMarke } from '../testung/Ladebalken'
@@ -42,6 +42,10 @@ export default function TestungErfassen() {
   const [speichert, setSpeichert] = useState(false)
   const [loeschenFragen, setLoeschenFragen] = useState(false)
   const zuletzt = useRef<string>('')
+  // Beim Öffnen sind ruhige Karten zu; was hier angeklickt wird, gilt bis zum Verlassen. Eine gerade ausgefüllte Karte klappt nie von selbst zu.
+  const startOffen = useRef<{ id: string; karten: Record<string, boolean> }>({ id: '', karten: {} })
+  const [klappen, setKlappen] = useState<Record<string, boolean>>({})
+  useEffect(() => setKlappen({}), [id])
   const meloqAuswahl = useMeloqAuswahl()
   const therapeutStandard = useLiveQuery(async () => ((await db.einstellungen.get(THERAPEUT_SCHLUESSEL))?.wert as string | undefined) ?? '', [])
 
@@ -94,6 +98,19 @@ export default function TestungErfassen() {
   const phase = ph.phase
   const seiten = seitennamen(patient)
   const sichtbar = sichtbareTests(testung, phase)
+  const statusVon = (id: string) => kartenStatus(auswertung.get(id)!.ergebnis, hatEingabe(testung.eingaben[id]))
+  if (startOffen.current.id !== testung.id) startOffen.current = { id: testung.id, karten: {} }
+  for (const t of sichtbar) {
+    if (t.id in startOffen.current.karten) continue
+    const eingabe = testung.eingaben[t.id] ?? {}
+    // Streuung, ungültige Eingabe oder klinisch anders beurteilt: Karte bleibt offen, damit nichts untergeht
+    const auffaellig =
+      auswertung.get(t.id)!.berechnung.streuung.length > 0 ||
+      Object.entries(eingabe).some(([k, v]) => k !== 'einheit' && k !== 'wert' && istKeineZahl(v)) ||
+      !!testung.klinischAnders?.[t.id]
+    startOffen.current.karten[t.id] = !statusVon(t.id).ruhig || auffaellig
+  }
+  const istOffen = (id: string) => klappen[id] ?? startOffen.current.karten[id] ?? true
   const zumHinzufuegen = hinzufuegbar(testung, phase)
   const aendern = (teil: Partial<Testung>) => setTestung((t) => (t ? { ...t, ...teil } : t))
   const setzeFeld = (testId: string) => (feld: string, wert: string) =>
@@ -185,12 +202,12 @@ export default function TestungErfassen() {
               <span className="feld-label">Datum der Testung</span>
               <input type="date" value={testung.datum} onChange={(e) => aendern({ datum: e.target.value })} />
             </label>
-            <label className={`feld${kgFehlt ? ' feld-fehler' : ''}`}>
+            <label className={`feld${kgFehlt || istKeineZahl(testung.koerpergewichtKg) ? ' feld-fehler' : ''}`}>
               <span className="feld-label">
                 Körpergewicht (kg) <span className="block-marke">Pflicht</span>
               </span>
               <input inputMode="decimal" value={testung.koerpergewichtKg} onChange={(e) => aendern({ koerpergewichtKg: e.target.value })} placeholder="z. B. 72,5" />
-              {kgFehlt && <span className="feld-meldung">Ohne Körpergewicht keine N/kg- und Ns/kg-Werte.</span>}
+              {istKeineZahl(testung.koerpergewichtKg) ? <span className="feld-meldung">Das ist keine Zahl – bitte z. B. 72,5 eingeben.</span> : kgFehlt && <span className="feld-meldung">Ohne Körpergewicht keine N/kg- und Ns/kg-Werte.</span>}
             </label>
           </div>
           <label className="feld">
@@ -269,7 +286,14 @@ export default function TestungErfassen() {
               if (anzeigen.length === 0 && optional.length === 0) return null
               return (
                 <div key={block} id={`block-${block}`} className="testung-block">
-                  <h3 className="testung-block-titel">{BLOCK_NAMEN[block]}</h3>
+                  <div className="testung-block-kopf">
+                    <h3 className="testung-block-titel">{BLOCK_NAMEN[block]}</h3>
+                    {anzeigen.length > 0 && (
+                      <button type="button" className="knopf-leise" onClick={() => setKlappen((k) => ({ ...k, ...Object.fromEntries(anzeigen.map((t) => [t.id, !anzeigen.every((x) => istOffen(x.id))])) }))}>
+                        {anzeigen.every((t) => istOffen(t.id)) ? 'Alle zuklappen' : 'Alle aufklappen'}
+                      </button>
+                    )}
+                  </div>
                   {anzeigen.map((t) => {
                     const a = auswertung.get(t.id)!
                     const p = pflichtStatus(a)
@@ -296,6 +320,9 @@ export default function TestungErfassen() {
                           hq={t.id === 'hhd_knie_flex' ? hqQuotient(a.berechnung, auswertung.get('hhd_knie_ext')?.berechnung) : null}
                           normdaten={normdatenFuer(t.id, patient, testung.datum, monate, boxTatsaechlich(t, testung.eingaben[t.id] ?? {}, testung.datum))}
                           datum={testung.datum}
+                          status={statusVon(t.id)}
+                          offen={istOffen(t.id)}
+                          onKlappen={() => setKlappen((k) => ({ ...k, [t.id]: !istOffen(t.id) }))}
                           fuss={
                             p && ph.art === 'endtestung' ? (
                               <KlinischAnders
@@ -400,7 +427,7 @@ export default function TestungErfassen() {
                 <p className="uebersicht-block">{BLOCK_NAMEN[block].replace(/ \(.*\)$/, '')}</p>
                 <ul>
                   {tests.map((t) => (
-                    <UebersichtZeile key={t.id} test={t} ergebnis={auswertung.get(t.id)!.ergebnis} />
+                    <UebersichtZeile key={t.id} test={t} status={statusVon(t.id)} onOeffnen={() => setKlappen((k) => ({ ...k, [t.id]: true }))} />
                   ))}
                 </ul>
               </div>
@@ -413,13 +440,26 @@ export default function TestungErfassen() {
   )
 }
 
-function UebersichtZeile({ test, ergebnis }: { test: TestDef; ergebnis: TestErgebnis }) {
+function UebersichtZeile({ test, status, onOeffnen }: { test: TestDef; status: KartenStatus; onOeffnen: () => void }) {
   return (
     <li>
-      <a href={`#test-${test.id}`} onClick={(e) => springen(e, `test-${test.id}`)}>
+      <a
+        href={`#test-${test.id}`}
+        onClick={(e) => {
+          onOeffnen()
+          springen(e, `test-${test.id}`)
+        }}
+      >
         <span>{test.name}</span>
       </a>
-      <AmpelMarke ampel={ergebnis.ampel} />
+      <span className="uebersicht-status">
+        {status.wuenschenswertOffen && (
+          <span className="uebersicht-w" title="wünschenswert nicht erreicht – blockiert nicht" aria-label="wünschenswert nicht erreicht">
+            W
+          </span>
+        )}
+        <AmpelMarke ampel={status.ampel} text={status.text} />
+      </span>
     </li>
   )
 }

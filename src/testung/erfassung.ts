@@ -91,6 +91,12 @@ export function parseZahl(text: string | undefined): number | null {
   return Number.isFinite(z) ? z : null
 }
 
+/** Etwas eingetippt, das keine Zahl ist („abc“) – ein angefangenes „-“ oder „,“ zählt noch nicht als Fehler. */
+export function istKeineZahl(text: string | undefined): boolean {
+  const t = (text ?? '').trim()
+  return t !== '' && !['-', '.', ','].includes(t) && parseZahl(t) === null
+}
+
 export interface Seitenwerte {
   gesund: number | null
   betroffen: number | null

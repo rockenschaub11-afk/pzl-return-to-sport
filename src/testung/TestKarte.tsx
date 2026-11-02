@@ -3,9 +3,10 @@ import { boxStandard } from '../berichte/nachvollziehbarkeit'
 import { protokollNach } from '../katalog'
 import type { TestDef } from '../katalog/typen'
 import type { KriteriumErgebnis, TestErgebnis } from '../rechnen/bewertung'
-import { ERFASSUNG, HQ_HINWEIS, KOOS_SUBSKALEN, VERSUCHE, type Berechnung, type hqQuotient, type TestEingabe } from './erfassung'
+import { ERFASSUNG, HQ_HINWEIS, istKeineZahl, KOOS_SUBSKALEN, VERSUCHE, type Berechnung, type hqQuotient, type TestEingabe } from './erfassung'
+import type { KartenStatus } from './kartenStatus'
 import { istMeloqTest } from '../katalog/meloq'
-import Ladebalken, { AMPEL_TEXT, AmpelMarke } from './Ladebalken'
+import Ladebalken, { AmpelMarke } from './Ladebalken'
 import FragebogenRechner from './FragebogenRechner'
 import MeloqBereich, { KernStrategie } from './MeloqBereich'
 import type { MeloqAuswahl } from './meloqAuswahl'
@@ -39,6 +40,11 @@ interface Props {
   normdaten?: NormAnzeige | null
   /** Datum der Testung – für den Standard der Boxhöhe (bis 28.10.2026 30 cm) */
   datum?: string
+  /** Status im Kartenkopf: zählt nur Pflicht-Kriterien */
+  status: KartenStatus
+  /** Karte aufgeklappt; zugeklappt bleiben Kopf und Kernwerte */
+  offen: boolean
+  onKlappen: () => void
 }
 
 const zahl = (v: number, nachkomma = 1) =>
@@ -48,11 +54,17 @@ const hqText = (q: number | null) => (q === null ? '–' : `${zahl(q * 100, 0)} 
 
 /** Eingabefeld für eine Zahl (Komma oder Punkt). */
 function Zahl({ wert, onChange, label, einheit, breit = false }: { wert?: string; onChange: (v: string) => void; label: string; einheit?: string; breit?: boolean }) {
+  const falsch = istKeineZahl(wert)
   return (
-    <label className={`zahl-feld${breit ? ' zahl-feld-breit' : ''}`}>
+    <label className={`zahl-feld${breit ? ' zahl-feld-breit' : ''}${falsch ? ' zahl-falsch' : ''}`}>
       <span className="sr-only">{label}</span>
-      <input inputMode="decimal" value={wert ?? ''} onChange={(e) => onChange(e.target.value)} aria-label={label} placeholder="–" />
+      <input inputMode="decimal" value={wert ?? ''} onChange={(e) => onChange(e.target.value)} aria-label={label} aria-invalid={falsch || undefined} placeholder="–" />
       {einheit && <span className="zahl-einheit">{einheit}</span>}
+      {falsch && (
+        <span className="zahl-fehler" role="alert">
+          keine Zahl
+        </span>
+      )}
     </label>
   )
 }
@@ -208,13 +220,29 @@ function Eingaben({ test, eingabe: e, setze, seiten, berechnung }: Props) {
   }
 }
 
+function kriteriumWert(e: KriteriumErgebnis): string {
+  const k = e.kriterium
+  const nachkomma = k.art === 'lsi' ? 1 : (k.nachkomma ?? 1)
+  const einheit = k.einheit === '%' ? ' %' : k.einheit ? ` ${k.einheit}` : ''
+  return typeof e.wert === 'number' ? `${zahl(e.wert, nachkomma)}${einheit}` : typeof e.wert === 'boolean' ? (e.wert ? 'ja' : 'nein') : (e.wert ?? '–')
+}
+
+/** Kernwerte für die zugeklappte Karte: Pflicht zuerst, höchstens drei. */
+function kernwerte(ergebnis: TestErgebnis): string {
+  const mitWert = ergebnis.kriterien.filter((e) => e.zustand !== 'nicht_anwendbar' && e.zustand !== 'offen' && e.wert !== undefined && e.wert !== null)
+  const sortiert = [...mitWert.filter((e) => e.kriterium.status === 'pflicht'), ...mitWert.filter((e) => e.kriterium.status !== 'pflicht')]
+  return sortiert
+    .slice(0, 3)
+    .map((e) => `${e.kriterium.bezeichnung} ${kriteriumWert(e)}`)
+    .join(' · ')
+}
+
 function KriteriumZeile({ e }: { e: KriteriumErgebnis }) {
   const k = e.kriterium
   if (e.zustand === 'nicht_anwendbar') return null
   const nachkomma = k.art === 'lsi' ? 1 : (k.nachkomma ?? 1)
   const einheit = k.einheit === '%' ? ' %' : k.einheit ? ` ${k.einheit}` : ''
-  const wertText =
-    typeof e.wert === 'number' ? `${zahl(e.wert, nachkomma)}${einheit}` : typeof e.wert === 'boolean' ? (e.wert ? 'ja' : 'nein') : (e.wert ?? '–')
+  const wertText = kriteriumWert(e)
   const ziel =
     k.art === 'auswahl'
       ? `Ziel ${k.erlaubt?.join(' / ')}`
@@ -280,8 +308,18 @@ export default function TestKarte(props: Props) {
           {test.info && <TestInfo info={test.info} />}
           {test.optional && <span className="chip">optional</span>}
         </h4>
-        <AmpelMarke ampel={ergebnis.ampel} text={ergebnis.ampel ? `${AMPEL_TEXT[ergebnis.ampel]}${ergebnis.vollstaendig ? '' : ' (unvollständig)'}` : undefined} />
+        <span className="test-kopf-rechts">
+          {props.status.wuenschenswertOffen && <span className="ampel-marke ampel-offen">wünschenswert nicht erreicht</span>}
+          <AmpelMarke ampel={props.status.ampel} text={props.status.text} />
+          <button type="button" className="test-klapp" aria-expanded={props.offen} aria-label={`${test.name} ${props.offen ? 'zuklappen' : 'aufklappen'}`} onClick={props.onKlappen}>
+            <span aria-hidden="true">{props.offen ? '▾' : '▸'}</span>
+          </button>
+        </span>
       </header>
+
+      {!props.offen && kernwerte(ergebnis) && <p className="test-kurz">{kernwerte(ergebnis)}</p>}
+      {props.offen && (
+        <>
 
       {props.hinweise?.map((h) => (
         <p key={h} className="meldung meldung-warnung test-hinweis">
@@ -410,6 +448,8 @@ export default function TestKarte(props: Props) {
         )}
         {props.fuss}
       </div>
+      </>
+      )}
     </article>
   )
 }

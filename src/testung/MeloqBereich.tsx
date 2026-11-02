@@ -1,4 +1,5 @@
 import { MELOQ, ODS_REIHENFOLGE, type MeloqTest } from '../katalog/meloq'
+import { istKeineZahl } from './erfassung'
 import type { Berechnung, TestEingabe } from './erfassung'
 import { kernStrategie, zusatzZeilen, type MeloqZeile } from './meloq'
 import type { MeloqAuswahl } from './meloqAuswahl'
@@ -118,10 +119,16 @@ export default function MeloqBereich({ test, eingabe: e, setze, seiten, berechnu
 }
 
 function Feld({ wert, onChange, label, einheit }: { wert?: string; onChange: (v: string) => void; label: string; einheit: string }) {
+  const falsch = istKeineZahl(wert)
   return (
-    <label className="zahl-feld">
-      <input inputMode="decimal" value={wert ?? ''} onChange={(e) => onChange(e.target.value)} aria-label={label} placeholder="–" />
+    <label className={`zahl-feld${falsch ? ' zahl-falsch' : ''}`}>
+      <input inputMode="decimal" value={wert ?? ''} onChange={(e) => onChange(e.target.value)} aria-label={label} aria-invalid={falsch || undefined} placeholder="–" />
       {einheit && <span className="zahl-einheit">{einheit}</span>}
+      {falsch && (
+        <span className="zahl-fehler" role="alert">
+          keine Zahl
+        </span>
+      )}
     </label>
   )
 }

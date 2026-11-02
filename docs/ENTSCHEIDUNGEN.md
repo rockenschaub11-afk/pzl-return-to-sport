@@ -336,6 +336,13 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - Arztbericht: Stammdaten, Phase (inkl. „übersteuert“ + Begründung), RTS-Vorschlag + Beurteilung mit Begründung (nur Endtestung), alle Kriterien mit Wert, Ziel, Bewertung (Zeichen ✓ ~ ✗ + Text) und Quelle, Meloq-Kern-Satz-Strategy und die persönlich gewählten Zusatzmetriken (ohne Ampel), „klinisch anders beurteilt“ markiert; Verlauf als Tabelle (Hauptwert der Pflicht-Tests, bis zu 6 Testungen bis zu dieser) + ein wählbares Diagramm (Standard Knie-Extension HHD); Unterschriftfeld.
 - Pat./Trainer-Bericht (1 Seite): Leistungswerte aus HHD, Platten, Hops, Kraftausdauer (ohne Klinik, Fragebögen und Driver-Werte), Klinik in einer Zeile, Spinnennetz mit LSI je Test mit Seitenvergleich (gesund = 100 %, Ziel 90 %), „Was fehlt noch?“ in Alltagssprache; Ergebnis „Kriterien erfüllt / (noch) nicht erfüllt“ nur bei abgeschlossener Endtestung, mit „Ersetzt keine ärztliche Freigabe“.
 
+## 10a-1. Testung erfassen (Nachtrag 02.11.2026, UI-Audit Punkte 1–4, von Philipp bestätigt)
+
+- **Eingabe prüfen:** Zahlenfelder melden „! keine Zahl“ (`--fehler`-Rand, aria-invalid); starke Ausreißer meldet weiter die Streuung (CV > 10 %). Keine festen Plausibilitätsgrenzen.
+- **Kartenkopf und Übersicht zählen nur Pflicht-Kriterien.** Pflicht passt, wünschenswert verfehlt: „erfüllt“ plus neutrale Marke „wünschenswert nicht erreicht“ (Übersicht: W). Test nur mit wünschenswerten Kriterien, verfehlt: neutral „~ wünschenswert“. Ampel je Kriterium, RTS-Vorschlag und Berichte unverändert.
+- **„offen“ nur ohne Eingabe.** Fragebögen mit Wert: „Warnung“ oder „erfasst“.
+- **Karten klappen zu:** Beim Öffnen sind vollständige, unauffällige Karten zu (Kopf + Kernwerte). Offen bleiben: nicht erfüllt, knapp, unvollständig, Warnung, wünschenswert verfehlt, Streuung, ungültige Eingabe, klinisch anders beurteilt. Eine gerade ausgefüllte Karte klappt nie von selbst zu. „Alle auf-/zuklappen“ je Block; Klick in der Übersicht klappt den Test auf.
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.
