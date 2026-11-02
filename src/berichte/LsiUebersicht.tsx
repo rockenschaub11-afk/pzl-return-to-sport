@@ -6,7 +6,6 @@ import { AMPEL_ZEICHEN } from './bericht'
 import type { LsiZeile } from './lsiZeilen'
 
 const B = 640
-const ZEILE = 15
 const OBEN = 20
 const X0 = 170
 const X1 = 440
@@ -14,7 +13,7 @@ const WORT = { gruen: '', gelb: 'knapp', rot: 'nicht erfüllt' } as const
 
 const zahl = (v: number) => `${v.toLocaleString('de-AT', { maximumFractionDigits: 1 })} %`
 
-export default function LsiUebersicht({ zeilen, vorigeDatum }: { zeilen: LsiZeile[]; vorigeDatum: string | null }) {
+export default function LsiUebersicht({ zeilen, vorigeDatum, zeile: ZEILE = 15 }: { zeilen: LsiZeile[]; vorigeDatum: string | null; zeile?: number }) {
   const H = OBEN + zeilen.length * ZEILE + 6
   const alle = zeilen.flatMap((z) => (z.vorige === null ? [z.lsi] : [z.lsi, z.vorige]))
   const LO = Math.min(60, Math.floor(Math.min(...alle) / 10) * 10)

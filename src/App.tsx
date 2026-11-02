@@ -22,6 +22,16 @@ export default function App() {
   return (
     <div className={`app${startseite ? ' app-start' : ''}`}>
       {/* Startseite: eigene Kopfzeile statt Seitenleiste */}
+      <a
+        href="#inhalt"
+        className="zum-inhalt"
+        onClick={(e) => {
+          e.preventDefault()
+          document.getElementById('inhalt')?.focus()
+        }}
+      >
+        Zum Inhalt
+      </a>
       {!startseite && <Seitenleiste mitLogo />}
 
       {/* Prüfung beim Start: fehlerhafte Konfiguration sofort sichtbar machen */}
@@ -36,7 +46,7 @@ export default function App() {
         </div>
       )}
 
-      <main className={`inhalt${startseite ? ' inhalt-voll' : breit ? ' inhalt-breit' : ''}`}>
+      <main id="inhalt" tabIndex={-1} className={`inhalt${startseite ? ' inhalt-voll' : breit ? ' inhalt-breit' : ''}`}>
         <Routes>
           <Route path="/" element={<Start />} />
           <Route path="/patienten" element={<PatientenListe />} />

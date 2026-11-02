@@ -14,7 +14,7 @@
   --linie-stark: #4a505a;
   --text: #eef1f4;
   --text-leise: #a4adb8;
-  --text-sehr-leise: #8e97a3;
+  --text-sehr-leise: #939ca8;
   --aktion: #eef1f4;
   --aktion-hover: #d3d8de;
   --aktion-text: #191b20;
@@ -114,6 +114,7 @@
 body {
   margin: 0;
   background: var(--hintergrund);
+  font-size: 0.9375rem;
 }
 
 a {
@@ -426,7 +427,7 @@ h3 {
   border-radius: 999px;
   color: var(--text-leise);
   font-weight: 500;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 .hinweis-leise {
@@ -559,7 +560,7 @@ h3 {
   grid-column: 1;
   grid-row: 1;
   font-weight: 700;
-  font-size: 1.4rem;
+  font-size: 1.375rem;
   line-height: 1.2;
   color: var(--nacht);
   font-variant-numeric: tabular-nums;
@@ -590,7 +591,7 @@ h3 {
 .pat-info {
   grid-column: 1;
   color: var(--text-leise);
-  font-size: 0.95rem;
+  font-size: 0.9375rem;
 }
 
 .pat-info strong {
@@ -662,7 +663,7 @@ h3 {
 .leer-titel {
   margin-top: 0;
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   color: var(--nacht);
 }
 
@@ -679,7 +680,7 @@ h3 {
   margin: 0 0 1rem;
   padding: 0;
   font-weight: 600;
-  font-size: 1.15rem;
+  font-size: 1.0625rem;
   color: var(--nacht);
 }
 
@@ -731,7 +732,7 @@ h3 {
 
 .feld-hilfe {
   color: var(--text-leise);
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
 }
 
 .feld-meldung {
@@ -753,7 +754,7 @@ h3 {
   border-radius: 50%;
   background: var(--fehler);
   color: var(--grund);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 
@@ -788,7 +789,7 @@ h3 {
 .feld .eingabe-kuerzel {
   max-width: 16rem;
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   letter-spacing: 0.04em;
 }
 
@@ -953,7 +954,7 @@ h3 {
 .testung-fortschritt {
   margin-left: auto;
   color: var(--text-leise);
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1028,7 +1029,7 @@ h3 {
 
 .testung-block-titel {
   margin: 0 0 0.6rem;
-  font-size: 1.2rem;
+  font-size: 1.375rem;
   font-weight: 600;
   color: var(--nacht);
 }
@@ -1069,7 +1070,7 @@ h3 {
 .test-protokoll,
 .test-mehr {
   margin-top: 0.35rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 /* 3. Lautstärke: alles Zusätzliche leise und zugeklappt */
@@ -1145,7 +1146,7 @@ h3 {
 
 .zahl-einheit {
   color: var(--text-leise);
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
 }
 
 .seiten-paar {
@@ -1160,7 +1161,7 @@ h3 {
 
 .einheit-wahl .auswahl-knopf {
   padding: 0.2rem 0.7rem;
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
 }
 
 .eingabe-raster {
@@ -1176,14 +1177,14 @@ h3 {
 
 .eingabe-raster thead th {
   color: var(--text-leise);
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 
 .eingabe-raster tbody th {
   padding-right: 1rem;
   font-weight: 600;
-  font-size: 0.92rem;
+  font-size: 0.9375rem;
 }
 
 .raster-seite {
@@ -1195,7 +1196,7 @@ h3 {
 .raster-versuch {
   color: var(--text-leise);
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
 }
 
 .bestwert {
@@ -1219,7 +1220,7 @@ h3 {
   align-items: center;
   gap: 0.25rem 1rem;
   padding: 0.3rem 0;
-  font-size: 0.93rem;
+  font-size: 0.9375rem;
 }
 
 .kriterium-nebensache {
@@ -1232,7 +1233,7 @@ h3 {
 
 .kriterium-status {
   color: var(--text-leise);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   font-weight: 400;
 }
 
@@ -1245,7 +1246,7 @@ h3 {
 
 .kriterium-ziel {
   color: var(--text-leise);
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
 }
 
 .kriterium-balken {
@@ -1255,12 +1256,12 @@ h3 {
 .test-zusatz {
   margin: 0.4rem 0 0;
   color: var(--text-leise);
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
 }
 
 .test-ergebnis .meldung {
   margin: 0.5rem 0 0;
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
 }
 
 .test-hinzu {
@@ -1271,7 +1272,7 @@ h3 {
 
 .test-entfernen {
   margin-top: 0.3rem;
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
   font-weight: 500;
 }
 
@@ -1410,7 +1411,7 @@ h3 {
 
 .testung-uebersicht h3 {
   margin: 0 0 0.5rem;
-  font-size: 1.05rem;
+  font-size: 1.0625rem;
   font-weight: 600;
   color: var(--nacht);
 }
@@ -1434,7 +1435,7 @@ h3 {
   justify-content: space-between;
   gap: 0.5rem;
   padding: 0.2rem 0;
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
 }
 
 .testung-uebersicht li a {
@@ -1452,7 +1453,7 @@ h3 {
 .uebersicht-fuss {
   margin: 0.9rem 0 0;
   color: var(--text-sehr-leise);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
 }
 
 @media (max-width: 1100px) {
@@ -1501,7 +1502,7 @@ h3 {
 .fragebogen-nr {
   min-width: 1.8rem;
   color: var(--text-leise);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   text-align: right;
 }
@@ -1517,7 +1518,7 @@ h3 {
 
 .fragebogen-item .auswahl-knopf {
   padding: 0.2rem 0.6rem;
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
 }
 
 .fragebogen-ergebnis {
@@ -1544,7 +1545,7 @@ h3 {
 
 .phase-zeile .hinweis-leise {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
 }
 
 .weitere-tests {
@@ -1557,7 +1558,7 @@ h3 {
 
 .test-hinweis {
   margin: 0.5rem 0 0;
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
 }
 
 .normdaten {
@@ -1566,7 +1567,7 @@ h3 {
   border-left: 3px solid var(--rand-stark);
   background: var(--feld);
   color: var(--text-leise);
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
 }
 
 .normdaten p {
@@ -1860,7 +1861,7 @@ h3 {
   margin: 0.15rem 0 0.4rem;
   color: var(--text);
   font-family: var(--schrift-titel);
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   font-weight: 600;
 }
 
@@ -1905,7 +1906,7 @@ h3 {
 }
 
 .rts-kasten .text-knopf {
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
 }
 
 .ergebnis {
@@ -1915,7 +1916,7 @@ h3 {
 
 .ergebnis h4 {
   margin: 1.1rem 0 0.4rem;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--nacht);
 }
@@ -1930,7 +1931,7 @@ h3 {
 }
 
 .ergebnis-vorschlag strong {
-  font-size: 1.35rem;
+  font-size: 1.375rem;
   color: var(--nacht);
 }
 
@@ -1994,7 +1995,7 @@ h3 {
 
 .klinisch-anders .auswahl-knopf {
   padding: 0.3rem 0.7rem;
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
 }
 
 .klinisch-anders .feld {
@@ -2030,7 +2031,7 @@ fieldset:disabled .test-hinzu {
   border: 1px solid var(--linie-stark);
   border-radius: 4px;
   color: var(--text-leise);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   vertical-align: 0.05rem;
   cursor: help;
@@ -2050,7 +2051,7 @@ fieldset:disabled .test-hinzu {
 
 .ods-erklaerung {
   margin: 0.5rem 0;
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
 }
 
 .ods-erklaerung summary {
@@ -2102,7 +2103,7 @@ fieldset:disabled .test-hinzu {
 
 .metrik-gruppe .haken {
   margin: 0.3rem 0;
-  font-size: 0.92rem;
+  font-size: 0.9375rem;
 }
 
 .meloq-bereich {
@@ -2123,14 +2124,14 @@ fieldset:disabled .test-hinzu {
 
 .meloq-kopf h5 {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--nacht);
 }
 
 .meloq-kopf .hinweis-leise {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
 }
 
 .meloq-tabelle tbody th {
@@ -2142,7 +2143,7 @@ fieldset:disabled .test-hinzu {
 .meloq-relativ,
 .meloq-vergleich {
   color: var(--text-leise);
-  font-size: 0.88rem;
+  font-size: 0.9375rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2152,14 +2153,14 @@ fieldset:disabled .test-hinzu {
 
 .meloq-einstellung h4 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   color: var(--nacht);
 }
 
 .meloq-einstellung .hinweis-leise {
   margin: 0.15rem 0 0;
-  font-size: 0.85rem;
+  font-size: 0.8125rem;
 }
 
 /* ---------- Konfigurationsfehler (Prüfung beim Start) ---------- */
@@ -2176,7 +2177,7 @@ fieldset:disabled .test-hinzu {
 .konfig-fehler ul {
   margin: 0.4rem 0 0;
   color: var(--text);
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
 }
 
 /* ---------- Testkatalog (Info) ---------- */
@@ -2184,7 +2185,7 @@ fieldset:disabled .test-hinzu {
 .kat-regeln h3,
 .kat-block h3 {
   margin: 0 0 0.75rem;
-  font-size: 1.15rem;
+  font-size: 1.0625rem;
   font-weight: 600;
   color: var(--nacht);
 }
@@ -2215,7 +2216,7 @@ fieldset:disabled .test-hinzu {
   min-width: 860px;
   table-layout: fixed;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -2230,7 +2231,7 @@ fieldset:disabled .test-hinzu {
 .kat-tabelle thead th {
   border-bottom: 2px solid var(--rand-stark);
   color: var(--text-leise);
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -2265,7 +2266,7 @@ fieldset:disabled .test-hinzu {
   gap: 0.15rem;
   margin-top: 0.3rem;
   color: var(--text-leise);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   font-weight: 400;
 }
 
@@ -2276,7 +2277,7 @@ fieldset:disabled .test-hinzu {
 .kat-kriterium-hinweis {
   display: block;
   color: var(--text-leise);
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
 }
 
 .kat-leer {
@@ -2290,19 +2291,19 @@ fieldset:disabled .test-hinzu {
 
 .kat-bereich {
   color: var(--text-sehr-leise);
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
 }
 
 .kat-quelle {
   color: var(--text-leise);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
 }
 
 .kat-status {
   padding: 0.05rem 0.5rem;
   border: 1px solid var(--linie-stark);
   border-radius: 999px;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
@@ -2348,7 +2349,7 @@ fieldset:disabled .test-hinzu {
   padding: 0.6rem 1.5rem;
   border-top: 1px solid var(--rand);
   color: var(--text-leise);
-  font-size: 0.9rem;
+  font-size: 0.9375rem;
   font-weight: 500;
   text-align: center;
 }
@@ -2391,7 +2392,7 @@ fieldset:disabled .test-hinzu {
 .start-dach {
   margin: 0 0 0.75rem;
   color: var(--text-leise);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
 }
 
@@ -2409,7 +2410,7 @@ fieldset:disabled .test-hinzu {
 .start-unterzeile {
   margin: 0.75rem 0 0;
   color: var(--text);
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   font-weight: 500;
 }
 
@@ -2540,14 +2541,14 @@ fieldset:disabled .test-hinzu {
 
 .start-karte-text {
   color: var(--text-leise);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 .start-karte-zahl {
   align-self: end;
   margin-top: 1.25rem;
   color: var(--text-leise);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 .start-karte-zahl strong {
@@ -2685,7 +2686,7 @@ fieldset:disabled .test-hinzu {
   }
 
   .seitentitel {
-    font-size: 1.5rem;
+    font-size: 1.375rem;
   }
 
   .karte {
@@ -2698,7 +2699,7 @@ fieldset:disabled .test-hinzu {
 
   .hinweis {
     padding: 0.45rem 1rem;
-    font-size: 0.8rem;
+    font-size: 0.8125rem;
   }
 
 }
@@ -3351,7 +3352,8 @@ fieldset:disabled .test-hinzu {
 }
 
 .lsi-streifen {
-  fill: #fafbfc;
+  fill: var(--feld);
+  opacity: 0.55;
 }
 
 .lsi-korridor {
@@ -3387,7 +3389,7 @@ fieldset:disabled .test-hinzu {
 }
 
 .lsi-vorige {
-  fill: #fff;
+  fill: var(--flaeche);
   stroke: var(--text-sehr-leise);
   stroke-width: 1.2;
 }
@@ -3398,11 +3400,21 @@ fieldset:disabled .test-hinzu {
 
 .lsi-punkt.lsi-gruen,
 .lsi-zeichen.lsi-gruen {
+  fill: var(--erfuellt);
+}
+
+.bericht .lsi-punkt.lsi-gruen,
+.bericht .lsi-zeichen.lsi-gruen {
   fill: #1f6b41;
 }
 
 .lsi-punkt.lsi-gelb,
 .lsi-zeichen.lsi-gelb {
+  fill: var(--knapp);
+}
+
+.bericht .lsi-punkt.lsi-gelb,
+.bericht .lsi-zeichen.lsi-gelb {
   fill: #7a5200;
 }
 
@@ -4273,7 +4285,7 @@ fieldset:disabled .test-hinzu {
   width: 1.75rem;
   height: 1.75rem;
   margin-right: 0.6rem;
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
 }
 
 .liste-zahl {
@@ -4685,7 +4697,7 @@ fieldset:disabled .test-hinzu {
   border-radius: var(--radius);
   background: none;
   color: var(--text-leise);
-  font-size: 1.25rem;
+  font-size: 1.375rem;
   cursor: pointer;
 }
 
@@ -4702,7 +4714,7 @@ fieldset:disabled .test-hinzu {
 .test-kurz {
   margin: 0.25rem 0 0;
   color: var(--text-leise);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -4742,4 +4754,143 @@ fieldset:disabled .test-hinzu {
   color: var(--text-leise);
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+/* Weniger Chips (UI-Audit Punkt 12): Pille nur im Kartenkopf, in Zeilen und Übersicht Zeichen + Wort */
+.kriterium-ampel .ampel-marke,
+.testung-uebersicht .ampel-marke {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.kriterium-ampel .ampel-marke.ampel-gruen,
+.testung-uebersicht .ampel-marke.ampel-gruen {
+  color: var(--text-leise);
+}
+
+.kriterium-ampel .ampel-marke.ampel-gruen::before,
+.testung-uebersicht .ampel-marke.ampel-gruen::before {
+  color: var(--erfuellt);
+}
+
+/* Zähler in der Sprungleiste (Punkt 5) */
+.sprung-zahl {
+  margin-left: 0.3rem;
+  color: var(--knapp);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.sprung-zahl.sprung-fertig {
+  color: var(--text-leise);
+}
+
+/* Zum Inhalt (Punkt 14) */
+.zum-inhalt {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 50;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius);
+  background: var(--aktion);
+  color: var(--aktion-text);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+
+.zum-inhalt:focus {
+  transform: none;
+}
+
+.inhalt:focus {
+  outline: none;
+}
+
+/* Seitenvergleich und Diagrammstand (Punkte 6, 7) */
+.seitenvergleich .lsi-text {
+  font-size: 12px;
+}
+
+.seitenvergleich .lsi-name,
+.seitenvergleich .lsi-zeichen {
+  font-size: 13px;
+}
+
+.seitenvergleich .bericht-legende {
+  font-size: 0.75rem;
+}
+
+.dashboard-raster + .verlauf {
+  margin-top: 1.25rem;
+}
+
+.diagramm-stand {
+  margin: 0.15rem 0 0.25rem;
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.bericht .diagramm-stand {
+  font-size: 8pt;
+}
+
+/* Pat.-Liste */
+.liste-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 1rem;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+/* Ziele groß genug (Punkt 15) */
+.test-info-knopf {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.test-protokoll summary,
+.test-mehr summary {
+  padding: 0.2rem 0;
+}
+
+@media screen and (max-width: 720px) {
+  .block-sprung {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .sprung-kontext {
+    display: none;
+  }
+
+  .test-eingabe,
+  .test-mehr,
+  .liste-rahmen {
+    overflow-x: auto;
+  }
+
+  .zahl-feld input {
+    width: 4.25rem;
+    font-size: 1rem;
+  }
+
+  .test-protokoll summary,
+  .test-mehr summary {
+    padding: 0.6rem 0;
+  }
+
+  .liste-filter {
+    margin: 0.5rem 0 0;
+  }
+}
+
+.kuerzel-wahl input {
+  width: 17rem;
+  max-width: 100%;
 }

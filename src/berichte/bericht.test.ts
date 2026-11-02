@@ -4,6 +4,7 @@ import { db, type Testung } from '../db'
 import { datumDeutsch, type Patient } from '../patienten/stammdaten'
 import { auswahlBereinigen } from '../testung/meloqAuswahl'
 import { arztBericht, bewertungText, kriteriumAlltag, patBericht, verlaufTabelle, zeitVergleich } from './bericht'
+import { pflichtKurz } from '../patienten/uebersicht'
 import { lsiUebersicht } from './lsiZeilen'
 
 let patient: Patient
@@ -204,12 +205,19 @@ describe('Pat./Trainer-Bericht', () => {
     const pat = patBericht(patient, ende, testungen)
     const z = lsiUebersicht(arztBericht(patient, ende, auswahlBereinigen(undefined)), pat)
     const ext = z.find((x) => x.id === 'hhd_knie_ext')!
-    expect(ext).toMatchObject({ name: 'Knie-Extension (HHD, sitzend)', lsi: 93.9, ampel: 'gruen', wuenschenswert: false })
+    expect(ext).toMatchObject({ name: 'Knie-Extension (HHD)', lsi: 93.9, ampel: 'gruen', wuenschenswert: false })
     expect(ext.vorige).toBe(pat.zeilen.find((x) => x.id === 'hhd_knie_ext')!.vorige)
     expect(z.find((x) => x.id === 'sl_dj')).toMatchObject({ name: 'SL-Drop-Jump – Sprunghöhe', lsi: 89.7, ampel: 'gelb' })
     expect(z.find((x) => x.id === 'sl_calf_raise')?.wuenschenswert).toBe(true)
     // ohne LSI-Kriterium (CMJ-Asymmetrie, IMTP) keine Zeile
     expect(z.some((x) => x.id === 'cmj' || x.id === 'imtp')).toBe(false)
+  })
+
+  it('Pat.-Liste: Phase und Pflicht-Stand der neuesten Testung, gezählt wie im Arztbericht', () => {
+    const k = pflichtKurz(patient, testungen)!
+    expect(arztBericht(patient, ende, auswahlBereinigen(undefined)).stand.zeile).toContain(`${k.erfuellt} von ${k.gesamt} Pflicht-Tests erfüllt`)
+    expect(k.phase).toBeTruthy()
+    expect(pflichtKurz(patient, [])).toBeNull()
   })
 
   it('Spinnennetz: Achsen nur für Tests mit Seitenvergleich', () => {

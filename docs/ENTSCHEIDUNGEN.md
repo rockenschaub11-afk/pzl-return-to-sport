@@ -343,6 +343,17 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - **„offen“ nur ohne Eingabe.** Fragebögen mit Wert: „Warnung“ oder „erfasst“.
 - **Karten klappen zu:** Beim Öffnen sind vollständige, unauffällige Karten zu (Kopf + Kernwerte). Offen bleiben: nicht erfüllt, knapp, unvollständig, Warnung, wünschenswert verfehlt, Streuung, ungültige Eingabe, klinisch anders beurteilt. Eine gerade ausgefüllte Karte klappt nie von selbst zu. „Alle auf-/zuklappen“ je Block; Klick in der Übersicht klappt den Test auf.
 
+## 10a-2. UI-Audit Punkte 5–8, 10–15 (Nachtrag 02.11.2026, von Philipp bestätigt)
+
+- **Testung:** Sprungleiste mit Zähler je Block (erfasst/Tests) und „Abschluss“ (Endtestung). Kriterien und Übersicht ohne Pille: Zeichen + Wort, „erfüllt“ leise.
+- **Seite eines Kürzels:** LSI-Übersicht der letzten Testung ersetzt die zwei Kennzahl-Karten. Verlauf über die volle Breite, Diagramme nebeneinander, darüber „Zuletzt: … · +x zur vorigen Messung“ (rohe Differenz der gerundeten Werte, wie im Arztbericht; Diagramm auch im Bericht).
+- **Pat.-Liste:** Spalten Phase und Pflicht x / y der neuesten Testung, Filter „Nur mit Testung in Arbeit“.
+- **Neue Testung:** Kürzel eintippen oder wählen, Hinweis statt grauem Knopf ohne Grund.
+- **Schrift:** alle Größen der App auf die 7 Stufen, Fließtext 15 px; Eingabefelder am Handy 16 px. Berichte (pt) und SVG-Texte unverändert.
+- **Kontrast:** `--text-sehr-leise` dunkel #939ca8 (4,7 : 1 auf Fläche).
+- **Bedienung:** Link „Zum Inhalt“, Handy ohne seitlichen Seitenüberlauf (Tabellen scrollen in der Karte, Sprungleiste wischbar), größere Tippziele.
+- Punkt 9 (Startseite) bewusst nicht umgesetzt.
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.

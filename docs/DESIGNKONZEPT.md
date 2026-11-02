@@ -32,7 +32,7 @@ Kontraste geprüft (WCAG; Text ≥ 4,5 : 1, Linien/Flächen ≥ 3 : 1).
 | Linie | `#3b4048` | `#d9dee5` | Raster, Trennlinien |
 | Text | `#eef1f4` (11,5) | `#1c222b` (16,0) | |
 | Text leise | `#a4adb8` (5,8) | `#56606d` (6,4) | Beschriftungen |
-| Text sehr leise | `#8e97a3` (4,4) | `#6c7683` (4,6) | Achsen, Fußnoten (nie unter 12 px) |
+| Text sehr leise | `#939ca8` (4,7) | `#6c7683` (4,6) | Achsen, Fußnoten (nie unter 12 px) |
 | **Betroffen** | `#5ea8ea` (5,1) | `#1d71b8` (5,1) | Linie durchgezogen – nur Daten (Hauptknopf: siehe 10.1 `--aktion`) |
 | **Gesund** | `#36c5d6` (6,3) | `#00808f` (4,7) | Linie gestrichelt |
 | ✓ erfüllt | `#4fc48d` (6,0) | `#2a7f50` (4,9) | nur Bewertung |
@@ -169,7 +169,7 @@ Prinzipien: Präzision statt Dekoration · klare Hierarchie statt Kartenflut · 
 | `--feld` | #25292f | #f3f5f8 | Eingabefelder, eingebettete Bereiche |
 | `--tief` | #191b20 | #1f2329 | Seitenleiste, Info-Fenster |
 | `--linie` / `--linie-stark` | #3b4048 / #4a505a | #d9dee5 / #c2cad4 | Trennlinien / Feldränder |
-| `--text` / `--text-leise` / `--text-sehr-leise` | #eef1f4 / #a4adb8 / #8e97a3 | #1c222b / #56606d / #6c7683 | Text |
+| `--text` / `--text-leise` / `--text-sehr-leise` | #eef1f4 / #a4adb8 / #939ca8 | #1c222b / #56606d / #6c7683 | Text |
 | `--aktion` / `--aktion-text` | #eef1f4 / #191b20 | #1f2329 / #ffffff | Hauptknopf, aktive Pille |
 | `--seite-betroffen` / `--seite-gesund` | #5ea8ea / #36c5d6 | #1d71b8 / #00808f | nur Daten |
 | `--erfuellt` / `--knapp` / `--nicht-erfuellt` | #4fc48d / #e9b23f / #f7765f | #2a7f50 / #9a6400 / #c62828 | nur Bewertung, immer mit ✓ ~ ✗ |

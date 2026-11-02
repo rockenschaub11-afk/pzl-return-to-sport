@@ -125,12 +125,28 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
   const ziele_ = [...mitZeit.map((p, i) => ({ art: 'punkt' as const, i, m: p.monate! })), ...fehlend.map((f, i) => ({ art: 'fehlt' as const, i, m: f.monate }))]
   const info = aktiv === null ? null : ziele_[aktiv]
 
+  // Letzter Wert ohne Maus lesbar; Veränderung = rohe Differenz zur vorigen Messung derselben Reihe
+  const stellen = einheit === 's' ? 2 : 1
+  const gerundet = (v: number) => Math.round(v * 10 ** stellen) / 10 ** stellen
+  const wertText = (v: number) => v.toLocaleString('de-AT', { maximumFractionDigits: stellen })
+  const stand = (() => {
+    const mitWert = mitZeit.filter((p) => p.werte[letzte] !== null)
+    const jetzt = mitWert[mitWert.length - 1]
+    if (!jetzt) return null
+    const vorher = mitWert[mitWert.length - 2]
+    const diff = vorher ? gerundet(gerundet(jetzt.werte[letzte]!) - gerundet(vorher.werte[letzte]!)) : null
+    const teile = reihen.map((r, i) => (jetzt.werte[i] === null ? null : `${reihen.length > 1 ? `${r.name} ` : ''}${wertText(jetzt.werte[i]!)}`)).filter(Boolean)
+    const delta = diff === null ? '' : ` · ${diff > 0 ? '+' : diff < 0 ? '−' : '±'}${wertText(Math.abs(diff))} zur vorigen Messung`
+    return `Zuletzt: ${teile.join(' · ')}${einheit ? ` ${einheit}` : ''}${delta}`
+  })()
+
   return (
     <figure className="diagramm" ref={ref as React.RefObject<HTMLElement & HTMLDivElement>}>
       <figcaption>
         {titel}
         {einheit && <span className="diagramm-einheit">, {einheit}</span>}
       </figcaption>
+      {stand && <p className="diagramm-stand">{stand}</p>}
       <svg viewBox={`0 0 ${B} ${H}`} width={B} height={H} role="img" aria-label={`${titel} (${einheit})`}>
         {/* Raster nur waagrecht */}
         {striche.map((s) => (

@@ -1,13 +1,16 @@
 import { useLiveQuery } from 'dexie-react-hooks'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { arztBericht, patBericht } from '../berichte/bericht'
+import LsiUebersicht from '../berichte/LsiUebersicht'
+import { lsiUebersicht } from '../berichte/lsiZeilen'
 import { db, type Testung } from '../db'
 import Laedt from '../Laedt'
 import { phaseNach } from '../katalog'
-import { letzterStand, lsiKennzahl, nachDatum } from '../patienten/uebersicht'
+import { letzterStand, nachDatum } from '../patienten/uebersicht'
 import { BEGLEIT_OPS, GRAFTS, monateSeit, NIVEAUS, type Patient } from '../patienten/stammdaten'
 import { phaseAusMonaten } from '../testung/ablauf'
-import Ladebalken, { AmpelMarke } from '../testung/Ladebalken'
+import { AmpelMarke } from '../testung/Ladebalken'
 import PatientTestungen, { useNeueTestung } from '../testung/PatientTestungen'
 import VerlaufBereich from '../testung/VerlaufBereich'
 import PatientFormular from './PatientFormular'
@@ -18,9 +21,6 @@ const REITER = [
   ['stammdaten', 'Stammdaten'],
 ] as const
 type ReiterId = (typeof REITER)[number][0]
-
-/** LSI-Kennzahlen der Übersicht – einzelne Tests, kein Durchschnitt (DESIGNKONZEPT 7). */
-const KENNZAHL_TESTS = ['hhd_knie_ext', 'single_hop']
 
 /** Seite eines Kürzels als Dashboard mit Reitern (DESIGNKONZEPT 7). Alle Reiter bleiben geladen, damit Eingaben im Formular beim Wechseln erhalten bleiben. */
 export default function PatientSeite() {
@@ -99,8 +99,10 @@ export default function PatientSeite() {
 
 function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; testungen: Testung[]; zuTestungen: () => void }) {
   const stand = letzterStand(patient, testungen)
-  const kennzahlen = KENNZAHL_TESTS.map((t) => lsiKennzahl(patient, testungen, t)).filter((k) => k !== null)
   const letzte = nachDatum(testungen)[0]
+  // Alle Seitenvergleiche der letzten Testung statt einzelner Kennzahlen (UI-Audit Punkt 6) – Werte wie im Arztbericht
+  const lsi = useMemo(() => (letzte ? lsiUebersicht(arztBericht(patient, letzte), patBericht(patient, letzte, testungen)) : []), [patient, letzte, testungen])
+  const vorigeDatum = useMemo(() => (letzte ? patBericht(patient, letzte, testungen).vorigeDatum : null), [patient, letzte, testungen])
 
   return (
     <>
@@ -150,33 +152,18 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
       <div className="dashboard-raster">
         <div className="dashboard-spalte">
           <Kopfkarte patient={patient} letzte={letzte} />
-          {kennzahlen.map((k) => (
-            <section key={k.testId} className="karte kennzahl" aria-label={`LSI ${k.name}`}>
-              <div className="kennzahl-kopf">
-                <span className="kennzahl-name">LSI {k.name}</span>
-                <AmpelMarke ampel={k.ampel} />
-              </div>
-              <p className="kennzahl-zahl">
-                {k.wert.toLocaleString('de-AT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-                <small>%</small>
-              </p>
-              {k.ampel && k.ziel !== null && <Ladebalken wert={k.wert} ziel={k.ziel} ampel={k.ampel} />}
-              <p className="kennzahl-bezug">
-                Testung vom {k.datum}
-                {k.ziel !== null && `, Ziel ≥ ${k.ziel} %`}
-              </p>
-            </section>
-          ))}
           {testungen.length > 0 && (
             <button type="button" className="knopf kennzahl-testungen" onClick={zuTestungen}>
               <span>Alle {testungen.length} Testungen ansehen</span>
             </button>
           )}
         </div>
-        <div className="dashboard-spalte">
-          <VerlaufBereich patient={patient} />
-        </div>
+        <section className="karte block seitenvergleich" aria-label="Seitenvergleich">
+          <h3 className="block-titel">Seitenvergleich der letzten Testung</h3>
+          {lsi.length > 0 ? <LsiUebersicht zeilen={lsi} vorigeDatum={vorigeDatum} zeile={21} /> : <p className="hinweis-leise">Sobald Tests mit Seitenvergleich erfasst sind, erscheint hier der LSI je Test.</p>}
+        </section>
       </div>
+      <VerlaufBereich patient={patient} />
     </>
   )
 }

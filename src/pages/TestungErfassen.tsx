@@ -270,11 +270,23 @@ export default function TestungErfassen() {
           <strong>{patient.kuerzel}</strong> · {ART_TEXT[ph.art]} · {phaseNach(phase).name}
           <span className="sprung-speicher">{speichert ? 'speichert …' : '✓ gespeichert'}</span>
         </span>
-        {BLOECKE.filter((b) => sichtbar.some((t) => t.block === b) || zumHinzufuegen.optional.some((t) => t.block === b)).map((b) => (
-          <a key={b} href={`#block-${b}`} onClick={(e) => springen(e, `block-${b}`)}>
-            {BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}
+        {BLOECKE.filter((b) => sichtbar.some((t) => t.block === b) || zumHinzufuegen.optional.some((t) => t.block === b)).map((b) => {
+          const tests = sichtbar.filter((t) => t.block === b)
+          const erfasst = tests.filter((t) => hatEingabe(testung.eingaben[t.id])).length
+          return (
+            <a key={b} href={`#block-${b}`} onClick={(e) => springen(e, `block-${b}`)} aria-label={`${BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}: ${erfasst} von ${tests.length} erfasst`}>
+              {BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}
+              <span className={`sprung-zahl${erfasst === tests.length ? ' sprung-fertig' : ''}`}>
+                {erfasst}/{tests.length}
+              </span>
+            </a>
+          )
+        })}
+        {ph.art === 'endtestung' && (
+          <a href="#ergebnis" onClick={(e) => springen(e, 'ergebnis')}>
+            Abschluss
           </a>
-        ))}
+        )}
       </nav>
 
       <div className="testung-raster">

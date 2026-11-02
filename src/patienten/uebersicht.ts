@@ -77,31 +77,11 @@ export function letzterStand(patient: Patient, testungen: readonly Testung[]): L
   }
 }
 
-export interface LsiKennzahl {
-  testId: string
-  name: string
-  wert: number
-  ziel: number | null
-  ampel: Ampel | null
-  datum: string
-}
-
-/** LSI eines Tests aus der neuesten Testung, in der er gemessen wurde – kein Durchschnitt, nichts Neues. */
-export function lsiKennzahl(patient: Patient, testungen: readonly Testung[], testId: string): LsiKennzahl | null {
-  for (const t of nachDatum(testungen)) {
-    const ph = phasenStand(t, patient.opDatum)
-    const aus = werteAus(t, ph.phase, patient.geschlecht).get(testId)
-    const e = aus?.ergebnis.kriterien.find((k) => k.kriterium.art === 'lsi')
-    if (aus && e && typeof e.wert === 'number') {
-      return {
-        testId,
-        name: aus.ergebnis.test.name,
-        wert: e.wert,
-        ziel: e.schwelle?.wert ?? null,
-        ampel: e.zustand === 'bewertet' ? (e.ampel ?? null) : null,
-        datum: datumDeutsch(t.datum),
-      }
-    }
-  }
-  return null
+/** Für die Pat.-Liste: Phase und Pflicht-Stand der neuesten Testung, gezählt wie beim RTS-Vorschlag. */
+export function pflichtKurz(patient: Patient, testungen: readonly Testung[]): { phase: string; erfuellt: number; gesamt: number } | null {
+  const t = nachDatum(testungen)[0]
+  if (!t) return null
+  const ph = phasenStand(t, patient.opDatum)
+  const v = rtsVorschlag(t, patient, werteAus(t, ph.phase, patient.geschlecht), ph.phase)
+  return { phase: phaseNach(ph.phase).name, erfuellt: v.pflicht.filter((p) => p.status === 'erfuellt').length, gesamt: v.pflicht.length }
 }

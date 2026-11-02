@@ -11,9 +11,10 @@ export default function TestungListe() {
   const navigate = useNavigate()
   const testungen = useLiveQuery(() => db.testungen.orderBy('geaendertAm').reverse().toArray())
   const patienten = useLiveQuery(() => db.patienten.orderBy('kuerzelNorm').toArray())
-  const [auswahl, setAuswahl] = useState('')
+  const [eingabe, setEingabe] = useState('')
 
   if (!testungen || !patienten) return <Laedt />
+  const auswahl = patienten.find((p) => p.kuerzel.toLowerCase() === eingabe.trim().toLowerCase())?.id ?? ''
   const kuerzel = new Map(patienten.map((p) => [p.id, p.kuerzel]))
   const opDatum = new Map(patienten.map((p) => [p.id, p.opDatum]))
   const beschreibung = (t: (typeof testungen)[number]) => {
@@ -48,20 +49,19 @@ export default function TestungListe() {
           </p>
         ) : (
           <div className="aktionen">
-            <label className="feld feld-inline">
+            <label className="feld feld-inline kuerzel-wahl">
               <span className="sr-only">Kürzel</span>
-              <select value={auswahl} onChange={(e) => setAuswahl(e.target.value)}>
-                <option value="">Kürzel wählen …</option>
+              <input list="kuerzel-vorschlaege" value={eingabe} onChange={(e) => setEingabe(e.target.value)} placeholder="Kürzel eintippen oder wählen …" autoComplete="off" />
+              <datalist id="kuerzel-vorschlaege">
                 {patienten.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.kuerzel}
-                  </option>
+                  <option key={p.id} value={p.kuerzel} />
                 ))}
-              </select>
+              </datalist>
             </label>
             <button type="button" className="knopf knopf-haupt" onClick={starten} disabled={!auswahl}>
               <span>Testung starten</span>
             </button>
+            {!auswahl && <span className="hinweis-leise">{eingabe.trim() ? 'Dieses Kürzel gibt es nicht.' : 'Zuerst ein Kürzel wählen.'}</span>}
           </div>
         )}
       </div>

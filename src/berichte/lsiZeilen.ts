@@ -23,7 +23,9 @@ export function lsiUebersicht(arzt: ArztBericht, pat: PatBericht): LsiZeile[] {
       const k = t.kriterien.find((x) => x.bezeichnung.startsWith('LSI') && x.bezeichnung !== 'LSI zur Vorverletzung')
       if (!t.gemessen || !z || z.lsi === null || !k) return []
       const zusatz = k.bezeichnung.replace(/^LSI\s*/, '')
-      return [{ id: t.test.id, name: zusatz ? `${t.test.name} – ${zusatz}` : t.test.name, lsi: z.lsi, vorige: z.vorige, ampel: z.lsiAmpel, wuenschenswert: k.status === STATUS_NAMEN.wuenschenswert }]
+      // Lage (sitzend, Bauchlage) steht in der Testkarte – hier zählt die kurze Zeile
+      const name = t.test.name.replace(/, (sitzend|Bauchlage)\)/, ')')
+      return [{ id: t.test.id, name: zusatz ? `${name} – ${zusatz}` : name, lsi: z.lsi, vorige: z.vorige, ampel: z.lsiAmpel, wuenschenswert: k.status === STATUS_NAMEN.wuenschenswert }]
     }),
   )
 }

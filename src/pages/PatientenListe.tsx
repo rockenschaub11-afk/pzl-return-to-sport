@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { db, type Testung } from '../db'
 import Laedt from '../Laedt'
 import { datumDeutsch, monateSeit, NIVEAUS, passtZurSuche } from '../patienten/stammdaten'
-import { nachDatum } from '../patienten/uebersicht'
+import { nachDatum, pflichtKurz } from '../patienten/uebersicht'
 import { statusText } from '../testung/ablauf'
 
 export default function PatientenListe() {
@@ -12,11 +12,12 @@ export default function PatientenListe() {
   const patienten = useLiveQuery(() => db.patienten.orderBy('geaendertAm').reverse().toArray())
   const testungen = useLiveQuery(() => db.testungen.toArray())
   const [suche, setSuche] = useState('')
+  const [nurArbeit, setNurArbeit] = useState(false)
 
   if (!patienten || !testungen) return <Laedt />
-  const treffer = patienten.filter((p) => passtZurSuche(p, suche))
   const letzte = new Map<string, Testung>()
   for (const t of nachDatum(testungen)) if (!letzte.has(t.patientId)) letzte.set(t.patientId, t)
+  const treffer = patienten.filter((p) => passtZurSuche(p, suche) && (!nurArbeit || letzte.get(p.id)?.status === 'in_arbeit'))
 
   return (
     <section>
@@ -43,9 +44,13 @@ export default function PatientenListe() {
             <span className="sr-only">Suchen</span>
             <input type="search" placeholder="Kürzel oder Sportart suchen …" value={suche} onChange={(e) => setSuche(e.target.value)} />
           </label>
+          <label className="liste-filter">
+            <input type="checkbox" checked={nurArbeit} onChange={(e) => setNurArbeit(e.target.checked)} />
+            Nur mit Testung in Arbeit
+          </label>
 
           {treffer.length === 0 ? (
-            <p className="hinweis-leise">Kein Kürzel passt zu „{suche}“.</p>
+            <p className="hinweis-leise">{suche ? `Kein Kürzel passt zu „${suche}“.` : 'Keine Testung in Arbeit.'}</p>
           ) : (
             <div className="liste-rahmen">
               <table className="liste-tabelle">
@@ -54,6 +59,8 @@ export default function PatientenListe() {
                     <th>Kürzel</th>
                     <th>OP / Verletzung</th>
                     <th>Merkmale</th>
+                    <th>Phase</th>
+                    <th>Pflicht</th>
                     <th>Letzte Testung</th>
                   </tr>
                 </thead>
@@ -61,6 +68,7 @@ export default function PatientenListe() {
                   {treffer.map((p) => {
                     const monate = monateSeit(p.opDatum)
                     const t = letzte.get(p.id)
+                    const stand = pflichtKurz(p, testungen.filter((x) => x.patientId === p.id))
                     return (
                       // ganze Zeile anklickbar; per Tastatur über den Link im Kürzel
                       <tr key={p.id} onClick={() => navigate(`/patienten/${p.id}`)}>
@@ -84,6 +92,8 @@ export default function PatientenListe() {
                             {p.konservativ && <span className="chip">konservativ</span>}
                           </span>
                         </td>
+                        <td>{stand ? stand.phase : <span className="liste-leise">–</span>}</td>
+                        <td className="liste-zahl">{stand && stand.gesamt > 0 ? `${stand.erfuellt} / ${stand.gesamt}` : <span className="liste-leise">–</span>}</td>
                         <td>
                           {t ? (
                             <span className="liste-stapel">
