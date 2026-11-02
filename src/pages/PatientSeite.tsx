@@ -182,7 +182,7 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
         </div>
         <section className="karte block seitenvergleich" aria-label="Seitenvergleich">
           <h2 className="block-titel">Seitenvergleich der letzten Testung</h2>
-          {lsi.length > 0 ? <LsiUebersicht zeilen={lsi} vorigeDatum={vorigeDatum} zeile={21} /> : <p className="hinweis-leise">Sobald Tests mit Seitenvergleich erfasst sind, erscheint hier der LSI je Test.</p>}
+          {lsi.length > 0 ? <LsiUebersicht zeilen={lsi} vorigeDatum={vorigeDatum} zeile={21} bewegt /> : <p className="hinweis-leise">Sobald Tests mit Seitenvergleich erfasst sind, erscheint hier der LSI je Test.</p>}
         </section>
       </div>
       <VerlaufBereich patient={patient} />

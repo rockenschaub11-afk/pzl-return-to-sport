@@ -2636,7 +2636,7 @@ fieldset:disabled .test-hinzu {
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
-    transition: none !important;
+    transition-property: color, background-color, border-color, opacity !important;
   }
 }
 
@@ -4926,4 +4926,78 @@ input::file-selector-button:hover {
 
 .feld-halb select {
   max-width: 24rem;
+}
+
+/* ---------- Bewegung: erklärt Daten und Zustand, sonst nichts ---------- */
+:root {
+  --bewegung-an: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Der Punkt wandert von der vorigen Testung zum aktuellen Wert, die Linie zieht mit; Versatz gedeckelt auf 0,36 s */
+.lsi-punkt.lsi-wandert {
+  animation: lsi-wandern 0.7s var(--bewegung-an) calc(min(var(--stufe), 12) * 30ms) backwards;
+}
+
+.lsi-verbindung.lsi-wandert {
+  stroke-dasharray: 1;
+  animation: lsi-linie 0.7s var(--bewegung-an) calc(min(var(--stufe), 12) * 30ms) backwards;
+}
+
+@keyframes lsi-wandern {
+  from {
+    transform: translateX(var(--weg));
+  }
+}
+
+@keyframes lsi-linie {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+/* Aufklappen nach Klick: Inhalt kommt aus dem Kartenkopf */
+.test-karte-klappt > .test-ergebnis,
+.test-karte-klappt > .test-eingabe,
+.test-karte-klappt > .test-leise {
+  animation: aufklappen 0.22s var(--bewegung-an);
+}
+
+.test-karte-klappt > .test-kurz {
+  animation: einblenden 0.15s ease-out;
+}
+
+@keyframes aufklappen {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes einblenden {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Ampel wechselt beim Eintippen weich, Speicherstand blendet über */
+.ampel-marke {
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.speicher-wechsel {
+  display: inline-block;
+  animation: einblenden 0.18s ease-out;
+}
+
+.test-info-text {
+  animation: einblenden 0.12s ease-out;
+}
+
+@media print {
+  .lsi-punkt.lsi-wandert,
+  .lsi-verbindung.lsi-wandert {
+    animation: none;
+  }
 }

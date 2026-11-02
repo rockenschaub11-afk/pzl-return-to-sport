@@ -62,7 +62,7 @@ Logo bleibt auf **weißem Chip**. Umschalter Dunkel/Hell (Mond/Sonne) unten in d
 
 - Abstände 4 / 8 / 12 / 16 / 24 / 32 px. **Rundung nur drei Werte:** Karte 14 px, Feld/Knopf 10 px, Chip/Pille rund.
 - Dunkler Modus: Karten ohne Rand (Abgrenzung über Fläche); heller Modus: 1 px Linie. Schatten nur beim Info-Fenster.
-- Bewegung nur bei Daten: Kurve zeichnet sich einmal (~0,6 s), Balken füllt sich. Bei „weniger Bewegung“ aus.
+- Bewegung nur bei Daten und als Rückmeldung: Kurve zeichnet sich einmal (~0,6 s), Balken füllt sich, in der LSI-Übersicht der Kürzel-Seite wandert jeder Punkt von der vorigen Testung zum aktuellen Wert. Aufklappen einer Testkarte, Wechsel von Ampel und Speicherstand höchstens 0,22 s. Bei „weniger Bewegung“ wandert nichts, Farbwechsel bleiben.
 - **Fokus-Ring** (`--fokus`, Textfarbe, 2 px mit 2 px Abstand) an *allen* anklickbaren Elementen inkl. Diagrammpunkte, Kärtchen, Tabellenzeilen, Reiter.
 
 ## 5. Bausteine

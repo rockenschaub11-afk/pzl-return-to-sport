@@ -293,6 +293,7 @@ function TestInfo({ info }: { info: NonNullable<TestDef['info']> }) {
 }
 
 export default function TestKarte(props: Props) {
+  const [geklickt, setGeklickt] = useState(false)
   const { test, eingabe: e, setze, berechnung: b, ergebnis, koerpergewichtFehlt } = props
   const protokoll = test.protokoll ? protokollNach(test.protokoll) : undefined
   const art = ERFASSUNG[test.id]?.typ
@@ -301,7 +302,7 @@ export default function TestKarte(props: Props) {
   const mitHebel = art === 'kraft'
 
   return (
-    <article className="test-karte" id={`test-${test.id}`} aria-labelledby={`titel-${test.id}`}>
+    <article className={`test-karte${geklickt ? ' test-karte-klappt' : ''}`} id={`test-${test.id}`} aria-labelledby={`titel-${test.id}`}>
       <header className="test-kopf">
         <h3 id={`titel-${test.id}`}>
           {test.name}
@@ -311,7 +312,7 @@ export default function TestKarte(props: Props) {
         <span className="test-kopf-rechts">
           {props.status.wuenschenswertOffen && <span className="ampel-marke ampel-offen">wünschenswert nicht erreicht</span>}
           <AmpelMarke ampel={props.status.ampel} text={props.status.text} />
-          <button type="button" className="test-klapp" aria-expanded={props.offen} aria-label={`${test.name} ${props.offen ? 'zuklappen' : 'aufklappen'}`} onClick={props.onKlappen}>
+          <button type="button" className="test-klapp" aria-expanded={props.offen} aria-label={`${test.name} ${props.offen ? 'zuklappen' : 'aufklappen'}`} onClick={() => { setGeklickt(true); props.onKlappen() }}>
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <path d="m6 3.5 4.5 4.5L6 12.5" />
             </svg>

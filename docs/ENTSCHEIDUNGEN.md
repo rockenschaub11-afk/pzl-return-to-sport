@@ -366,6 +366,12 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 
 **Nachtrag 02.11.2026 (Feinschliff):** Alte Farbnamen im CSS entfernt, nur noch Tokens aus DESIGNKONZEPT 10.1. Rundungen nur Karte 14, Feld/Knopf 10, Klein 4, Pille; ein Schatten für Info-Fenster. Knöpfe mit Active-Zustand, Pfeil der Testkarte gezeichnet und drehend. Tippziele 44 px auf Touch und am Handy. Text-Auswahl, Scrollbalken, Platzhalter, Häkchen und Datei-Knopf folgen dem Thema. Bewusst beibehalten: farbige linke Kante an Status-Karten und Meldungen (DESIGNKONZEPT 5, 10.4), Raster im Messfenster der Startseite.
 
+**Nachtrag 02.11.2026 (Bewegung):**
+- Fokus: In der LSI-Übersicht der Kürzel-Seite wandert jeder Punkt einmal vom Wert der vorigen Testung zum aktuellen (0,7 s, Versatz höchstens 0,36 s). Die Bewegung zeigt die Veränderung. In den Berichten ist diese Bewegung nicht eingeschaltet.
+- Rückmeldung: Testkarte klappt nach Klick in 0,22 s auf (beim Laden der Seite nicht), Ampel wechselt beim Eintippen in 0,15 s die Farbe, Speicherstand blendet über.
+- „Weniger Bewegung“: nichts wandert oder verschiebt sich; Farb- und Deckkraft-Wechsel bleiben als Rückmeldung.
+- Bewusst nicht: Seitenwechsel, Reiter, Einblenden von Listen und Karten. Das bremst nur bei der täglichen Arbeit.
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.

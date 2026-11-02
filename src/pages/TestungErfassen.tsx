@@ -198,7 +198,9 @@ export default function TestungErfassen() {
         </div>
         <div className="testung-kopf-aktionen">
           <span className={`speicher-status${speichert ? ' speicher-laeuft' : ''}${speicherFehler ? ' speicher-fehler' : ''}`} aria-live="polite">
-            {speicherText}
+            <span key={speicherText} className="speicher-wechsel">
+              {speicherText}
+            </span>
           </span>
           <Link to={`/berichte/${testung.id}/arzt`} className="knopf">
             <span>Bericht</span>
@@ -300,7 +302,11 @@ export default function TestungErfassen() {
       <nav className="block-sprung" aria-label="Blöcke">
         <span className="sprung-kontext">
           <strong>{patient.kuerzel}</strong> · {ART_TEXT[ph.art]} · {phaseNach(phase).name}
-          <span className={`sprung-speicher${speicherFehler ? ' speicher-fehler' : ''}`}>{speicherText}</span>
+          <span className={`sprung-speicher${speicherFehler ? ' speicher-fehler' : ''}`}>
+            <span key={speicherText} className="speicher-wechsel">
+              {speicherText}
+            </span>
+          </span>
         </span>
         {BLOECKE.filter((b) => sichtbar.some((t) => t.block === b) || zumHinzufuegen.optional.some((t) => t.block === b)).map((b) => {
           const tests = sichtbar.filter((t) => t.block === b)

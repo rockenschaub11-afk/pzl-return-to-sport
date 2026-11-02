@@ -2,6 +2,7 @@
 // Korridor 90–110 % wie im Verlaufsdiagramm, Punkt in der LSI-Ampel, vorige Testung als hohler Punkt mit Verbindung.
 // Die Achse reicht immer über alle Werte (mindestens 60–120 %), damit kein Punkt am Rand klebt.
 
+import type { CSSProperties } from 'react'
 import { AMPEL_ZEICHEN } from './bericht'
 import type { LsiZeile } from './lsiZeilen'
 
@@ -13,7 +14,8 @@ const WORT = { gruen: '', gelb: 'knapp', rot: 'nicht erfüllt' } as const
 
 const zahl = (v: number) => `${v.toLocaleString('de-AT', { maximumFractionDigits: 1 })} %`
 
-export default function LsiUebersicht({ zeilen, vorigeDatum, zeile: ZEILE = 15 }: { zeilen: LsiZeile[]; vorigeDatum: string | null; zeile?: number }) {
+/** bewegt: Punkte wandern einmal vom Wert der vorigen Testung zum aktuellen (nur am Bildschirm, nicht im Bericht). */
+export default function LsiUebersicht({ zeilen, vorigeDatum, zeile: ZEILE = 15, bewegt = false }: { zeilen: LsiZeile[]; vorigeDatum: string | null; zeile?: number; bewegt?: boolean }) {
   const H = OBEN + zeilen.length * ZEILE + 6
   const alle = zeilen.flatMap((z) => (z.vorige === null ? [z.lsi] : [z.lsi, z.vorige]))
   const LO = Math.min(60, Math.floor(Math.min(...alle) / 10) * 10)
@@ -61,11 +63,17 @@ export default function LsiUebersicht({ zeilen, vorigeDatum, zeile: ZEILE = 15 }
               )}
               {z.vorige !== null && (
                 <>
-                  <line x1={x(z.vorige)} x2={x(z.lsi)} y1={y} y2={y} className="lsi-verbindung" />
+                  <line x1={x(z.vorige)} x2={x(z.lsi)} y1={y} y2={y} pathLength={1} className={`lsi-verbindung${bewegt ? ' lsi-wandert' : ''}`} style={{ '--stufe': i } as CSSProperties} />
                   <circle cx={x(z.vorige)} cy={y} r={3.2} className="lsi-vorige" />
                 </>
               )}
-              <circle cx={x(z.lsi)} cy={y} r={4.6} className={`lsi-punkt${a ? ` lsi-${a}` : ''}`} />
+              <circle
+                cx={x(z.lsi)}
+                cy={y}
+                r={4.6}
+                className={`lsi-punkt${a ? ` lsi-${a}` : ''}${bewegt && z.vorige !== null ? ' lsi-wandert' : ''}`}
+                style={z.vorige === null ? undefined : ({ '--stufe': i, '--weg': `${x(z.vorige) - x(z.lsi)}px` } as CSSProperties)}
+              />
               <text x={478} y={y + 3.5} textAnchor="end" className="lsi-name lsi-wert">
                 {zahl(z.lsi)}
               </text>
