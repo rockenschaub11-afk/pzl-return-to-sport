@@ -133,6 +133,12 @@ describe('RTS-Vorschlag und Abschluss', () => {
     await waitFor(async () => expect((await db.testungen.get(testungId))?.status).toBe('in_arbeit'))
     expect((await db.testungen.get(testungId))?.entscheidung?.art).toBe('')
     expect(screen.getByPlaceholderText('z. B. 72,5')).toBeEnabled()
+    // Audit W2: der bisherige Abschluss bleibt dokumentiert
+    const frueher = (await db.testungen.get(testungId))?.fruehereAbschluesse
+    expect(frueher).toHaveLength(1)
+    expect(frueher![0]).toMatchObject({ art: 'endtestung', entscheidung: { art: 'bestaetigt', therapeut: 'PR', vorschlagBeiAbschluss: 'erfuellt' } })
+    expect(screen.getByText('Frühere Abschlüsse (1)')).toBeInTheDocument()
+    expect(screen.getByText('Kriterien erfüllt – Vorschlag bestätigt · Therapeut:in PR')).toBeInTheDocument()
   })
 })
 

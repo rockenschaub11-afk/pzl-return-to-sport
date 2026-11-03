@@ -17,7 +17,7 @@ import {
 } from '../patienten/stammdaten'
 import type { Ampel, KriteriumErgebnis } from '../rechnen/bewertung'
 import { ART_TEXT, monateBisTestung, phasenStand, sichtbareTests, werteAus, type TestAuswertung } from '../testung/ablauf'
-import { endErgebnis, ENTSCHEIDUNG_TEXT } from '../testung/ErgebnisEntscheidung'
+import { endErgebnis, ENTSCHEIDUNG_TEXT, fruehererAbschlussText } from '../testung/ErgebnisEntscheidung'
 import { ERFASSUNG, hatEingabe, HQ_HINWEIS, hqQuotient, KOOS_SUBSKALEN, parseZahl, type TestEingabe } from '../testung/erfassung'
 import { AMPEL_TEXT } from '../testung/Ladebalken'
 import { kernStrategie, zusatzZeilen, type MeloqZeile } from '../testung/meloq'
@@ -151,6 +151,8 @@ export interface ArztBericht {
   bloecke: { block: Block; name: string; tests: ArztTest[] }[]
   therapeut: string
   abgeschlossenAm: string | null
+  /** Abschlüsse vor einem „Wieder öffnen“ (Audit W2) */
+  fruehereAbschluesse: ReturnType<typeof fruehererAbschlussText>[]
   /** Anhang: Ablauf der Protokolle der gemessenen Tests (Audit Punkt 8) */
   protokolle: { name: string; ablauf: string; quelle: string }[]
   /** Anhang: Einzelversuche mit Streuung (Audit Punkt 9) */
@@ -427,6 +429,7 @@ export function arztBericht(patient: Patient, testung: Testung, auswahl?: MeloqA
     bloecke,
     therapeut: testung.entscheidung?.therapeut.trim() ?? '',
     abgeschlossenAm: abgeschlossen && testung.abgeschlossenAm ? datumDeutsch(testung.abgeschlossenAm.slice(0, 10)) : null,
+    fruehereAbschluesse: (testung.fruehereAbschluesse ?? []).map(fruehererAbschlussText),
     protokolle,
     rohdaten: roh,
   }

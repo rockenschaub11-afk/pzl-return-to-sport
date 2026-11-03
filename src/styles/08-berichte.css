@@ -1258,3 +1258,13 @@
     margin-top: 3mm;
   }
 }
+
+/* Frühere Abschlüsse im Arztbericht (Audit W2) */
+.bericht-fruehere p {
+  margin: 1.5mm 0 0.5mm;
+}
+
+.bericht-fruehere ul {
+  margin: 0;
+  padding-left: 4mm;
+}

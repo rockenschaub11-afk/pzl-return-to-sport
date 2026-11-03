@@ -132,5 +132,10 @@ describe('Gesamtsicherung', () => {
     expect(() => inhaltPruefen(kaputt({ eingaben: { hhd_knie_ext: { g1: 54 } } }), 'gesamt')).toThrow(/Eingaben ungültig/)
     expect(() => inhaltPruefen(kaputt({ geaendertAm: undefined }), 'gesamt')).toThrow(/Änderungszeitpunkt fehlt/)
     expect(() => inhaltPruefen({ ...echt, testungen: [echt.testungen[0], echt.testungen[0]] }, 'gesamt')).toThrow(/Testung 2: doppelt/)
+    // frühere Abschlüsse (Audit W2): gültige bleiben, kaputte werden abgelehnt
+    const frueher = { abgeschlossenAm: '2026-06-01T10:00:00.000Z', wiedergeoeffnetAm: '2026-06-02T10:00:00.000Z', art: 'endtestung', entscheidung: { art: 'bestaetigt', begruendung: '', therapeut: 'PR' } }
+    expect(inhaltPruefen(kaputt({ fruehereAbschluesse: [frueher] }), 'gesamt').testungen[0].fruehereAbschluesse).toHaveLength(1)
+    expect(() => inhaltPruefen(kaputt({ fruehereAbschluesse: [{ ...frueher, art: 'egal' }] }), 'gesamt')).toThrow(/frühere Abschlüsse ungültig/)
+    expect(() => inhaltPruefen(kaputt({ fruehereAbschluesse: 'ja' }), 'gesamt')).toThrow(/frühere Abschlüsse ungültig/)
   })
 })

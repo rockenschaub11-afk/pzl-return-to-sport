@@ -2,7 +2,7 @@ import { useEinstellung, usePatient, useTestung } from '../daten'
 import Frage from '../Frage'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { db, loescheTestung, speichereEinstellung, speichereTestung, TestungKonfliktFehler, type Entscheidung, type Testung } from '../db'
+import { db, loescheTestung, speichereEinstellung, speichereTestung, TestungKonfliktFehler, type Entscheidung, type FruehererAbschluss, type Testung } from '../db'
 import { KATALOG, phaseNach, protokollNach } from '../katalog'
 import { BLOCK_NAMEN, BLOECKE, PHASEN_IDS, type PhaseId, type TestDef } from '../katalog/typen'
 import { datumDeutsch, TEGNER_STUFEN, type Patient } from '../patienten/stammdaten'
@@ -222,8 +222,15 @@ export default function TestungErfassen() {
     setTestung(aktuell)
   }
 
+  /** Der bisherige Abschluss bleibt als „früherer Abschluss“ dokumentiert (Audit W2); die Entscheidung wird neu getroffen. */
   function wiederOeffnen() {
-    aendern({ status: 'in_arbeit', abgeschlossenAm: undefined, entscheidung: { art: '', begruendung: '', therapeut: entscheidung.therapeut } })
+    const frueher: FruehererAbschluss = { abgeschlossenAm: testung!.abgeschlossenAm ?? '', wiedergeoeffnetAm: new Date().toISOString(), art: testung!.art, phase: testung!.phase, entscheidung: testung!.entscheidung }
+    aendern({
+      status: 'in_arbeit',
+      abgeschlossenAm: undefined,
+      entscheidung: { art: '', begruendung: '', therapeut: entscheidung.therapeut },
+      fruehereAbschluesse: [...(testung!.fruehereAbschluesse ?? []), frueher],
+    })
   }
 
   async function loeschen() {

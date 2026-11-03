@@ -411,7 +411,8 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - W6: `styles.css` ist nach Bereichen in `src/styles/` geteilt (Reihenfolge = Kaskade); 13 von 15 doppelten Selektoren zusammengeführt (`.leer` und `.sprung-kontext` bleiben bewusst getrennt – sie liegen vor bzw. nach einer @media-Regel). Geprüft mit 58 Bildern (Seiten hell/dunkel, Laptop/Handy, Druck): pixelgleich. Die verbleibenden `!important` stehen fast alle im Druck der Berichte.
 - L1: Lesen aus der Datenbank über Hooks in `src/daten.ts` (usePatient, useTestungenVon …). L2: Bericht in `berichte/teile.tsx`, `ArztAnsicht.tsx`, `PatAnsicht.tsx` geteilt; das Namensfeld rendert nur den Kopf neu. L4: Feldnamen der Eingaben in `src/testung/felder.ts` (gespeichert wird wie bisher).
 - K1 gemeinsamer Zahlformatierer `src/rechnen/format.ts`; K2 Katalog ohne `as unknown as`; K3 Erdbeschleunigung über den geprüften Katalog; K4 die zwei Monatsrechnungen sind kommentiert.
-- Offen: W2 (Wieder-Öffnen verwirft Entscheidung) wartet auf Philipps Entscheidung; L3 (Meloq-Import) braucht eine Beispiel-Exportdatei; L5/L6 bewusst nicht.
+- W2 (Philipp, 03.11.2026: „soll erhalten bleiben“): „Wieder öffnen“ hebt den bisherigen Abschluss samt Entscheidung, Vorschlag der App, Begründung und Therapeut:in als „früheren Abschluss“ auf (Feld fruehereAbschluesse, wird mitgesichert und beim Import geprüft). Die neue Entscheidung wird wie bisher frisch getroffen. Sichtbar unter Ergebnis/Abschluss der Testung und im Arztbericht unter „Bestätigung“.
+- Offen: L3 (Meloq-Import) braucht eine Beispiel-Exportdatei; L5/L6 bewusst nicht.
 
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 

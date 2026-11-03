@@ -86,6 +86,13 @@ function testungFehler(t: unknown, patientIds: ReadonlySet<string>): string | nu
     if (t[feld] !== undefined && !istObjekt(t[feld])) return `${feld} ungültig`
   }
   if (istObjekt(t.entscheidung) && !einerVon(t.entscheidung.art, ['bestaetigt', 'ueberstimmt_erfuellt', 'ueberstimmt_nicht_erfuellt', ''])) return 'Entscheidung ungültig'
+  if (t.fruehereAbschluesse !== undefined) {
+    if (!Array.isArray(t.fruehereAbschluesse)) return 'frühere Abschlüsse ungültig'
+    for (const f of t.fruehereAbschluesse) {
+      if (!istObjekt(f) || !istText(f.abgeschlossenAm) || !istText(f.wiedergeoeffnetAm) || !einerVon(f.art, ['endtestung', 'verlauf'])) return 'frühere Abschlüsse ungültig'
+      if (f.entscheidung !== undefined && (!istObjekt(f.entscheidung) || !einerVon(f.entscheidung.art, ['bestaetigt', 'ueberstimmt_erfuellt', 'ueberstimmt_nicht_erfuellt', '']))) return 'frühere Abschlüsse ungültig'
+    }
+  }
   return null
 }
 

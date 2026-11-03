@@ -270,6 +270,19 @@ function ArztAnsicht({
           </div>
         </div>
         {b.abgeschlossenAm && <p className="bericht-leise">Testung abgeschlossen am {b.abgeschlossenAm}.</p>}
+        {b.fruehereAbschluesse.length > 0 && (
+          <div className="bericht-leise bericht-fruehere">
+            <p>Frühere Abschlüsse dieser Testung (danach wieder geöffnet und geändert):</p>
+            <ul>
+              {b.fruehereAbschluesse.map((f, i) => (
+                <li key={i}>
+                  {f.zeit}: {f.ergebnis}
+                  {f.begruendung && ` · Begründung: ${f.begruendung}`}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </Abschnitt>
 
       <Methodik protokolle={b.protokolle} endtestung={b.rts !== null} />

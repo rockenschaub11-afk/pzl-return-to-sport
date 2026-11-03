@@ -25,9 +25,20 @@ export interface Testung {
   klinischAnders?: Record<string, KlinischAnders>
   /** Entscheidung der Therapeut:in (F10) – Entwurf, bis die Testung abgeschlossen wird */
   entscheidung?: Entscheidung
+  /** Abschlüsse vor einem „Wieder öffnen“ – bleiben dokumentiert (Audit W2, Philipp 03.11.2026) */
+  fruehereAbschluesse?: FruehererAbschluss[]
   abgeschlossenAm?: string
   angelegtAm: string
   geaendertAm: string
+}
+
+export interface FruehererAbschluss {
+  abgeschlossenAm: string
+  wiedergeoeffnetAm: string
+  art: Testung['art']
+  phase?: PhaseId
+  /** Entscheidung samt Vorschlag der App zum Zeitpunkt dieses Abschlusses */
+  entscheidung?: Entscheidung
 }
 
 export interface KlinischAnders {

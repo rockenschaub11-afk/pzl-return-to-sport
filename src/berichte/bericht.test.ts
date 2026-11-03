@@ -201,6 +201,14 @@ describe('Pat./Trainer-Bericht', () => {
     expect(b.klinik).toMatch(/in Ordnung/)
   })
 
+  it('nennt frühere Abschlüsse nach „Wieder öffnen“ (Audit W2)', () => {
+    const t = { ...ende, fruehereAbschluesse: [{ abgeschlossenAm: '2026-06-01T10:00:00.000Z', wiedergeoeffnetAm: '2026-06-02T10:00:00.000Z', art: 'endtestung' as const, entscheidung: { art: 'ueberstimmt_erfuellt' as const, begruendung: 'SL-DJ unauffällig', therapeut: 'PR', vorschlagBeiAbschluss: 'nicht_erfuellt' as const } }] }
+    expect(arztBericht(patient, t, auswahlBereinigen(undefined)).fruehereAbschluesse).toEqual([
+      { zeit: 'abgeschlossen am 01.06.2026, wieder geöffnet am 02.06.2026', ergebnis: 'Kriterien erfüllt – Überstimmt: Kriterien als erfüllt beurteilt · Therapeut:in PR', begruendung: 'SL-DJ unauffällig' },
+    ])
+    expect(arztBericht(patient, ende, auswahlBereinigen(undefined)).fruehereAbschluesse).toEqual([])
+  })
+
   it('LSI-Übersicht im Arztbericht: Werte und Ampel wie im Pat.-Bericht, vorige Testung, wünschenswert markiert', () => {
     const pat = patBericht(patient, ende, testungen)
     const z = lsiUebersicht(arztBericht(patient, ende, auswahlBereinigen(undefined)), pat)

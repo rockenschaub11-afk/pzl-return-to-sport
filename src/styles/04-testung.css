@@ -588,3 +588,18 @@
 .fragebogen-ergebnis {
   margin-top: 0.5rem;
 }
+
+/* Frühere Abschlüsse nach „Wieder öffnen“ (Audit W2) */
+.fruehere-abschluesse ul {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fruehere-abschluesse li {
+  display: grid;
+  gap: 0.1rem;
+  font-size: 0.875rem;
+}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Frage from '../Frage'
-import type { Entscheidung, Testung } from '../db'
+import type { Entscheidung, FruehererAbschluss, Testung } from '../db'
 import { HINWEIS } from '../navigation'
 import { datumDeutsch } from '../patienten/stammdaten'
 import { RTS_TEXT, type RtsVorschlag } from './rts'
@@ -16,6 +16,42 @@ export function endErgebnis(e: Entscheidung | undefined, vorschlagErfuellt: bool
   if (!e?.art) return null
   if (e.art === 'bestaetigt') return vorschlagErfuellt ? 'erfuellt' : 'nicht_erfuellt'
   return e.art === 'ueberstimmt_erfuellt' ? 'erfuellt' : 'nicht_erfuellt'
+}
+
+/** Ein früherer Abschluss als Satz, z. B. „Kriterien erfüllt – Vorschlag bestätigt · Therapeut:in PR“ (auch im Arztbericht). */
+export function fruehererAbschlussText(f: FruehererAbschluss): { zeit: string; ergebnis: string; begruendung: string } {
+  const e = f.entscheidung
+  const ende = f.art === 'endtestung' ? endErgebnis(e, e?.vorschlagBeiAbschluss === 'erfuellt') : null
+  const teile = [ende ? RTS_TEXT[ende] : f.art === 'verlauf' ? 'Verlaufstest abgeschlossen' : 'ohne Entscheidung', e?.art ? ENTSCHEIDUNG_TEXT[e.art] : ''].filter(Boolean)
+  const datum = (iso: string) => (iso ? datumDeutsch(iso.slice(0, 10)) : '–')
+  return {
+    zeit: `abgeschlossen am ${datum(f.abgeschlossenAm)}, wieder geöffnet am ${datum(f.wiedergeoeffnetAm)}`,
+    ergebnis: `${teile.join(' – ')}${e?.therapeut ? ` · Therapeut:in ${e.therapeut}` : ''}`,
+    begruendung: e?.begruendung?.trim() ?? '',
+  }
+}
+
+/** Liste der früheren Abschlüsse unter Ergebnis bzw. Abschluss (Audit W2). */
+export function FruehereAbschluesse({ testung }: { testung: Testung }) {
+  const liste = testung.fruehereAbschluesse ?? []
+  if (liste.length === 0) return null
+  return (
+    <details className="test-mehr fruehere-abschluesse">
+      <summary>Frühere Abschlüsse ({liste.length})</summary>
+      <ul>
+        {liste.map((f, i) => {
+          const t = fruehererAbschlussText(f)
+          return (
+            <li key={i}>
+              <span className="hinweis-leise">{t.zeit}</span>
+              <strong>{t.ergebnis}</strong>
+              {t.begruendung && <span>Begründung: {t.begruendung}</span>}
+            </li>
+          )
+        })}
+      </ul>
+    </details>
+  )
 }
 
 /** Was vor dem Abschluss noch fehlt (leer = abschließbar). */
@@ -102,9 +138,18 @@ export default function ErgebnisEntscheidung({ testung, vorschlag: v, setzeEntsc
             </button>
           ) : (
             <Frage className="meldung meldung-warnung" label="Wieder öffnen bestätigen" onAbbrechen={() => setOeffnenFragen(false)}>
-              <p>Testung wieder bearbeitbar machen? Die Entscheidung wird dabei zurückgesetzt und muss neu getroffen werden.</p>
+              <p>Testung wieder bearbeitbar machen? Die Entscheidung muss danach neu getroffen werden – der bisherige Abschluss bleibt unter „Frühere Abschlüsse“ dokumentiert.</p>
               <div className="aktionen">
-                <button type="button" className="knopf knopf-haupt" onClick={wiederOeffnen}>
+                <button
+                  type="button"
+                  className="knopf knopf-haupt"
+                  onClick={() => {
+                    // frischer Start: alte Hinweise aus dem letzten Abschlussversuch nicht gleich wieder zeigen
+                    setVersucht(false)
+                    setOeffnenFragen(false)
+                    wiederOeffnen()
+                  }}
+                >
                   <span>Ja, wieder öffnen</span>
                 </button>
                 <button type="button" className="knopf" data-abbrechen onClick={() => setOeffnenFragen(false)}>
@@ -158,6 +203,7 @@ export default function ErgebnisEntscheidung({ testung, vorschlag: v, setzeEntsc
           </div>
         </>
       )}
+      <FruehereAbschluesse testung={testung} />
     </section>
   )
 }
@@ -183,9 +229,18 @@ export function AbschlussVerlauf({ testung, setzeEntscheidung, abschliessen, wie
             </button>
           ) : (
             <Frage className="meldung meldung-warnung" label="Wieder öffnen bestätigen" onAbbrechen={() => setOeffnenFragen(false)}>
-              <p>Verlaufstest wieder bearbeitbar machen?</p>
+              <p>Verlaufstest wieder bearbeitbar machen? Der bisherige Abschluss bleibt unter „Frühere Abschlüsse“ dokumentiert.</p>
               <div className="aktionen">
-                <button type="button" className="knopf knopf-haupt" onClick={wiederOeffnen}>
+                <button
+                  type="button"
+                  className="knopf knopf-haupt"
+                  onClick={() => {
+                    // frischer Start: alte Hinweise aus dem letzten Abschlussversuch nicht gleich wieder zeigen
+                    setVersucht(false)
+                    setOeffnenFragen(false)
+                    wiederOeffnen()
+                  }}
+                >
                   <span>Ja, wieder öffnen</span>
                 </button>
                 <button type="button" className="knopf" data-abbrechen onClick={() => setOeffnenFragen(false)}>
@@ -219,6 +274,7 @@ export function AbschlussVerlauf({ testung, setzeEntscheidung, abschliessen, wie
           </div>
         </>
       )}
+      <FruehereAbschluesse testung={testung} />
     </section>
   )
 }
