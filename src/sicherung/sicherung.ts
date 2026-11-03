@@ -3,6 +3,7 @@
 
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, type Einstellung, type Testung } from '../db'
+import { PHASEN_IDS } from '../katalog/typen'
 import { freiesKuerzel, type Patient } from '../patienten/stammdaten'
 import { verschluesseln, type DateiArt } from './krypto'
 
@@ -52,22 +53,65 @@ export function useSicherungsStand(): { tage: number | null; faellig: boolean; l
   }, [])
 }
 
+const istObjekt = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v)
+const istText = (v: unknown): v is string => typeof v === 'string'
+const istDatum = (v: unknown) => istText(v) && /^\d{4}-\d{2}-\d{2}$/.test(v)
+const einerVon = (v: unknown, erlaubt: readonly unknown[]) => erlaubt.includes(v)
+
+/** Grund, warum ein Eintrag nicht passt – oder null. Geprüft wird, worauf die App beim Anzeigen und Rechnen baut. */
+function patientFehler(p: unknown): string | null {
+  if (!istObjekt(p)) return 'kein Eintrag'
+  if (!istText(p.id) || !p.id) return 'id fehlt'
+  if (!istText(p.kuerzel) || !istText(p.kuerzelNorm) || !p.kuerzelNorm) return 'Kürzel fehlt'
+  if (!(p.opDatum === '' || istDatum(p.opDatum))) return 'OP-Datum ungültig'
+  if (!einerVon(p.seite, ['links', 'rechts', ''])) return 'Seite ungültig'
+  if (!Array.isArray(p.begleitOps)) return 'Begleit-OPs fehlen'
+  return null
+}
+
+function testungFehler(t: unknown, patientIds: ReadonlySet<string>): string | null {
+  if (!istObjekt(t)) return 'kein Eintrag'
+  if (!istText(t.id) || !t.id) return 'id fehlt'
+  if (!istText(t.patientId) || !patientIds.has(t.patientId)) return 'gehört zu keinem Kürzel in der Datei'
+  if (!einerVon(t.art, ['endtestung', 'verlauf'])) return 'Art ungültig'
+  if (!einerVon(t.status, ['in_arbeit', 'abgeschlossen'])) return 'Status ungültig'
+  if (t.phase !== undefined && !einerVon(t.phase, PHASEN_IDS)) return 'Phase ungültig'
+  if (!istDatum(t.datum)) return 'Datum ungültig'
+  if (!istText(t.geaendertAm) || !t.geaendertAm) return 'Änderungszeitpunkt fehlt'
+  if (!istText(t.koerpergewichtKg) || !istText(t.tegnerAktuell)) return 'Körpergewicht oder Tegner ungültig'
+  if (!Array.isArray(t.optionaleTests) || !t.optionaleTests.every(istText)) return 'optionale Tests ungültig'
+  // Eingaben liegen genau wie getippt als Text vor – nur so rechnet die App sie richtig
+  if (!istObjekt(t.eingaben) || !Object.values(t.eingaben).every((e) => istObjekt(e) && Object.values(e).every(istText))) return 'Eingaben ungültig'
+  for (const feld of ['entscheidung', 'klinischAnders', 'phaseUebersteuert'] as const) {
+    if (t[feld] !== undefined && !istObjekt(t[feld])) return `${feld} ungültig`
+  }
+  if (istObjekt(t.entscheidung) && !einerVon(t.entscheidung.art, ['bestaetigt', 'ueberstimmt_erfuellt', 'ueberstimmt_nicht_erfuellt', ''])) return 'Entscheidung ungültig'
+  return null
+}
+
 /** Prüft den entschlüsselten Inhalt, bevor irgendetwas geschrieben wird. */
 export function inhaltPruefen(roh: unknown, art: DateiArt): Inhalt {
-  const fehler = () => new Error('Die Datei ist unvollständig oder beschädigt.')
-  if (!roh || typeof roh !== 'object') throw fehler()
+  const fehler = (wo?: string) => new Error(`Die Datei ist unvollständig oder beschädigt${wo ? ` (${wo})` : ''}.`)
+  if (!istObjekt(roh)) throw fehler()
   const r = roh as Partial<Inhalt>
   if (!Array.isArray(r.patienten) || !Array.isArray(r.testungen)) throw fehler()
-  const ids = new Set<string>()
-  for (const p of r.patienten) {
-    if (!p || typeof p.id !== 'string' || typeof p.kuerzel !== 'string' || typeof p.kuerzelNorm !== 'string') throw fehler()
-    ids.add(p.id)
-  }
-  for (const t of r.testungen) {
-    if (!t || typeof t.id !== 'string' || !ids.has(t.patientId) || typeof t.eingaben !== 'object') throw fehler()
-  }
   if (art === 'kuerzel' && r.patienten.length !== 1) throw fehler()
-  return { patienten: r.patienten, testungen: r.testungen, einstellungen: Array.isArray(r.einstellungen) ? r.einstellungen : [] }
+  const ids = new Set<string>()
+  r.patienten.forEach((p, i) => {
+    const grund = patientFehler(p)
+    if (grund) throw fehler(`Kürzel ${i + 1}: ${grund}`)
+    if (ids.has(p.id)) throw fehler(`Kürzel ${i + 1}: doppelt`)
+    ids.add(p.id)
+  })
+  const testungIds = new Set<string>()
+  r.testungen.forEach((t, i) => {
+    const grund = testungFehler(t, ids)
+    if (grund) throw fehler(`Testung ${i + 1}: ${grund}`)
+    if (testungIds.has(t.id)) throw fehler(`Testung ${i + 1}: doppelt`)
+    testungIds.add(t.id)
+  })
+  const einstellungen = Array.isArray(r.einstellungen) ? r.einstellungen.filter((e) => istObjekt(e) && istText(e.id)) : []
+  return { patienten: r.patienten, testungen: r.testungen, einstellungen }
 }
 
 // ---------- Kürzel-Datei importieren ----------

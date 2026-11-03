@@ -29,6 +29,20 @@ describe('Testung speichern', () => {
     await waitFor(async () => expect((await db.testungen.get(endeId))?.koerpergewichtKg).toBe('81'))
   })
 
+  it('überschreibt keine Änderung aus einem zweiten Fenster und lädt auf Wunsch den aktuellen Stand', async () => {
+    zeige()
+    const feld = await screen.findByPlaceholderText('z. B. 72,5')
+    // zweites Fenster speichert zuerst
+    const t = (await db.testungen.get(endeId))!
+    await db.testungen.put({ ...t, koerpergewichtKg: '90', geaendertAm: new Date(Date.parse(t.geaendertAm) + 5000).toISOString() })
+    fireEvent.change(feld, { target: { value: '60' } })
+    expect(await screen.findByRole('alert')).toHaveTextContent('in einem anderen Fenster geändert')
+    expect((await db.testungen.get(endeId))?.koerpergewichtKg).toBe('90')
+    fireEvent.click(screen.getByRole('button', { name: 'Aktuellen Stand laden' }))
+    await waitFor(() => expect(screen.getByPlaceholderText('z. B. 72,5')).toHaveValue('90'))
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+
   it('meldet einen Speicherfehler sichtbar', async () => {
     zeige()
     const feld = await screen.findByPlaceholderText('z. B. 72,5')

@@ -381,6 +381,11 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - Start: Bühne niedriger, Arbeitsbereich früher sichtbar. Versatz der Einstiegskarten behoben (kam aus dem Feinschliff, `.karte + .karte` griff im Raster).
 - Berichte: Aufbau und Seitenzahl unverändert (Muster freigegeben), nur die Zielkante kommt hinzu.
 
+**Nachtrag 03.11.2026 (Architektur-Audit W1, W3, W4):**
+- W1 Zwei Fenster: Eine Testung wird nur gespeichert, wenn die Datenbank noch den Stand hat, auf dem die Eingaben beruhen (`geaendertAm`). Sonst speichert das Fenster nicht mehr und zeigt „In einem anderen Fenster geändert“ mit „Aktuellen Stand laden“. Eingaben dieses Fensters seit dem letzten Speichern werden dann verworfen; eine in einem anderen Fenster gelöschte Testung wird nicht wieder angelegt.
+- W3 Linter: `npm run lint` (oxlint) prüft nur die zwei React-Hooks-Regeln. ESLint mit typescript-eslint geht mit TypeScript 7 nicht (dort nur bis 6.1).
+- W4 Import: Sicherungsdateien werden vor dem Schreiben gründlich geprüft (Status, Art, Phase, Datum, Änderungszeitpunkt, Eingaben als Text, doppelte Einträge). Die Meldung nennt den Eintrag, z. B. „Testung 3: Datum ungültig“.
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.

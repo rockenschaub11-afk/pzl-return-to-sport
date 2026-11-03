@@ -2,7 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import Frage from '../Frage'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { db, loescheTestung, speichereEinstellung, speichereTestung, type Entscheidung, type Testung } from '../db'
+import { db, loescheTestung, speichereEinstellung, speichereTestung, TestungKonfliktFehler, type Entscheidung, type Testung } from '../db'
 import { KATALOG, phaseNach, protokollNach } from '../katalog'
 import { BLOCK_NAMEN, BLOECKE, PHASEN_IDS, type PhaseId, type TestDef } from '../katalog/typen'
 import { datumDeutsch, TEGNER_STUFEN, type Patient } from '../patienten/stammdaten'
@@ -48,6 +48,18 @@ export default function TestungErfassen() {
   const offen = useRef<Testung | null>(null)
   const [loeschenFragen, setLoeschenFragen] = useState(false)
   const zuletzt = useRef<string>('')
+  /** geaendertAm des Stands in der Datenbank, auf dem die Eingaben hier beruhen */
+  const basis = useRef<string>('')
+  const [konflikt, setKonflikt] = useState(false)
+  /** Schreibvorgänge nacheinander – sonst hielte ein zweiter, schneller Speichervorgang den eigenen ersten für ein fremdes Fenster */
+  const kette = useRef<Promise<unknown>>(Promise.resolve())
+  const schreiben = (stand: Testung) => {
+    const lauf = kette.current.then(async () => {
+      basis.current = await speichereTestung(stand, basis.current)
+    })
+    kette.current = lauf.catch(() => {})
+    return lauf
+  }
   // Beim Öffnen sind ruhige Karten zu; was hier angeklickt wird, gilt bis zum Verlassen. Eine gerade ausgefüllte Karte klappt nie von selbst zu.
   const startOffen = useRef<{ id: string; karten: Record<string, boolean> }>({ id: '', karten: {} })
   const [klappen, setKlappen] = useState<Record<string, boolean>>({})
@@ -60,12 +72,13 @@ export default function TestungErfassen() {
     if (gespeichert && (!testung || testung.id !== gespeichert.id)) {
       setTestung(gespeichert)
       zuletzt.current = JSON.stringify(gespeichert)
+      basis.current = gespeichert.geaendertAm
     }
   }, [gespeichert, testung])
 
   // automatisch speichern, kurz nach der letzten Eingabe; schlägt es fehl, sichtbar melden und wiederholen
   useEffect(() => {
-    if (!testung) return
+    if (!testung || konflikt) return
     const stand = JSON.stringify(testung)
     if (stand === zuletzt.current) return
     offen.current = testung
@@ -73,25 +86,31 @@ export default function TestungErfassen() {
     const t = setTimeout(
       async () => {
         try {
-          await speichereTestung(testung)
+          await schreiben(testung)
           zuletzt.current = stand
           if (offen.current === testung) offen.current = null
           setSpeicherFehler(false)
-        } catch {
-          setSpeicherFehler(true)
-          setVersuch((v) => v + 1)
+        } catch (err) {
+          if (err instanceof TestungKonfliktFehler) {
+            // nichts überschreiben – der Stand aus dem anderen Fenster bleibt erhalten
+            offen.current = null
+            setKonflikt(true)
+          } else {
+            setSpeicherFehler(true)
+            setVersuch((v) => v + 1)
+          }
         }
         setSpeichert(false)
       },
       speicherFehler ? SPEICHER_WIEDERHOLUNG_MS : SPEICHER_VERZOEGERUNG_MS,
     )
     return () => clearTimeout(t)
-  }, [testung, versuch])
+  }, [testung, versuch, konflikt, speicherFehler])
 
   // Was noch wartet, beim Verlassen der Seite sofort schreiben – auch beim Schließen des Fensters
   useEffect(() => {
     const sichern = () => {
-      if (offen.current) void speichereTestung(offen.current).catch(() => {})
+      if (offen.current) void schreiben(offen.current).catch(() => {})
       offen.current = null
     }
     window.addEventListener('pagehide', sichern)
@@ -142,7 +161,13 @@ export default function TestungErfassen() {
   const phase = ph.phase
   const seiten = seitennamen(patient)
   const sichtbar = sichtbareTests(testung, phase)
-  const speicherText = speicherFehler ? '! nicht gespeichert – wird wiederholt' : speichert ? 'speichert …' : '✓ gespeichert'
+  const speicherText = konflikt
+    ? '! nicht gespeichert – anderes Fenster'
+    : speicherFehler
+      ? '! nicht gespeichert – wird wiederholt'
+      : speichert
+        ? 'speichert …'
+        : '✓ gespeichert'
   const statusVon = (id: string) => kartenStatus(auswertung.get(id)!.ergebnis, hatEingabe(testung.eingaben[id]))
   if (startOffen.current.id !== testung.id) startOffen.current = { id: testung.id, karten: {} }
   for (const t of sichtbar) {
@@ -184,6 +209,19 @@ export default function TestungErfassen() {
     springen(null, 'ergebnis')
   }
 
+  /** Nach einem Konflikt: den Stand aus der Datenbank übernehmen, die Eingaben hier seit dem letzten Speichern verwerfen. */
+  async function neuLaden() {
+    const aktuell = await db.testungen.get(testung!.id)
+    setKonflikt(false)
+    if (!aktuell) {
+      navigate(`/patienten/${patient!.id}`)
+      return
+    }
+    zuletzt.current = JSON.stringify(aktuell)
+    basis.current = aktuell.geaendertAm
+    setTestung(aktuell)
+  }
+
   function wiederOeffnen() {
     aendern({ status: 'in_arbeit', abgeschlossenAm: undefined, entscheidung: { art: '', begruendung: '', therapeut: entscheidung.therapeut } })
   }
@@ -211,7 +249,7 @@ export default function TestungErfassen() {
           </p>
         </div>
         <div className="testung-kopf-aktionen">
-          <span className={`speicher-status${speichert ? ' speicher-laeuft' : ''}${speicherFehler ? ' speicher-fehler' : ''}`} aria-live="polite">
+          <span className={`speicher-status${speichert && !konflikt ? ' speicher-laeuft' : ''}${speicherFehler || konflikt ? ' speicher-fehler' : ''}`} aria-live="polite">
             <span key={speicherText} className="speicher-wechsel">
               {speicherText}
             </span>
@@ -221,6 +259,18 @@ export default function TestungErfassen() {
           </Link>
         </div>
       </div>
+
+      {konflikt && (
+        <div className="meldung meldung-fehler testung-konflikt" role="alert">
+          <p>
+            Diese Testung wurde inzwischen in einem anderen Fenster geändert. Damit nichts überschrieben wird, speichert dieses Fenster nicht mehr.
+            Eingaben hier seit dem letzten „✓ gespeichert“ gehen beim Laden verloren.
+          </p>
+          <button type="button" className="knopf" onClick={neuLaden}>
+            <span>Aktuellen Stand laden</span>
+          </button>
+        </div>
+      )}
 
       {abgeschlossen && (
         <p className="meldung meldung-info testung-gesperrt">
@@ -316,7 +366,7 @@ export default function TestungErfassen() {
       <nav className="block-sprung" aria-label="Blöcke">
         <span className="sprung-kontext">
           <strong>{patient.kuerzel}</strong> · {ART_TEXT[ph.art]} · {phaseNach(phase).name}
-          <span className={`sprung-speicher${speicherFehler ? ' speicher-fehler' : ''}`}>
+          <span className={`sprung-speicher${speicherFehler || konflikt ? ' speicher-fehler' : ''}`}>
             <span key={speicherText} className="speicher-wechsel">
               {speicherText}
             </span>

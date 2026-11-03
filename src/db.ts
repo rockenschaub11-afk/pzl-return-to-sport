@@ -133,8 +133,27 @@ export async function neueTestung(patientId: string, datum: string, phase: Phase
   return testung.id
 }
 
-export async function speichereTestung(testung: Testung): Promise<void> {
-  await db.testungen.put({ ...testung, geaendertAm: new Date().toISOString() })
+/** Die Testung wurde inzwischen woanders geändert oder gelöscht (z. B. in einem zweiten Fenster). */
+export class TestungKonfliktFehler extends Error {
+  constructor() {
+    super('Diese Testung wurde in einem anderen Fenster geändert.')
+  }
+}
+
+/**
+ * Schreibt die Testung und gibt den neuen Änderungszeitpunkt zurück.
+ * Mit `erwartet` (geaendertAm des Stands, auf dem die Eingaben beruhen) wird nur geschrieben,
+ * wenn die Datenbank noch genau diesen Stand hat – sonst TestungKonfliktFehler statt stillem Überschreiben.
+ */
+export async function speichereTestung(testung: Testung, erwartet?: string): Promise<string> {
+  return db.transaction('rw', db.testungen, async () => {
+    if (erwartet !== undefined && (await db.testungen.get(testung.id))?.geaendertAm !== erwartet) throw new TestungKonfliktFehler()
+    let geaendertAm = new Date().toISOString()
+    // gleiche Millisekunde wie der erwartete Stand: eindeutig machen, sonst wäre der Vergleich wertlos
+    if (geaendertAm === erwartet) geaendertAm = new Date(Date.parse(geaendertAm) + 1).toISOString()
+    await db.testungen.put({ ...testung, geaendertAm })
+    return geaendertAm
+  })
 }
 
 export async function loescheTestung(id: string): Promise<void> {

@@ -118,4 +118,19 @@ describe('Gesamtsicherung', () => {
   it('lehnt beschädigte Inhalte ab', () => {
     expect(() => inhaltPruefen({ patienten: [{ id: 'p', kuerzel: 'A', kuerzelNorm: 'A' }], testungen: [{ id: 't', patientId: 'fremd', eingaben: {} }] }, 'gesamt')).toThrow(/beschädigt/)
   })
+
+  it('lehnt beschädigte Testungen ab und nennt die Stelle', async () => {
+    await db.patienten.clear()
+    await db.testungen.clear()
+    await beispielAnlegen()
+    const echt = { patienten: await db.patienten.toArray(), testungen: await db.testungen.toArray(), einstellungen: [] }
+    expect(inhaltPruefen(echt, 'gesamt').testungen).toHaveLength(echt.testungen.length)
+    const kaputt = (aenderung: Record<string, unknown>) => ({ ...echt, testungen: [{ ...echt.testungen[0], ...aenderung }] })
+    expect(() => inhaltPruefen(kaputt({ status: 'fertig' }), 'gesamt')).toThrow(/Testung 1: Status ungültig/)
+    expect(() => inhaltPruefen(kaputt({ datum: '20.10.2026' }), 'gesamt')).toThrow(/Testung 1: Datum ungültig/)
+    expect(() => inhaltPruefen(kaputt({ phase: 'irgendwann' }), 'gesamt')).toThrow(/Phase ungültig/)
+    expect(() => inhaltPruefen(kaputt({ eingaben: { hhd_knie_ext: { g1: 54 } } }), 'gesamt')).toThrow(/Eingaben ungültig/)
+    expect(() => inhaltPruefen(kaputt({ geaendertAm: undefined }), 'gesamt')).toThrow(/Änderungszeitpunkt fehlt/)
+    expect(() => inhaltPruefen({ ...echt, testungen: [echt.testungen[0], echt.testungen[0]] }, 'gesamt')).toThrow(/Testung 2: doppelt/)
+  })
 })
