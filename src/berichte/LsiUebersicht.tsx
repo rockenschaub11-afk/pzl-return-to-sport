@@ -5,13 +5,14 @@
 // und die Spanne aus den Einzelversuchen als heller Balken hinter dem Punkt.
 
 import type { CSSProperties } from 'react'
+import { prozentDe } from '../rechnen/format'
 import { AMPEL_ZEICHEN } from './bericht'
 import type { LsiZeile } from './lsiZeilen'
 
 const OBEN = 20
 const WORT = { gruen: '', gelb: 'knapp', rot: 'nicht erfüllt' } as const
 
-const zahl = (v: number) => `${v.toLocaleString('de-AT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`
+const zahl = prozentDe
 
 /** Spalten: ohne Seitenwerte wie bisher, mit Seitenwerten zwei Spalten mehr vor der Achse. */
 function spalten(mitSeiten: boolean) {

@@ -9,10 +9,10 @@ import { pruefeKatalog } from './pruefen'
 import type { Katalog, Phase, PhaseId, Protokoll, Regeln, TestDef } from './typen'
 
 export const KATALOG: Katalog = {
-  phasen: phasenDatei.phasen as unknown as Phase[],
-  regeln: regelnDatei as unknown as Regeln,
-  protokolle: protokolleDatei.protokolle as unknown as Protokoll[],
-  tests: testsDatei.tests as unknown as TestDef[],
+  phasen: phasenDatei.phasen as Phase[],
+  regeln: regelnDatei as Regeln,
+  protokolle: protokolleDatei.protokolle as Protokoll[],
+  tests: testsDatei.tests as TestDef[],
 }
 
 /** Leer, wenn alles passt – sonst eine Meldung je Problem. */

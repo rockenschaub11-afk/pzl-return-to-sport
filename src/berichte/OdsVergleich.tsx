@@ -3,6 +3,7 @@
 // Farbe nur beim Sprunghöhe-LSI (Ziel aus dem Katalog), sonst grau ohne Bewertung. Zeiten in Worten („betroffen länger“).
 
 import { MELOQ } from '../katalog/meloq'
+import { prozentDe, zahlDe } from '../rechnen/format'
 import { AMPEL_ZEICHEN, zeitVergleich } from './bericht'
 import type { OdsVergleich as Vergleich, OdsZeile } from './odsZeilen'
 
@@ -12,8 +13,8 @@ const X0 = 355
 const X1 = 615
 const SPALTE = { gesund: 236, betroffen: 306, wert: 629 }
 
-const prozent = (v: number) => `${v.toLocaleString('de-AT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`
-const zahl = (v: number | null, nachkomma: number) => (v === null ? '–' : v.toLocaleString('de-AT', { minimumFractionDigits: nachkomma, maximumFractionDigits: nachkomma }))
+const prozent = prozentDe
+const zahl = (v: number | null, nachkomma: number) => (v === null ? '–' : zahlDe(v, nachkomma, true))
 const mitEinheit = (z: OdsZeile, v: number | null) => `${zahl(v, z.nachkomma)}${z.einheit ? ` ${z.einheit}` : ''}`
 const vergleichText = (z: OdsZeile) => (z.lsi === null ? '–' : z.zeit ? zeitVergleich(z.lsi) : `LSI ${prozent(z.lsi)}`)
 

@@ -1,10 +1,10 @@
-import { useLiveQuery } from 'dexie-react-hooks'
+import { usePatient, usePatienten } from '../daten'
 import Frage from '../Frage'
 import { useUngespeichertWarnung } from '../patienten/ungespeichert'
 import { useRef, useEffect, useState, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import Laedt from '../Laedt'
-import { db, KuerzelVergebenFehler, loeschePatient, speicherePatient } from '../db'
+import { KuerzelVergebenFehler, loeschePatient, speicherePatient } from '../db'
 import {
   BEGLEIT_OP_HILFE,
   BEGLEIT_OPS,
@@ -29,8 +29,8 @@ export default function PatientFormular({ eingebettet = false }: { eingebettet?:
   const neu = id === undefined
   const navigate = useNavigate()
 
-  const gespeichert = useLiveQuery(() => (id ? db.patienten.get(id) : undefined), [id])
-  const alle = useLiveQuery(() => db.patienten.toArray(), [])
+  const gespeichert = usePatient(id)
+  const alle = usePatienten()
 
   const [daten, setDaten] = useState<Stammdaten>(LEER)
   const [geladen, setGeladen] = useState(neu)
@@ -50,7 +50,7 @@ export default function PatientFormular({ eingebettet = false }: { eingebettet?:
     }
   }, [gespeichert, geladen])
 
-  if (!neu && gespeichert === undefined && alle !== undefined && !geladen) {
+  if (!neu && gespeichert === null && !geladen) {
     return (
       <div className="karte">
         <p>Dieses Kürzel gibt es nicht (mehr).</p>

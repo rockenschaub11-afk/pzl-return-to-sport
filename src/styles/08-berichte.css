@@ -1,0 +1,1260 @@
+/* ---------- Berichte (Etappe 9): Stil B, druckfreundlich – weißer Grund, keine dunklen Vollflächen, s/w lesbar ---------- */
+
+.testung-kopf-aktionen {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bericht-liste-knoepfe {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.bericht-steuerung .seitenkopf {
+  margin-bottom: 0.75rem;
+}
+
+.bericht-umschalter {
+  display: inline-flex;
+  border: 1px solid var(--linie-stark);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.umschalter-knopf {
+  padding: 0.45rem 1rem;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.umschalter-knopf + .umschalter-knopf {
+  border-left: 1px solid var(--linie-stark);
+}
+
+.umschalter-knopf.active {
+  background: var(--aktion);
+  color: var(--aktion-text);
+}
+
+/* Bericht-Redesign (Muster docs/muster-berichte.html, freigegeben 27.10.2026): nur Tokens aus dem hellen .bericht-Set,
+   Blau/Türkis nur für Daten, eine Box-Art („Tafel“), Ampel als Chip, Titelzeilen über die volle Breite. */
+.bericht {
+  max-width: 210mm;
+  margin: 1.25rem auto 0;
+  padding: 13mm 12mm 10mm;
+  background: #fff;
+  color: var(--text);
+  font-family: var(--schrift);
+  font-size: 9pt;
+  line-height: 1.38;
+  font-variant-numeric: tabular-nums;
+  box-shadow: var(--schatten-hoch);
+}
+
+.bericht h1,
+.bericht h2,
+.bericht h3 {
+  margin: 0;
+  font-family: var(--schrift-titel);
+  font-weight: 600;
+}
+
+.bericht p {
+  margin: 0;
+}
+
+.bericht ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bericht li {
+  padding: 0.5mm 0;
+}
+
+/* Kopf (beide Berichte) */
+.bericht-kopfzeile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6mm;
+  padding-bottom: 2.5mm;
+  border-bottom: 0.5pt solid var(--linie-stark);
+}
+
+.bericht-marke {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+}
+
+.bericht-logo {
+  width: auto;
+  height: 9mm;
+}
+
+.bericht-praxis {
+  color: var(--text-leise);
+  font-size: 8pt;
+  font-weight: 500;
+}
+
+.bericht-art {
+  font: 600 8.5pt var(--schrift-titel);
+  text-align: right;
+}
+
+.bericht-entwurf {
+  display: inline-block;
+  margin-left: 3mm;
+  padding: 0.4mm 2mm;
+  border: 0.75pt dashed var(--text);
+  font: 600 7.5pt var(--schrift);
+  letter-spacing: 0.04em;
+  vertical-align: 1px;
+}
+
+.bericht-titelzeile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1mm 4mm;
+  margin-top: 5mm;
+}
+
+.bericht-titel {
+  font-size: 20pt;
+  letter-spacing: -0.01em;
+}
+
+.bericht-unter {
+  color: var(--text-leise);
+  font-size: 10pt;
+}
+
+.bericht-kontext {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5mm 5mm;
+  margin: 3mm 0 0;
+}
+
+.bericht-kontext > div {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  column-gap: 1.8mm;
+}
+
+.bericht-kontext .bericht-symbol {
+  grid-row: span 2;
+  width: 4mm;
+  height: 4mm;
+  color: var(--text-leise);
+}
+
+.bericht-kontext dt {
+  color: var(--text-sehr-leise);
+  font-size: 7pt;
+  line-height: 1.2;
+}
+
+.bericht-kontext dd {
+  margin: 0;
+  font-size: 9pt;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.bericht-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5mm;
+  font-size: 11pt;
+  font-weight: 600;
+}
+
+.bericht-symbol {
+  flex: none;
+  width: 3.4mm;
+  height: 3.4mm;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Abschnitte (Arzt): Nummer + Titel, kurze Erklärung rechts */
+.bericht-abschnitt {
+  margin-top: 5mm;
+  break-inside: avoid-page;
+}
+
+.bericht-abschnitt.bericht-lang {
+  break-inside: auto;
+}
+
+.bericht-abschnitt-kopf {
+  display: flex;
+  align-items: baseline;
+  gap: 2.5mm;
+  margin-bottom: 3mm;
+  padding-bottom: 1.6mm;
+  border-bottom: 0.75pt solid var(--text);
+  break-after: avoid;
+}
+
+.bericht-nr {
+  min-width: 3.5mm;
+  color: var(--text-sehr-leise);
+  font: 600 10.5pt var(--schrift-titel);
+}
+
+.bericht-abschnitt-kopf h2 {
+  flex: none;
+  font-size: 10.5pt;
+  line-height: 1.25;
+}
+
+.bericht-abschnitt-kopf p {
+  margin-left: auto;
+  max-width: 105mm;
+  color: var(--text-leise);
+  font-size: 7pt;
+  line-height: 1.3;
+  text-align: right;
+}
+
+/* Tafel: die einzige Box im Bericht – feine Linie, kleine Rundung, kein Schatten */
+.bericht-tafel {
+  border: 0.75pt solid var(--linie);
+  border-radius: var(--radius);
+  overflow: hidden;
+  break-inside: avoid;
+}
+
+.bericht-tafel-innen {
+  padding: 3mm 4mm;
+}
+
+.bericht-tafel-lang {
+  overflow: visible;
+  break-inside: auto;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.bericht-tafel-lang thead th:first-child {
+  border-top-left-radius: var(--radius);
+}
+
+.bericht-tafel-lang thead th:last-child {
+  border-top-right-radius: var(--radius);
+}
+
+.bericht-tafel-titel {
+  display: flex;
+  align-items: center;
+  gap: 1.8mm;
+  margin-bottom: 1.5mm !important;
+  font: 600 8.5pt var(--schrift) !important;
+}
+
+/* Beurteilung = Einschätzung: Fläche „Feld“, Messwerte bleiben auf Weiß */
+.bericht-beurteilung {
+  border-color: transparent;
+  background: var(--feld);
+}
+
+.bericht-label {
+  display: block;
+  color: var(--text-sehr-leise);
+  font-size: 7pt;
+  font-weight: 600;
+}
+
+.bericht-stand {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.bericht-stand-drei {
+  grid-template-columns: 1.35fr 1fr 1fr;
+}
+
+.bericht-stand > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8mm;
+  padding: 3mm 4.5mm;
+}
+
+.bericht-stand > div + div {
+  border-left: 0.75pt solid var(--linie-stark);
+}
+
+.bericht-stand strong {
+  font: 600 11pt/1.25 var(--schrift-titel);
+}
+
+.bericht-stand .bericht-zaehlung {
+  font-size: 17pt;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.bericht-zaehlung small {
+  color: var(--text-leise);
+  font-size: 10pt;
+  letter-spacing: 0;
+}
+
+.bericht-offen {
+  font-size: 9.5pt;
+  font-weight: 600;
+}
+
+.bericht-fehlt {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 3mm;
+  margin-top: 3mm;
+}
+
+.bericht-hinweise {
+  margin-top: 2.5mm !important;
+}
+
+.bericht-warnung {
+  margin-top: 3mm !important;
+  padding: 1.2mm 0 1.2mm 3mm;
+  border-left: 2pt solid var(--knapp);
+  font-weight: 600;
+}
+
+.bericht-hinweis-stark {
+  margin-top: 2.5mm !important;
+  font-weight: 600;
+}
+
+.bericht-leise {
+  color: var(--text-leise);
+}
+
+.bericht-klein {
+  margin-top: 2mm !important;
+  font-size: 7.5pt;
+}
+
+.bericht-markiert {
+  font-weight: 700;
+}
+
+/* Stammdaten */
+.bericht-stamm {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0 5mm;
+  margin: 0;
+}
+
+.bericht-stamm > div {
+  padding: 1mm 0;
+  border-bottom: 0.5pt solid var(--linie);
+}
+
+.bericht-stamm .bericht-breit {
+  grid-column: span 2;
+}
+
+.bericht-stamm dt {
+  color: var(--text-sehr-leise);
+  font-size: 7pt;
+}
+
+.bericht-stamm dd {
+  margin: 0;
+}
+
+/* Tabellen */
+.bericht-tabelle {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bericht-tabelle.bericht-ergebnis {
+  table-layout: fixed;
+}
+
+.bericht-tabelle th,
+.bericht-tabelle td {
+  padding: 1mm 1.5mm;
+  border-bottom: 0.5pt solid var(--linie);
+  text-align: left;
+  vertical-align: baseline;
+}
+
+.bericht-tabelle th:first-child,
+.bericht-tabelle td:first-child {
+  padding-left: 3mm;
+}
+
+.bericht-tabelle th:last-child,
+.bericht-tabelle td:last-child {
+  padding-right: 3mm;
+}
+
+.bericht-tabelle thead th {
+  padding-top: 1.6mm;
+  padding-bottom: 1.4mm;
+  border-bottom: 0.75pt solid var(--linie-stark);
+  background: var(--feld);
+  color: var(--text-leise);
+  font-size: 7.5pt;
+  font-weight: 600;
+}
+
+.bericht-tabelle thead small {
+  display: block;
+  color: var(--text-sehr-leise);
+  font-weight: 400;
+}
+
+.bericht-tabelle tbody:last-child tr:last-child > * {
+  border-bottom: 0;
+}
+
+.bericht-zahl {
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+.bericht-block-zeile th {
+  padding-top: 1.8mm;
+  padding-bottom: 1.4mm;
+  border-top: 0.75pt solid var(--linie-stark);
+  border-bottom: 0.75pt solid var(--linie-stark);
+  background: var(--feld);
+  font: 600 9pt var(--schrift-titel);
+}
+
+.bericht-test-zeile th,
+.bericht-test-zeile td {
+  padding-top: 2mm;
+  border-bottom: 0;
+  font-weight: 600;
+}
+
+.bericht-gesund {
+  color: var(--seite-gesund);
+}
+
+.bericht-betroffen {
+  color: var(--seite-betroffen);
+}
+
+.bericht-eingabe {
+  display: block;
+  color: var(--text-sehr-leise);
+  font-size: 7pt;
+  font-weight: 400;
+}
+
+.bericht-links {
+  text-align: left;
+}
+
+.bericht-krit td:first-child {
+  padding-left: 4.5mm;
+}
+
+.bericht-bewertung {
+  white-space: nowrap;
+}
+
+.bericht-tag {
+  margin-left: 1.5mm;
+  color: var(--text-sehr-leise);
+  font-size: 7pt;
+  font-weight: 400;
+}
+
+.bericht-protokoll {
+  display: block;
+  color: var(--text-sehr-leise);
+  font-size: 7.5pt;
+  font-weight: 400;
+}
+
+.bericht-protokoll strong {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.bericht-fussnote {
+  margin-left: 0.4mm;
+  color: var(--text-sehr-leise);
+  font-size: 6.5pt;
+}
+
+.bericht-unterzeile td {
+  padding-left: 4.5mm !important;
+  color: var(--text-leise);
+  font-size: 7.5pt;
+}
+
+.bericht-normdaten td {
+  font-style: italic;
+}
+
+.bericht-meloq-kopf td {
+  padding-top: 1.2mm;
+  padding-left: 4.5mm !important;
+  border-bottom: 0;
+  color: var(--text-sehr-leise);
+  font-size: 7pt;
+  font-weight: 600;
+}
+
+.bericht-meloq td {
+  padding-top: 0.6mm;
+  padding-bottom: 0.6mm;
+  color: var(--text-leise);
+  font-size: 8pt;
+}
+
+.bericht-meloq td:first-child {
+  padding-left: 6mm !important;
+  box-shadow: inset 4.5mm 0 0 #fff, inset calc(4.5mm + 0.75pt) 0 0 var(--linie-stark);
+}
+
+.bericht-meloq-wert {
+  text-align: right !important;
+}
+
+.bericht-ods {
+  display: inline-block;
+  width: 3.6mm;
+  margin-right: 1mm;
+  border: 0.5pt solid var(--text-sehr-leise);
+  border-radius: 0.6mm;
+  color: var(--text);
+  font-size: 6.5pt;
+  font-weight: 600;
+  text-align: center;
+}
+
+.bericht-markiert-zeile td {
+  border-left: 2pt solid var(--knapp);
+}
+
+/* Ampel-Chip (Designsystem: Zeichen + Wort, Ampelfarbe, Fläche 12 %) – druckfeste Töne wie bisher */
+.bericht-chip {
+  display: inline-block;
+  padding: 0.3mm 2mm;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font-size: 7.5pt;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bericht .ampel-gruen {
+  color: #1f6b41;
+}
+
+.bericht .ampel-gelb {
+  color: #7a5200;
+}
+
+.bericht .ampel-rot {
+  color: var(--nicht-erfuellt);
+}
+
+.bericht-chip.ampel-offen {
+  background: var(--feld);
+  color: var(--text-leise);
+  font-weight: 500;
+}
+
+.bericht-zeichen {
+  font-weight: 700;
+}
+
+.bericht-quelle {
+  color: var(--text-leise);
+  font-size: 8pt;
+}
+
+.bericht-unterkopf {
+  margin-top: 3mm !important;
+  font: 600 8.5pt var(--schrift) !important;
+}
+
+.bericht-quellen {
+  margin: 1mm 0 0;
+  padding-left: 4mm;
+  color: var(--text-leise);
+  font-size: 7.5pt;
+}
+
+/* Verlauf */
+.bericht-verlauf-tabelle td strong {
+  font-weight: 600;
+}
+
+.bericht-veraenderung strong {
+  font-weight: 600;
+}
+
+.bericht-diagramme {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4mm;
+  margin-top: 4mm;
+}
+
+/* LSI-Übersicht */
+.lsi-uebersicht {
+  margin: 0;
+}
+
+.lsi-uebersicht svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.lsi-streifen {
+  fill: var(--feld);
+  opacity: 0.55;
+}
+
+.lsi-korridor {
+  fill: var(--korridor);
+}
+
+.lsi-raster {
+  stroke: var(--linie);
+  stroke-width: 0.7;
+}
+
+.lsi-raster-100 {
+  stroke-dasharray: 3 3;
+}
+
+.lsi-text {
+  fill: var(--text-leise);
+  font: 500 10.5px var(--schrift);
+}
+
+.lsi-name {
+  fill: var(--text);
+  font: 500 11.5px var(--schrift);
+}
+
+.lsi-wert {
+  font-weight: 600;
+}
+
+.lsi-verbindung {
+  stroke: var(--linie-stark);
+  stroke-width: 1.5;
+}
+
+.lsi-vorige {
+  fill: var(--flaeche);
+  stroke: var(--text-sehr-leise);
+  stroke-width: 1.2;
+}
+
+.lsi-punkt {
+  fill: var(--text-sehr-leise);
+}
+
+.lsi-punkt.lsi-gruen,
+.lsi-zeichen.lsi-gruen {
+  fill: var(--erfuellt);
+}
+
+.bericht .lsi-punkt.lsi-gruen,
+.bericht .lsi-zeichen.lsi-gruen {
+  fill: #1f6b41;
+}
+
+.lsi-punkt.lsi-gelb,
+.lsi-zeichen.lsi-gelb {
+  fill: var(--knapp);
+}
+
+.bericht .lsi-punkt.lsi-gelb,
+.bericht .lsi-zeichen.lsi-gelb {
+  fill: #7a5200;
+}
+
+.lsi-punkt.lsi-rot,
+.lsi-zeichen.lsi-rot {
+  fill: var(--nicht-erfuellt);
+}
+
+.lsi-zeichen {
+  font: 600 10.5px var(--schrift);
+}
+
+.bericht-legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1mm 5mm;
+  margin-top: 1.5mm;
+  color: var(--text-leise);
+  font-size: 7.5pt;
+}
+
+.legende-korridor {
+  display: inline-block;
+  width: 5mm;
+  height: 2.4mm;
+  margin-right: 1.2mm;
+  vertical-align: -0.3mm;
+  background: var(--korridor);
+}
+
+/* Unterschrift, Anhang, Fuß */
+.bericht-unterschrift {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 10mm;
+  margin-bottom: 2mm;
+}
+
+.bericht-unterschrift > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1mm;
+  color: var(--text-leise);
+  font-size: 8pt;
+}
+
+.bericht-linie {
+  height: 10mm;
+  border-bottom: 0.75pt solid var(--text);
+}
+
+.bericht-methodik {
+  margin: 0;
+  columns: 2;
+  column-gap: 7mm;
+  font-size: 7.5pt;
+}
+
+.bericht-methodik dt {
+  font-weight: 600;
+  break-after: avoid;
+}
+
+.bericht-methodik dd {
+  margin: 0 0 2mm;
+  color: var(--text-leise);
+  break-inside: avoid;
+}
+
+.bericht-methodik ul {
+  padding-left: 4mm;
+  list-style: disc;
+}
+
+.bericht-methodik li {
+  padding: 0 0 0.6mm;
+}
+
+.bericht-roh-test {
+  font-weight: 600;
+}
+
+.bericht-roh-seite {
+  color: var(--text-leise);
+}
+
+.bericht-fuss {
+  margin-top: 8mm !important;
+  padding-top: 2mm;
+  border-top: 0.5pt solid var(--linie);
+  color: var(--text-leise);
+  font-size: 7.5pt;
+  text-align: center;
+}
+
+/* ---------- Pat./Trainer-Bericht: ein lautes Element (Kopfband), sonst ruhig ---------- */
+.bericht-pat {
+  font-size: 10pt;
+  line-height: 1.42;
+}
+
+.bericht-pat .bericht-titel {
+  margin-bottom: 0;
+  font-size: 17pt;
+}
+
+.bericht-band {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  margin-top: 4mm;
+  border-radius: var(--radius-karte);
+  background: var(--feld);
+}
+
+.bericht-band > div {
+  padding: 3mm 6mm;
+}
+
+.bericht-band > div + div {
+  border-left: 0.75pt solid var(--linie-stark);
+}
+
+.bericht-band .bericht-label {
+  color: var(--text-leise);
+  font-size: 8.5pt;
+}
+
+.bericht-band-zahl {
+  display: flex;
+  align-items: baseline;
+  gap: 2.5mm;
+  margin-top: 0.5mm !important;
+}
+
+.bericht-band-zahl b {
+  font: 600 30pt/1 var(--schrift-titel);
+  letter-spacing: -0.02em;
+}
+
+.bericht-band-zahl span {
+  font: 600 11pt var(--schrift-titel);
+}
+
+.bericht-band-text {
+  margin-top: 1mm !important;
+  font: 600 13pt/1.2 var(--schrift-titel);
+}
+
+.bericht-pat-mitte {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 6mm;
+  margin-top: 3.5mm;
+}
+
+.bericht-pat h2 {
+  margin-bottom: 1.5mm;
+  font-size: 11pt;
+}
+
+/* Netz im Pat.-Bericht begrenzen, damit alles auf eine Seite passt */
+.bericht-pat .netz svg {
+  max-height: 68mm;
+}
+
+.bericht-pat-rechts {
+  display: grid;
+  align-content: start;
+  gap: 3mm;
+}
+
+.bericht-pat-fehlt .bericht-tafel-titel {
+  font: 600 10pt var(--schrift-titel) !important;
+}
+
+.bericht-pat-fehlt li {
+  padding: 1.5mm 0 1mm 3mm;
+  border-left: 2pt solid var(--linie-stark);
+}
+
+.bericht-pat-fehlt li + li {
+  margin-top: 1.5mm;
+}
+
+.bericht-pat-fehlt li b {
+  display: block;
+  font-weight: 600;
+}
+
+.bericht-pat-hinweis {
+  color: var(--text-leise);
+  font-size: 9pt;
+}
+
+.bericht-pat-hinweis .bericht-tafel-titel {
+  color: var(--text);
+}
+
+.bericht-pat-ergebnis {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8mm;
+  font-size: 9pt;
+}
+
+.bericht-pat-ergebnis strong {
+  font: 600 12pt var(--schrift-titel);
+}
+
+.bericht-werte {
+  margin-top: 4mm;
+}
+
+.bericht-werte-kopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1mm 4mm;
+  padding-bottom: 1.2mm;
+  border-bottom: 0.75pt solid var(--text);
+}
+
+.bericht-werte-kopf h2 {
+  margin: 0 !important;
+}
+
+.bericht-werte-kopf p {
+  color: var(--text-leise);
+  font-size: 8.5pt;
+}
+
+.bericht-werte-raster {
+  columns: 2;
+  column-gap: 8mm;
+}
+
+.bericht-gruppe {
+  padding-top: 2.5mm;
+  break-inside: avoid;
+}
+
+.bericht-gruppe h3 {
+  padding-bottom: 0.8mm;
+  border-bottom: 0.5pt solid var(--linie-stark);
+  color: var(--text-leise);
+  font: 600 8pt var(--schrift);
+}
+
+.bericht-wert {
+  display: grid;
+  grid-template-columns: 1fr auto minmax(17mm, auto);
+  align-items: baseline;
+  column-gap: 3mm;
+  padding: 0.75mm 0;
+  border-bottom: 0.5pt solid var(--linie);
+  break-inside: avoid;
+}
+
+.bericht-wert-name {
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.bericht-wert-name small,
+.bericht-wert-rechts small {
+  display: block;
+  color: var(--text-sehr-leise);
+  font-size: 7.5pt;
+  font-weight: 400;
+}
+
+.bericht-wert-zahl {
+  font: 600 12pt var(--schrift-titel);
+  text-align: right;
+}
+
+.bericht-wert-zahl.bericht-wert-ohne {
+  font: 500 9pt var(--schrift);
+}
+
+.bericht-wert-rechts {
+  font-size: 8.5pt;
+  text-align: right;
+}
+
+.bericht-lesehilfe {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(28mm, auto));
+  justify-content: space-between;
+  gap: 4mm;
+  margin-top: 3mm;
+  padding: 2mm 4mm;
+  border-radius: var(--radius);
+  background: var(--feld);
+  color: var(--text-leise);
+  font-size: 8pt;
+}
+
+.bericht-lesehilfe b {
+  display: block;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.bericht-pat .bericht-fuss {
+  margin-top: 3mm !important;
+}
+
+/* Spinnennetz */
+.netz {
+  margin: 0;
+}
+
+.netz svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.netz-ring,
+.netz-achse {
+  fill: none;
+  stroke: var(--linie);
+}
+
+.netz-gesund {
+  fill: none;
+  stroke: var(--seite-gesund);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+}
+
+.netz-ziel {
+  fill: none;
+  stroke: var(--erfuellt);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+
+.netz-flaeche {
+  fill: color-mix(in srgb, var(--seite-betroffen) 20%, transparent);
+  stroke: var(--seite-betroffen);
+  stroke-width: 2;
+  animation: netz-auf 0.6s ease-out;
+}
+
+.netz-punkt {
+  fill: var(--flaeche);
+  stroke: var(--seite-betroffen);
+  stroke-width: 2;
+}
+
+.netz-text {
+  fill: var(--text);
+  font-family: var(--schrift);
+  font-size: 14px;
+}
+
+.netz-wert {
+  font-weight: 700;
+}
+
+/* Ampel an den Achsen – dieselben druckfesten Töne wie .bericht-ampel */
+.netz-punkt.netz-gruen,
+.netz-wert.netz-gruen {
+  fill: #1f6b41;
+}
+
+.netz-punkt.netz-gelb,
+.netz-wert.netz-gelb {
+  fill: #7a5200;
+}
+
+.netz-punkt.netz-rot,
+.netz-wert.netz-rot {
+  fill: var(--nicht-erfuellt);
+}
+
+.netz-vorige {
+  fill: var(--flaeche);
+  stroke: var(--text-sehr-leise);
+  stroke-width: 1.2;
+}
+
+.netz-punkt.netz-gruen,
+.netz-punkt.netz-gelb,
+.netz-punkt.netz-rot {
+  stroke: var(--flaeche);
+}
+
+.netz-ring-text {
+  fill: var(--text-sehr-leise);
+  font-family: var(--schrift);
+  font-size: 9px;
+}
+
+.netz-legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.9rem;
+  color: var(--text-leise);
+  font-size: 8.5pt;
+}
+
+.netz-legende i {
+  display: inline-block;
+  width: 1.1rem;
+  margin-right: 0.25rem;
+  vertical-align: middle;
+}
+
+.netz-legende-gesund {
+  border-top: 2px dashed var(--seite-gesund);
+}
+
+.netz-legende-betroffen {
+  height: 0.6rem;
+  border: 2px solid var(--seite-betroffen);
+  background: color-mix(in srgb, var(--seite-betroffen) 20%, transparent);
+}
+
+.netz-legende-vorige {
+  width: 0.55rem !important;
+  height: 0.55rem;
+  border: 1.2px solid var(--text-sehr-leise);
+  border-radius: 50%;
+}
+
+.netz-legende-ziel {
+  border-top: 2px dotted var(--erfuellt);
+}
+
+@keyframes netz-auf {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media screen and (max-width: 720px) {
+  .bericht {
+    padding: 1rem;
+  }
+
+  .bericht-kopfzeile,
+  .bericht-abschnitt-kopf {
+    flex-wrap: wrap;
+  }
+
+  .bericht-abschnitt-kopf p {
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .bericht-stand-drei,
+  .bericht-fehlt,
+  .bericht-stamm,
+  .bericht-diagramme,
+  .bericht-band,
+  .bericht-pat-mitte {
+    grid-template-columns: 1fr;
+  }
+
+  .bericht-stand > div + div,
+  .bericht-band > div + div {
+    border-left: 0;
+    border-top: 0.75pt solid var(--linie-stark);
+  }
+
+  .bericht-werte-raster {
+    columns: 1;
+  }
+
+  .bericht-tafel-lang {
+    overflow-x: auto;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  body,
+  .app {
+    background: #fff;
+  }
+
+  /* Platz der Seitenleiste nicht freihalten */
+  .app {
+    padding-left: 0;
+  }
+
+  /* Kopfleiste, Seitenleiste, Hinweisleiste und Bedienelemente nicht drucken */
+  .kopf,
+  .leiste,
+  .hinweis,
+  .konfig-fehler,
+  .bericht-steuerung {
+    display: none !important;
+  }
+
+  .inhalt {
+    max-width: none;
+    padding: 0;
+  }
+
+  .bericht {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .bericht-tabelle tr,
+  .bericht-stamm > div,
+  .bericht-wert,
+  .diagramm,
+  .netz {
+    break-inside: avoid;
+  }
+
+  /* Seite 1 = Befund und Überblick; Ergebnisse und Anhang beginnen auf einer neuen Seite */
+  .bericht-neue-seite,
+  .bericht-anhang {
+    break-before: page;
+  }
+
+  .bericht-unterschrift-abschnitt {
+    break-inside: avoid;
+  }
+
+  .netz-flaeche {
+    animation: none;
+  }
+
+  /* Pat./Trainer-Bericht: 1 Seite (Endtestung) */
+  .bericht-pat {
+    font-size: 9.5pt;
+  }
+
+  .bericht-pat .netz svg {
+    max-height: 62mm;
+  }
+
+  .bericht-pat .netz-legende {
+    font-size: 7.5pt;
+  }
+
+  .bericht-pat .bericht-pat-mitte {
+    margin-top: 2.5mm;
+  }
+
+  .bericht-pat .bericht-werte {
+    margin-top: 3mm;
+  }
+}

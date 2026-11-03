@@ -156,7 +156,10 @@ export function datumDeutsch(iso: string): string {
   return j && m && t ? `${t}.${m}.${j}` : iso
 }
 
-/** Volle Monate seit dem Datum (nur Anzeige in der Liste). */
+/**
+ * Volle Kalendermonate seit dem Datum – Grundlage für Phase und Zeitkriterium (über monateBisTestung) und die Anzeige in der Liste.
+ * Absichtlich anders als monateGenau (verlauf.ts): dort Tage / 30,44 mit Nachkommastellen, nur für die Lage auf der Zeitachse (Audit K4).
+ */
 export function monateSeit(iso: string, heute: Date = new Date()): number | null {
   const [j, m, t] = iso.split('-').map(Number)
   if (!j || !m || !t) return null

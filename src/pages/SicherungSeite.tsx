@@ -1,7 +1,6 @@
-import { useLiveQuery } from 'dexie-react-hooks'
+import { usePatienten } from '../daten'
 import { useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { db } from '../db'
 import Laedt from '../Laedt'
 import { datumDeutsch } from '../patienten/stammdaten'
 import { DATEI_ENDUNG, entschluesseln, huelleLesen, PASSWORT_MIN, type DateiHuelle } from '../sicherung/krypto'
@@ -46,7 +45,7 @@ const passwortOk = (w: [string, string]) => w[0].length >= PASSWORT_MIN && w[0] 
 
 /** Seite „Sicherung“ (Etappe 10): Gesamtsicherung, Kürzel übergeben, Datei importieren. */
 export default function SicherungSeite() {
-  const patienten = useLiveQuery(() => db.patienten.orderBy('kuerzelNorm').toArray())
+  const patienten = usePatienten('kuerzel')
   const stand = useSicherungsStand()
   const [suche] = useSearchParams()
 

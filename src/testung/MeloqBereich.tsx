@@ -1,4 +1,6 @@
+import { nachSeite, richtung, RICHTUNG_ARZT } from '../berichte/nachvollziehbarkeit'
 import { MELOQ, ODS_REIHENFOLGE, type MeloqTest } from '../katalog/meloq'
+import type { Seite } from '../patienten/stammdaten'
 import { istKeineZahl } from './erfassung'
 import type { Berechnung, TestEingabe } from './erfassung'
 import { kernStrategie, zusatzZeilen, type MeloqZeile } from './meloq'
@@ -9,11 +11,14 @@ import type { Seitennamen } from './TestKarte'
 const zahl = (v: number | null, nachkomma = 1) =>
   v === null ? '–' : v.toLocaleString('de-AT', { minimumFractionDigits: nachkomma, maximumFractionDigits: nachkomma })
 
-function Vergleich({ z }: { z: MeloqZeile }) {
+/** seite: betroffene Seite – bei Links/Rechts (CMJ) steht dazu, welche Seite schwächer ist (wie im Arztbericht). */
+function Vergleich({ z, seite = '' }: { z: MeloqZeile; seite?: Seite | '' }) {
   if (!z.vergleich || z.vergleich.wert === null) return null
+  const s = z.form === 'lr' ? nachSeite(z.werte[0], z.werte[1], seite) : null
+  const r = s ? richtung(s.betroffen, s.gesund) : null
   return (
     <span className="meloq-vergleich">
-      {z.vergleich.art === 'lsi' ? 'LSI' : 'Asym.'} {zahl(z.vergleich.wert)} %
+      {z.vergleich.art === 'lsi' ? 'LSI' : 'Asym.'} {zahl(z.vergleich.wert)} %{r && <small className="kriterium-richtung">{RICHTUNG_ARZT[r]}</small>}
     </span>
   )
 }
@@ -26,6 +31,8 @@ interface Props {
   berechnung: Berechnung
   auswahl: MeloqAuswahl
   kg: number | null
+  /** betroffene Seite (für die Richtung der Asymmetrie bei Links/Rechts) */
+  seite?: Seite | ''
 }
 
 /** Strategy-Wert des Kern-Satzes – ohne Ampel, mit LSI (gehört in den Ergebnisbereich der Karte). */
@@ -42,7 +49,7 @@ export function KernStrategie({ test, eingabe, berechnung, seiten }: Pick<Props,
 }
 
 /** Frei wählbare Meloq-Werte des gewerteten Versuchs (Etappe-5-Fragen 3–7). */
-export default function MeloqBereich({ test, eingabe: e, setze, seiten, berechnung: b, auswahl, kg }: Props) {
+export default function MeloqBereich({ test, eingabe: e, setze, seiten, berechnung: b, auswahl, kg, seite }: Props) {
   const zeilen = zusatzZeilen(test, e, auswahl[test], kg)
   const versuchText =
     test === 'cmj'
@@ -96,7 +103,7 @@ export default function MeloqBereich({ test, eingabe: e, setze, seiten, berechnu
                       {z.relativ && z.relativ.werte.some((w) => w !== null) ? `${z.relativ.werte.map((w) => zahl(w, z.relativ!.einheit === 'N/s' ? 0 : 1)).join(' / ')} ${z.relativ.einheit}` : ''}
                     </td>
                     <td>
-                      <Vergleich z={z} />
+                      <Vergleich z={z} seite={seite} />
                     </td>
                   </tr>
                 )),

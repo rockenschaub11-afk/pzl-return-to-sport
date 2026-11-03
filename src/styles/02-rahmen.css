@@ -1,0 +1,304 @@
+/* ---------- Seitenleiste (DESIGNKONZEPT 5, 10.8) – in beiden Modi dunkel ---------- */
+
+.leiste {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 88px;
+  padding: 14px 0;
+  background: var(--tief);
+  color: #a4adb8;
+}
+
+.leiste-logo {
+  display: block;
+  width: 64px;
+  margin-bottom: 16px;
+  padding: 6px;
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.leiste-logo img {
+  display: block;
+  width: 100%;
+}
+
+.leiste-logo-platz {
+  height: 16px;
+}
+
+.leiste-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.leiste-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 76px;
+  padding: 10px 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.leiste-link:hover {
+  color: #eef1f4;
+}
+
+.leiste-link.active {
+  background: rgb(255 255 255 / 0.06);
+  color: #eef1f4;
+}
+
+.leiste-link.active::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: -6px;
+  width: 3px;
+  border-radius: var(--radius-klein);
+  background: #36c5d6;
+}
+
+.leiste-link:focus-visible,
+.leiste-logo:focus-visible,
+.leiste-mehr-menue a:focus-visible {
+  outline: 2px solid #eef1f4;
+  outline-offset: 2px;
+}
+
+.leiste-symbol {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.leiste-mehr {
+  display: none;
+}
+
+.leiste-unten {
+  margin-top: auto;
+}
+
+.leiste-mehr-menue {
+  display: none;
+}
+
+/* Inhalt rechts neben der Leiste */
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-left: 88px;
+}
+
+@media (max-width: 720px) {
+  .leiste {
+    inset: auto 0 0 0;
+    flex-direction: row;
+    width: auto;
+    height: calc(64px + env(safe-area-inset-bottom));
+    padding: 0 4px env(safe-area-inset-bottom);
+  }
+
+  .leiste-logo,
+  .leiste-logo-platz,
+  .leiste-unten,
+  .leiste-link.nur-breit {
+    display: none;
+  }
+
+  .leiste-nav {
+    flex: 1;
+    flex-direction: row;
+    justify-content: space-around;
+  }
+
+  .leiste-link {
+    width: auto;
+    min-width: 56px;
+    min-height: 44px;
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+
+  .leiste-link.active::before {
+    top: -1px;
+    right: 10px;
+    bottom: auto;
+    left: 10px;
+    width: auto;
+    height: 3px;
+  }
+
+  .leiste-mehr {
+    display: flex;
+  }
+
+  .leiste-mehr-menue {
+    position: fixed;
+    right: 8px;
+    bottom: 72px;
+    z-index: 30;
+    display: grid;
+    gap: 4px;
+    min-width: 220px;
+    padding: 8px;
+    border-radius: var(--radius-karte);
+    background: var(--tief);
+    box-shadow: var(--schatten-hoch);
+  }
+
+  .leiste-mehr-menue a {
+    padding: 12px;
+    border-radius: var(--radius);
+    color: #eef1f4;
+    text-decoration: none;
+  }
+
+  .leiste-mehr-menue .darstellung {
+    width: max-content;
+    margin: 6px 12px;
+  }
+
+  .app {
+    padding-left: 0;
+    padding-bottom: 64px;
+  }
+}
+
+/* Hell/Dunkel-Umschalter (sitzt auf der dunklen Leiste) */
+.darstellung {
+  display: flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.08);
+}
+
+.darstellung button {
+  display: grid;
+  place-items: center;
+  padding: 5px 7px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: #a4adb8;
+  cursor: pointer;
+}
+
+.darstellung button[aria-pressed='true'] {
+  background: #eef1f4;
+  color: #191b20;
+}
+
+.darstellung button:focus-visible {
+  outline: 2px solid #eef1f4;
+  outline-offset: 2px;
+}
+
+.darstellung svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- Inhalt ---------- */
+
+.inhalt {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 2.5rem;
+}
+
+.seitenkopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.seitentitel {
+  text-wrap: balance;
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.75rem;
+  line-height: 1.15;
+  color: var(--text);
+}
+
+.seitenzusatz {
+  margin: 0.3rem 0 0;
+  color: var(--text-leise);
+}
+
+.seitenzusatz a {
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.karte + .karte {
+  margin-top: 1.25rem;
+}
+
+.block + .karte,
+.block + .block {
+  margin-top: 0;
+}
+
+.karte {
+  background: var(--flaeche);
+  border: 1px solid var(--karten-rand);
+  border-radius: var(--radius-karte);
+  padding: 1.125rem 1.25rem;
+}
+
+.platzhalter-etappe {
+  display: inline-block;
+  margin-bottom: 0;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--linie-stark);
+  border-radius: 999px;
+  color: var(--text-leise);
+  font-weight: 500;
+  font-size: 0.8125rem;
+}
+
+.hinweis-leise {
+  margin-top: 0;
+  color: var(--text-leise);
+}

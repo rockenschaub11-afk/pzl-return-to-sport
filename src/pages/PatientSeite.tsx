@@ -1,12 +1,16 @@
-import { useLiveQuery } from 'dexie-react-hooks'
+import { usePatient, useTestungenVon } from '../daten'
 import { useMemo } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { arztBericht, patBericht } from '../berichte/bericht'
 import LsiUebersicht from '../berichte/LsiUebersicht'
 import OdsVergleich, { OdsHinweis } from '../berichte/OdsVergleich'
 import { odsFuerTestung } from '../berichte/odsZeilen'
+import Testabdeckung from '../testung/Testabdeckung'
+import { testAbdeckung } from '../testung/abdeckung'
+import Leistungsprofil from '../testung/Leistungsprofil'
+import { leistungsprofil } from '../testung/profil'
 import { lsiUebersicht } from '../berichte/lsiZeilen'
-import { db, type Testung } from '../db'
+import { type Testung } from '../db'
 import Laedt from '../Laedt'
 import { phaseNach } from '../katalog'
 import { letzterStand, nachDatum, pflichtKurz } from '../patienten/uebersicht'
@@ -28,8 +32,8 @@ type ReiterId = (typeof REITER)[number][0]
 /** Seite eines Kürzels als Dashboard mit Reitern (DESIGNKONZEPT 7). Alle Reiter bleiben geladen, damit Eingaben im Formular beim Wechseln erhalten bleiben. */
 export default function PatientSeite() {
   const { id = '' } = useParams()
-  const patient = useLiveQuery(async () => (await db.patienten.get(id)) ?? null, [id])
-  const testungen = useLiveQuery(() => db.testungen.where('patientId').equals(id).toArray(), [id])
+  const patient = usePatient(id)
+  const testungen = useTestungenVon(id)
   // Reiter steht in der Adresse: „Zurück“ aus einer Testung landet wieder am selben Ort
   const [adresse, setAdresse] = useSearchParams()
   const reiter: ReiterId = REITER.find(([r]) => r === adresse.get('reiter'))?.[0] ?? 'uebersicht'
@@ -129,6 +133,8 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
   const lsi = useMemo(() => (letzte ? lsiUebersicht(arztBericht(patient, letzte), patBericht(patient, letzte, testungen)) : []), [patient, letzte, testungen])
   const vorigeDatum = useMemo(() => (letzte ? patBericht(patient, letzte, testungen).vorigeDatum : null), [patient, letzte, testungen])
   const ods = useMemo(() => (letzte ? odsFuerTestung(patient, letzte) : []), [patient, letzte])
+  const abdeckung = useMemo(() => testAbdeckung(patient, testungen), [patient, testungen])
+  const profil = useMemo(() => (letzte ? leistungsprofil(patient, letzte) : []), [patient, letzte])
 
   return (
     <>
@@ -209,6 +215,18 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
             </div>
           ))}
           <OdsHinweis />
+        </section>
+      )}
+      {profil.length > 0 && (
+        <section className="karte block" aria-label="Absolutwerte zur Phasenschwelle">
+          <h2 className="block-titel">Absolutwerte der letzten Testung zur Phasenschwelle</h2>
+          <Leistungsprofil bloecke={profil} />
+        </section>
+      )}
+      {abdeckung.spalten.length > 0 && (
+        <section className="karte block" aria-label="Testungen im Überblick">
+          <h2 className="block-titel">Testungen im Überblick</h2>
+          <Testabdeckung abdeckung={abdeckung} />
         </section>
       )}
       <VerlaufBereich patient={patient} />

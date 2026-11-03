@@ -9,6 +9,7 @@ import type { Ampel, TestErgebnis } from '../rechnen/bewertung'
 import { nsProKg } from '../rechnen/einheiten'
 import { lsi } from '../rechnen/versuche'
 import { parseZahl, type Berechnung } from '../testung/erfassung'
+import { versuchFeld } from '../testung/felder'
 import { kernStrategie, zusatzZeilen } from '../testung/meloq'
 import { phasenStand, werteAus } from '../testung/ablauf'
 import type { Patient } from '../patienten/stammdaten'
@@ -46,7 +47,7 @@ export function odsZeilen(test: OdsTest, testung: Pick<Testung, 'eingaben' | 'ko
   const kg = parseZahl(testung.koerpergewichtKg)
   const ng = b.besterVersuch.gesund
   const nb = b.besterVersuch.betroffen
-  const ausVersuch = (feld: string): [number | null, number | null] => [ng ? parseZahl(e[`g${ng}_${feld}`]) : null, nb ? parseZahl(e[`b${nb}_${feld}`]) : null]
+  const ausVersuch = (feld: string): [number | null, number | null] => [ng ? parseZahl(e[versuchFeld('g', ng, feld)]) : null, nb ? parseZahl(e[versuchFeld('b', nb, feld)]) : null]
   const kLsi = ergebnis?.kriterien.find((k) => k.kriterium.id === 'lsi' && k.zustand === 'bewertet')
 
   const zeilen: OdsZeile[] = []

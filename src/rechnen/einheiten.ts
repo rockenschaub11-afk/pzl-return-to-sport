@@ -1,8 +1,9 @@
 // Einheiten-Umrechnung (docs/ENTSCHEIDUNGEN.md 3 und 6.2). Meloq und DynaMo zeigen Kraft in kg.
 
-import regeln from '../../config/regeln.json'
+import { KATALOG } from '../katalog'
 
-export const G = regeln.erdbeschleunigung
+/** aus regeln.json über den geprüften Katalog (Audit K3) */
+export const G = KATALOG.regeln.erdbeschleunigung
 
 /** kg (Anzeige am Gerät) → Newton */
 export const kgZuN = (kg: number) => kg * G

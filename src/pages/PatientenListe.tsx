@@ -1,7 +1,7 @@
-import { useLiveQuery } from 'dexie-react-hooks'
+import { usePatienten, useTestungen } from '../daten'
 import { useMemo } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { db, type Testung } from '../db'
+import { type Testung } from '../db'
 import Laedt from '../Laedt'
 import { datumDeutsch, monateSeit, NIVEAUS, passtZurSuche } from '../patienten/stammdaten'
 import { nachDatum, pflichtKurz } from '../patienten/uebersicht'
@@ -9,8 +9,8 @@ import { statusText } from '../testung/ablauf'
 
 export default function PatientenListe() {
   const navigate = useNavigate()
-  const patienten = useLiveQuery(() => db.patienten.orderBy('geaendertAm').reverse().toArray())
-  const testungen = useLiveQuery(() => db.testungen.toArray())
+  const patienten = usePatienten('zuletzt')
+  const testungen = useTestungen()
   const [adresse, setAdresse] = useSearchParams()
   const suche = adresse.get('suche') ?? ''
   const nurArbeit = adresse.get('filter') === 'arbeit'

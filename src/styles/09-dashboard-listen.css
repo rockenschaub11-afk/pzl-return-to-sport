@@ -1,0 +1,524 @@
+/* ---------- Seite eines Kürzels als Dashboard (DESIGNKONZEPT 7, Etappe 9b Schritt 5) ---------- */
+
+.seitenkopf-fest {
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  margin: -1.75rem -1.5rem 0.5rem;
+  padding: 1rem 1.5rem 0.75rem;
+  background: var(--grund);
+  box-shadow: 0 1px 0 var(--linie);
+}
+
+.seitenkopf-zeile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+
+.reiter {
+  display: flex;
+  gap: 0.375rem;
+  margin: 0.75rem 0 1.25rem;
+  overflow-x: auto;
+}
+
+.reiter button {
+  flex: none;
+  min-height: 2.5rem;
+  padding: 0.45rem 1.1rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-leise);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.reiter button:hover {
+  color: var(--text);
+}
+
+.reiter button[aria-selected='true'] {
+  background: var(--aktion);
+  color: var(--aktion-text);
+  font-weight: 600;
+}
+
+.reiter button:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.karte-laut {
+  padding-left: calc(1.25rem - 3px);
+  border-left: 4px solid var(--aktion);
+}
+
+.status-letzte {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  gap: 1rem 2rem;
+  margin-bottom: 1.25rem;
+}
+
+.status-aussage {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+}
+
+.status-herkunft {
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+.status-titel {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.375rem;
+  line-height: 1.25;
+}
+
+.status-warnung {
+  margin: 0.4rem 0 0;
+  color: var(--knapp);
+  font-weight: 600;
+}
+
+.status-offen {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0.9rem;
+  padding: 0;
+  list-style: none;
+}
+
+.status-offen li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.6rem;
+}
+
+.leer-handlung {
+  margin-bottom: 1.25rem;
+}
+
+.leer-handlung p {
+  margin: 0.2rem 0;
+}
+
+.dashboard-raster {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) minmax(0, 2.4fr);
+  align-items: stretch;
+  gap: 1.25rem;
+}
+
+.dashboard-spalte {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.dashboard-spalte > .karte.block,
+.dashboard-spalte > .karte {
+  margin: 0;
+}
+
+.kopfkarte-zeile {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.kopfkarte-seite {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.0625rem;
+}
+
+.kopfkarte-zeile .hinweis-leise {
+  margin: 0.1rem 0 0;
+}
+
+.bein-symbol {
+  flex: none;
+  width: 46px;
+  height: 64px;
+}
+
+.bein-symbol path {
+  fill: var(--feld);
+  stroke: var(--text-sehr-leise);
+}
+
+.bein-knie-ring {
+  fill: none;
+  stroke: var(--seite-betroffen);
+  stroke-width: 2.5;
+}
+
+.bein-knie {
+  fill: var(--seite-betroffen);
+}
+
+.kopfkarte-fakten dt {
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+.kopfkarte-fakten dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+@media (max-width: 1060px) {
+  .status-letzte,
+  .dashboard-raster {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .seitenkopf-fest {
+    margin: -1.25rem -1rem 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* ---------- Listen als Tabellen, Lade- und Leerzustand (DESIGNKONZEPT 10.4, 10.7; Etappe 9b Schritt 7) ---------- */
+
+.liste-rahmen {
+  margin-top: 0.75rem;
+  overflow-x: auto;
+}
+
+.liste-tabelle {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.liste-tabelle th {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--linie);
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.liste-tabelle td {
+  height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--linie);
+  vertical-align: middle;
+}
+
+.liste-tabelle tbody tr {
+  transition: background 0.15s ease;
+}
+
+.liste-tabelle tbody tr[class],
+.liste-tabelle tbody tr:has(a.liste-kuerzel) {
+  cursor: pointer;
+}
+
+.liste-tabelle tbody tr:hover td,
+.liste-tabelle tbody tr:focus-within td {
+  background: var(--flaeche-hoch);
+}
+
+.liste-kuerzel {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.liste-kuerzel:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 3px;
+  border-radius: var(--radius-klein);
+}
+
+.liste-kuerzel .seiten-marke {
+  display: inline-grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-right: 0.6rem;
+  font-size: 0.8125rem;
+}
+
+.liste-zahl {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.liste-leise {
+  color: var(--text-leise);
+}
+
+.liste-rechts {
+  text-align: right;
+}
+
+.liste-stapel {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.liste-tabelle .bericht-liste-knoepfe {
+  justify-content: flex-end;
+}
+
+.liste-tabelle .pat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.leer {
+  display: grid;
+  justify-items: start;
+  gap: 0.25rem;
+}
+
+.leer .knopf {
+  margin-top: 0.5rem;
+}
+
+.laedt {
+  display: grid;
+  gap: 0.75rem;
+  padding-block: 1.5rem;
+}
+
+.laedt-zeile {
+  display: block;
+  height: 0.875rem;
+  border-radius: 999px;
+  background: var(--feld);
+}
+
+/* ---------- Startseite ohne Seitenleiste: schmale Kopfzeile, Zeichnungen in den Karten ---------- */
+
+.app.app-start {
+  padding-left: 0;
+}
+
+.start-kopf {
+  display: flex;
+  align-items: center;
+  gap: 1rem 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--linie);
+}
+
+.start-marke {
+  flex: none;
+  display: block;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.start-marke img {
+  display: block;
+  height: 40px;
+  width: auto;
+}
+
+.start-marke:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.start-nav {
+  display: flex;
+  gap: 0.25rem 1.5rem;
+  margin-left: auto;
+  overflow-x: auto;
+}
+
+.start-nav a {
+  flex: none;
+  padding: 0.4rem 0;
+  border-bottom: 2px solid transparent;
+  color: var(--text-leise);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.start-nav a:hover {
+  color: var(--text);
+}
+
+.start-nav a.active {
+  border-bottom-color: var(--text);
+  color: var(--text);
+}
+
+.start-nav a:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+/* Hell/Dunkel-Umschalter auf der Seitenfläche (statt auf der dunklen Leiste) */
+.start-kopf .darstellung {
+  flex: none;
+  background: var(--feld);
+}
+
+.start-kopf .darstellung button {
+  color: var(--text-leise);
+}
+
+.start-kopf .darstellung button[aria-pressed='true'] {
+  background: var(--aktion);
+  color: var(--aktion-text);
+}
+
+.start-kopf .darstellung button:focus-visible {
+  outline-color: var(--fokus);
+}
+
+/* Karten mit Strichzeichnung unten rechts */
+.start-karte {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  color: var(--text);
+  text-decoration: none;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+  min-height: 16rem;
+  overflow: hidden;
+}
+
+.start-karte-text {
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+  max-width: 15rem;
+}
+
+.start-karte-zahl {
+  align-self: end;
+  margin-top: 1.25rem;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  max-width: 42%;
+  line-height: 1.3;
+}
+
+.start-zeichnung {
+  position: absolute;
+  right: -0.5rem;
+  bottom: -0.25rem;
+  width: 62%;
+  max-width: 220px;
+  height: auto;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+.start-karte:hover .start-zeichnung {
+  transform: translateY(-3px);
+}
+
+.z-umriss,
+.z-knochen,
+.z-band,
+.z-band-gesund,
+.z-hinweis {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.z-umriss {
+  stroke: var(--text-sehr-leise);
+  stroke-width: 1.4;
+  opacity: 0.8;
+}
+
+.z-knochen {
+  stroke: var(--text-leise);
+  stroke-width: 1.2;
+  opacity: 0.6;
+}
+
+.z-band {
+  stroke: var(--seite-betroffen);
+  stroke-width: 2;
+}
+
+.z-band-gesund {
+  stroke: var(--seite-gesund);
+  stroke-width: 1.6;
+}
+
+.z-hinweis {
+  stroke: var(--seite-betroffen);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: 0.7;
+}
+
+.z-punkt {
+  fill: var(--seite-betroffen);
+}
+
+.z-punkt-gesund {
+  fill: var(--seite-gesund);
+}
+
+.z-punkt-leise {
+  fill: var(--text-sehr-leise);
+}
+
+.z-korridor {
+  fill: var(--korridor);
+}
+
+@media (max-width: 720px) {
+  .app.app-start {
+    padding-bottom: 0;
+  }
+
+  .start-kopf {
+    flex-wrap: wrap;
+  }
+
+  .start-nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .start-kopf .darstellung {
+    margin-left: auto;
+  }
+
+  .start-karte {
+    min-height: 12rem;
+  }
+
+  .start-zeichnung {
+    width: 42%;
+  }
+}

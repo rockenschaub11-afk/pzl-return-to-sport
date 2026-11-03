@@ -1,11 +1,10 @@
 // Startseite (ENTSCHEIDUNGEN 10a Startseite, Nachtrag 26.10.2026): Bühne mit Titel und Messfenster,
 // darunter Arbeitsbereich mit Einstiegen und den letzten Testungen. Kurven sind modelliert – keine Messdaten.
 
-import { useLiveQuery } from 'dexie-react-hooks'
+import { usePatienten, useTestungen } from '../daten'
 import { useEffect, useRef, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import DarstellungUmschalter from '../Darstellung'
-import { db } from '../db'
 import { phaseNach } from '../katalog'
 import { BEREICHE } from '../navigation'
 import { datumDeutsch } from '../patienten/stammdaten'
@@ -179,8 +178,8 @@ function Symbol({ name }: { name: keyof typeof SYMBOL }) {
 }
 
 export default function Start() {
-  const patienten = useLiveQuery(() => db.patienten.toArray())
-  const testungen = useLiveQuery(() => db.testungen.toArray())
+  const patienten = usePatienten()
+  const testungen = useTestungen()
   const kuerzel = new Map((patienten ?? []).map((p) => [p.id, p]))
   const neueste = nachDatum(testungen ?? []).filter((t) => kuerzel.has(t.patientId))
   const sicherung = useSicherungsStand()

@@ -1,0 +1,131 @@
+/* Design Richtung B „Sportwissenschaft-Dashboard“ (docs/ENTSCHEIDUNGEN.md 10a)
+   Farben aus dem Praxis-Logo, ruhige Flächen, Bewegung nur bei Daten */
+/* Farben: Designsystem (docs/DESIGNKONZEPT.md 10.1). Standard dunkel, umschaltbar auf hell.
+   Die alten Namen (--pzl-blau, --rand, --fehler = „nicht erfüllt“ …) bleiben als Übersetzung, bis die Bausteine umgestellt sind (Etappe 9b, Schritt 3). */
+:root,
+:root[data-theme='dunkel'] {
+  color-scheme: dark;
+  --grund: #22252b;
+  --flaeche: #2d3138;
+  --flaeche-hoch: #353a42;
+  --feld: #25292f;
+  --tief: #191b20;
+  --linie: #3b4048;
+  --linie-stark: #4a505a;
+  --text: #eef1f4;
+  --text-leise: #a4adb8;
+  --text-sehr-leise: #939ca8;
+  --aktion: #eef1f4;
+  --aktion-hover: #d3d8de;
+  --aktion-text: #191b20;
+  --auf-akzent: #10233a;
+  --seite-betroffen: #5ea8ea;
+  --seite-gesund: #36c5d6;
+  --erfuellt: #4fc48d;
+  --knapp: #e9b23f;
+  --nicht-erfuellt: #ff8b77;
+  --korridor: rgb(238 241 244 / 0.11);
+  --fokus: #eef1f4;
+
+  --fehler: #ff8fb1;
+  --karten-rand: transparent;
+  --schatten: none;
+  --schatten-hoch: 0 8px 24px rgb(0 0 0 / 0.35);
+}
+
+:root[data-theme='hell'],
+.bericht {
+  color-scheme: light;
+  --grund: #eceff3;
+  --flaeche: #ffffff;
+  --flaeche-hoch: #f7f8fa;
+  --feld: #f3f5f8;
+  --tief: #1f2329;
+  --linie: #d9dee5;
+  --linie-stark: #c2cad4;
+  --text: #1c222b;
+  --text-leise: #56606d;
+  --text-sehr-leise: #616b78;
+  --aktion: #1f2329;
+  --aktion-hover: #3a414b;
+  --aktion-text: #ffffff;
+  --auf-akzent: #ffffff;
+  --seite-betroffen: #1d71b8;
+  --seite-gesund: #00808f;
+  --erfuellt: #206a42;
+  --knapp: #855600;
+  --nicht-erfuellt: #b21f1f;
+  --korridor: rgb(28 34 43 / 0.08);
+  --fokus: #1c222b;
+
+  --fehler: #b3124e;
+  --karten-rand: #d9dee5;
+  --schatten: 0 1px 2px rgb(10 31 60 / 0.06);
+  --schatten-hoch: 0 4px 16px rgb(10 31 60 / 0.1);
+}
+
+:root {
+  --radius: 10px;
+  --radius-karte: 14px;
+  --radius-klein: 4px;
+
+  --schrift-titel: 'Montserrat', 'Barlow', system-ui, sans-serif;
+  --schrift: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  font-family: var(--schrift);
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--grund);
+  accent-color: var(--aktion);
+  scrollbar-color: var(--linie-stark) transparent;
+  --bewegung-an: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* stehende Leisten dürfen das fokussierte Feld nicht verdecken */
+  scroll-padding-top: 6rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.karte,
+.bericht,
+.meldung {
+  overflow-wrap: break-word;
+}
+
+body {
+  margin: 0;
+  background: var(--grund);
+  font-size: 0.9375rem;
+}
+
+a {
+  color: var(--text);
+}
+
+/* Titel in Montserrat (DESIGNKONZEPT 10.2) */
+h1,
+h1,
+h2,
+h3 {
+  font-family: var(--schrift-titel);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

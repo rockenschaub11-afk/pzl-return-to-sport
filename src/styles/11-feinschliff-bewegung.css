@@ -1,0 +1,211 @@
+/* ---------- Feinschliff: Browser-Flächen, Zustände, Tippziele ---------- */
+
+::selection {
+  background: color-mix(in srgb, var(--text) 22%, transparent);
+}
+
+::placeholder {
+  color: var(--text-sehr-leise);
+  opacity: 1;
+}
+
+a:focus-visible,
+summary:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+  border-radius: var(--radius-klein);
+}
+
+.knopf,
+.auswahl-knopf {
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease-out;
+}
+
+.knopf:active:not(:disabled),
+.auswahl-knopf:active,
+.test-klapp:active,
+.reiter button:active {
+  transform: scale(0.98);
+}
+
+input::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--linie-stark);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  font: 600 0.8125rem var(--schrift);
+  cursor: pointer;
+}
+
+input::file-selector-button:hover {
+  background: var(--flaeche-hoch);
+}
+
+/* Zahlen in der Verlaufstabelle rechtsbündig untereinander */
+.verlauf-tabelle th:nth-child(n + 3),
+.verlauf-tabelle td:nth-child(n + 3) {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tippziele: 44 px auf Touch-Geräten (DESIGNKONZEPT 10.3) */
+@media (pointer: coarse), screen and (max-width: 720px) {
+  .knopf,
+  .auswahl-knopf,
+  .reiter button,
+  .feld input:not([type='checkbox']):not([type='radio']),
+  .feld select,
+  .zahl-feld input {
+    min-height: 2.75rem;
+  }
+
+  .test-klapp {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .test-info-knopf {
+    position: relative;
+  }
+
+  .test-info-knopf::after {
+    content: '';
+    position: absolute;
+    inset: -0.625rem;
+  }
+
+  .knopf-leise {
+    min-height: 2.75rem;
+  }
+
+  .block-sprung a {
+    padding: 0.6rem 0;
+  }
+
+  .liste-filter {
+    min-height: 2.75rem;
+  }
+}
+
+.test-klapp svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.15s ease-out;
+}
+
+.test-klapp[aria-expanded='true'] svg {
+  transform: rotate(90deg);
+}
+
+.dashboard-raster > .karte {
+  margin: 0;
+}
+
+.feld-halb select {
+  max-width: 24rem;
+}
+
+/* ---------- Bewegung: erklärt Daten und Zustand, sonst nichts ---------- */
+
+/* Der Punkt wandert von der vorigen Testung zum aktuellen Wert, die Linie zieht mit; Versatz gedeckelt auf 0,36 s */
+.lsi-punkt.lsi-wandert {
+  animation: lsi-wandern 0.7s var(--bewegung-an) calc(min(var(--stufe), 12) * 30ms) backwards;
+}
+
+.lsi-verbindung.lsi-wandert {
+  stroke-dasharray: 1;
+  animation: lsi-linie 0.7s var(--bewegung-an) calc(min(var(--stufe), 12) * 30ms) backwards;
+}
+
+@keyframes lsi-wandern {
+  from {
+    transform: translateX(var(--weg));
+  }
+}
+
+@keyframes lsi-linie {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+/* Aufklappen nach Klick: Inhalt kommt aus dem Kartenkopf */
+.test-karte-klappt > .test-ergebnis,
+.test-karte-klappt > .test-eingabe,
+.test-karte-klappt > .test-leise {
+  animation: aufklappen 0.22s var(--bewegung-an);
+}
+
+.test-karte-klappt > .test-kurz {
+  animation: einblenden 0.15s ease-out;
+}
+
+@keyframes aufklappen {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes einblenden {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Ampel wechselt beim Eintippen weich, Speicherstand blendet über */
+.ampel-marke {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.05rem 0.6rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.speicher-wechsel {
+  display: inline-block;
+  animation: einblenden 0.18s ease-out;
+}
+
+.test-info-text {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  left: -0.5rem;
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: min(24rem, 80vw);
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius);
+  background: var(--tief);
+  color: #eef1f4;
+  box-shadow: var(--schatten-hoch);
+  font: 400 0.8125rem/1.4 var(--schrift);
+  animation: einblenden 0.12s ease-out;
+}
+
+@media print {
+  .lsi-punkt.lsi-wandert,
+  .lsi-verbindung.lsi-wandert {
+    animation: none;
+  }
+}

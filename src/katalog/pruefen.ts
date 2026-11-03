@@ -1,7 +1,7 @@
 // Prüft die Konfigurationsdateien beim Start. Jede Meldung nennt Datei und Stelle,
 // damit ein Tippfehler in config/ sofort auffällt und nicht still zu falschen Ampeln führt.
 
-import { ARTEN, BLOECKE, MESSGERAETE, PHASEN_IDS, STATUS, VERGLEICHE, type Katalog } from './typen'
+import { ARTEN, BLOECKE, ERFASSUNGS_TYPEN, MESSGERAETE, PHASEN_IDS, STATUS, VERGLEICHE, type Katalog } from './typen'
 
 const istZahl = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v)
 const istText = (v: unknown): v is string => typeof v === 'string' && v.trim().length > 0
@@ -45,6 +45,18 @@ export function pruefeKatalog(k: Katalog): string[] {
     testIds.add(t.id)
     if (!istText(t.name)) melde(wo, 'Name fehlt')
     if (!enthaelt(BLOECKE, t.block)) melde(wo, `unbekannter Block „${t.block}“`)
+    // Erfassungstyp (Audit W5): bekannter Typ, Einheit und Kriterien passend zum Test
+    const erf = t.erfassung as { typ?: unknown; einheit?: unknown; kriterium?: unknown; felder?: unknown } | undefined
+    if (erf !== undefined) {
+      if (!enthaelt(ERFASSUNGS_TYPEN, erf.typ)) melde(wo, `unbekannter Erfassungstyp „${String(erf.typ)}“`)
+      else if (erf.typ === 'versuche' && erf.einheit !== 'cm' && erf.einheit !== 's') melde(wo, 'Erfassung versuche: einheit muss cm oder s sein')
+      else if (erf.typ === 'einzeln' && (!istText(erf.einheit) || !istText(erf.kriterium))) melde(wo, 'Erfassung einzeln: einheit oder kriterium fehlt')
+      else if (erf.typ === 'direkt') {
+        const felder = Array.isArray(erf.felder) ? (erf.felder as { kriterium?: unknown; label?: unknown; einheit?: unknown }[]) : []
+        if (felder.length === 0) melde(wo, 'Erfassung direkt: felder fehlen')
+        for (const f of felder) if (!istText(f.kriterium) || !istText(f.label) || typeof f.einheit !== 'string') melde(wo, 'Erfassung direkt: Feld unvollständig (kriterium, label, einheit)')
+      }
+    }
     if (!enthaelt(MESSGERAETE, t.messgeraet)) melde(wo, `unbekanntes Messgerät „${t.messgeraet}“`)
     if (!Array.isArray(t.phasen) || t.phasen.length === 0) melde(wo, 'keine Phasen')
     t.phasen?.forEach((p) => enthaelt(PHASEN_IDS, p) || melde(wo, `unbekannte Phase „${p}“`))

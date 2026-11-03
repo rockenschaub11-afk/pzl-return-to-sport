@@ -1,0 +1,638 @@
+/* ---------- Phasen und Verlauf (Etappe 7) ---------- */
+
+.phase-zeile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.phase-marke {
+  padding: 0.1rem 0.75rem;
+  border: 1px solid var(--linie-stark);
+  border-radius: 999px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.phase-zeile .hinweis-leise {
+  margin: 0;
+  font-size: 0.9375rem;
+}
+
+.weitere-tests {
+  margin: 0.5rem 0 1.5rem;
+}
+
+.weitere-tests select {
+  max-width: 24rem;
+}
+
+.test-hinweis {
+  margin: 0.5rem 0 0;
+  font-size: 0.9375rem;
+}
+
+.normdaten {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  border-left: 3px solid var(--linie-stark);
+  background: var(--feld);
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+.normdaten p {
+  margin: 0.1rem 0;
+}
+
+.normdaten-kopf {
+  font-weight: 600;
+  color: var(--text-leise);
+}
+
+.verlauf-diagramme {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 1rem 1.5rem;
+}
+
+.diagramm {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+}
+
+.diagramm figcaption {
+  margin-bottom: 0.25rem;
+  color: var(--text);
+  font-family: var(--schrift-titel);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.diagramm-einheit {
+  color: var(--text-leise);
+  font-family: var(--schrift);
+  font-weight: 500;
+}
+
+.diagramm svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.diagramm-raster {
+  stroke: var(--linie);
+}
+
+.diagramm-achse {
+  fill: var(--text-sehr-leise);
+  font-family: var(--schrift);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.diagramm-achse-y {
+  text-anchor: end;
+}
+
+.diagramm-achse-x {
+  text-anchor: middle;
+}
+
+/* Zielkorridor – das einzige Grau im Diagramm */
+.diagramm-korridor {
+  fill: var(--korridor);
+}
+
+.diagramm-phase {
+  stroke: var(--linie-stark);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+.diagramm-phase-text {
+  fill: var(--text-leise);
+  font-family: var(--schrift);
+  font-size: 12px;
+  font-weight: 500;
+  text-anchor: middle;
+}
+
+.diagramm-linie {
+  stroke-dasharray: 1;
+  animation: diagramm-zeichnen 0.8s ease-out both;
+}
+
+@keyframes diagramm-zeichnen {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.diagramm-symbol {
+  font-family: var(--schrift);
+  font-size: 13px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.diagramm-fehlt {
+  fill: none;
+  stroke: var(--text-sehr-leise);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+
+.diagramm-zone {
+  fill: transparent;
+  cursor: pointer;
+  outline: none;
+}
+
+.diagramm-fokus {
+  fill: none;
+  stroke: var(--fokus);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+
+/* Info-Fenster – immer dunkel */
+.diagramm-fenster {
+  position: absolute;
+  top: 2.5rem;
+  z-index: 5;
+  min-width: 220px;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius);
+  background: #191b20;
+  color: #eef1f4;
+  box-shadow: var(--schatten-hoch);
+  font-size: 0.9375rem;
+  pointer-events: none;
+}
+
+.diagramm-fenster-datum {
+  display: block;
+  width: max-content;
+  margin: 0 auto 0.5rem;
+  padding: 0.1rem 0.75rem;
+  border-radius: 999px;
+  background: #eef1f4;
+  color: #191b20;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.diagramm-fenster dl {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.15rem 1rem;
+  margin: 0 0 0.5rem;
+}
+
+.diagramm-fenster-zeile {
+  display: contents;
+}
+
+.diagramm-fenster dt {
+  color: #a4adb8;
+}
+
+.diagramm-fenster dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.diagramm-fenster .ampel-marke.ampel-gruen {
+  color: #4fc48d;
+}
+
+.diagramm-fenster .ampel-marke.ampel-gelb {
+  color: #e9b23f;
+}
+
+.diagramm-fenster .ampel-marke.ampel-rot {
+  color: #f7765f;
+}
+
+.diagramm-fenster .ampel-marke.ampel-offen {
+  color: #a4adb8;
+}
+
+.diagramm-legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.1rem;
+  margin: 0.3rem 0 0;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+.diagramm-legende i {
+  display: inline-block;
+  width: 1.1rem;
+  height: 3px;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+
+.diagramm-legende .diagramm-legende-korridor {
+  height: 0.6rem;
+  border-radius: var(--radius-klein);
+  background: var(--korridor);
+  outline: 1px solid var(--linie);
+}
+
+.diagramm-hinweis {
+  margin: 0.3rem 0 0;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+@media print {
+  .diagramm-fenster,
+  .diagramm-fokus {
+    display: none;
+  }
+
+  .diagramm-linie {
+    animation: none;
+  }
+}
+
+.verlauf-tabelle td {
+  padding-right: 1.25rem;
+}
+
+/* ---------- RTS-Vorschlag und Entscheidung (Etappe 6) ---------- */
+
+.ohne-rahmen {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.feld textarea {
+  width: 100%;
+  max-width: 40rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--linie-stark);
+  border-radius: var(--radius);
+  background: var(--feld);
+  font: inherit;
+  color: inherit;
+  resize: vertical;
+}
+
+.feld textarea:focus-visible {
+  outline: none;
+  border-color: var(--fokus);
+  box-shadow: 0 0 0 1px var(--fokus);
+}
+
+.feld-fehler textarea {
+  border-color: var(--fehler);
+}
+
+.rts-kasten {
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--karten-rand);
+  border-left: 4px solid;
+  border-radius: var(--radius);
+  background: var(--flaeche);
+}
+
+.rts-erfuellt {
+  border-left-color: var(--erfuellt);
+}
+
+.rts-offen {
+  border-left-color: var(--aktion);
+}
+
+.rts-titel {
+  margin: 0;
+  color: var(--text-leise);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.rts-ergebnis {
+  margin: 0.15rem 0 0.4rem;
+  color: var(--text);
+  font-family: var(--schrift-titel);
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.rts-erfuellt .rts-ergebnis,
+.ergebnis-vorschlag.rts-erfuellt strong {
+  color: var(--erfuellt);
+}
+
+.rts-punkte {
+  margin: 0 0 0.4rem !important;
+}
+
+.rts-punkte li {
+  justify-content: flex-start !important;
+  gap: 0.4rem !important;
+}
+
+.rts-punkte li::before {
+  font-weight: 700;
+}
+
+.rts-punkte li.ok::before {
+  content: '✓';
+  color: var(--erfuellt);
+}
+
+.rts-punkte li.nein::before {
+  content: '✗';
+  color: var(--nicht-erfuellt);
+}
+
+.rts-punkte li.warnung::before {
+  content: '⚠';
+  color: var(--knapp);
+}
+
+.rts-hinweis {
+  display: block;
+  margin: 0.4rem 0 0;
+  color: var(--text-leise);
+  font-size: 0.75rem;
+}
+
+.rts-kasten .text-knopf {
+  font-size: 0.9375rem;
+}
+
+.ergebnis {
+  scroll-margin-top: 120px;
+  margin: 1rem 0;
+}
+
+.ergebnis h3 {
+  margin: 1.1rem 0 0.4rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ergebnis-vorschlag {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid;
+  border-radius: var(--radius);
+}
+
+.ergebnis-vorschlag strong {
+  font-size: 1.375rem;
+  color: var(--text);
+}
+
+.ergebnis-acl {
+  margin: 0.75rem 0 0;
+  font-weight: 600;
+}
+
+.ergebnis-liste {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.ergebnis-liste li + li {
+  margin-top: 0.2rem;
+}
+
+.ergebnis-leise {
+  color: var(--text-leise);
+}
+
+.ergebnis .meldung {
+  margin: 0.6rem 0 0;
+}
+
+.entscheidung-wahl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.entscheidung-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 34rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--linie-stark);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.entscheidung-option.gewaehlt {
+  border-color: var(--aktion);
+  background: var(--flaeche-hoch);
+  font-weight: 600;
+}
+
+.entscheidung-option input {
+  accent-color: var(--aktion);
+}
+
+.entscheidung-fertig p {
+  margin: 0.3rem 0;
+}
+
+.klinisch-anders.klinisch-aktiv summary {
+  color: var(--knapp);
+}
+
+.klinisch-anders .auswahl-knopf {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8125rem;
+}
+
+.klinisch-anders .feld {
+  margin: 0.5rem 0 0;
+}
+
+.testung-gesperrt {
+  margin: 0 0 1rem;
+}
+
+fieldset:disabled .zahl-feld input,
+fieldset:disabled input,
+fieldset:disabled select,
+fieldset:disabled textarea {
+  /* abgeschlossen: Werte als Text, ohne Feldfläche (DESIGNKONZEPT 10.4) */
+  border-color: var(--linie);
+  background: transparent;
+  color: var(--text);
+}
+
+fieldset:disabled .auswahl-knopf,
+fieldset:disabled .test-hinzu {
+  cursor: default;
+}
+
+/* ---------- Meloq-Metriken nach ODS (Etappe 5) ---------- */
+
+.ods-marke {
+  display: inline-grid;
+  place-items: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 1px solid var(--linie-stark);
+  border-radius: var(--radius-klein);
+  color: var(--text-leise);
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: 0.05rem;
+  cursor: help;
+}
+
+.ods-output {
+  color: var(--text);
+}
+
+.ods-driver {
+  color: var(--text);
+}
+
+.ods-strategy {
+  color: var(--text-leise);
+}
+
+.ods-erklaerung {
+  margin: 0.5rem 0;
+  font-size: 0.9375rem;
+}
+
+.ods-erklaerung summary {
+  width: fit-content;
+  color: var(--text-leise);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ods-erklaerung[open] {
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius);
+  background: var(--grund);
+}
+
+.ods-erklaerung ul {
+  margin: 0.5rem 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.ods-erklaerung li + li {
+  margin-top: 0.3rem;
+}
+
+.ods-erklaerung p {
+  margin: 0.4rem 0;
+}
+
+.metrik-wahl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.metrik-gruppe {
+  min-width: 13rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--linie);
+  border-radius: var(--radius);
+}
+
+.metrik-gruppe legend {
+  padding: 0 0.25rem;
+  font-weight: 600;
+}
+
+.metrik-gruppe .haken {
+  margin: 0.3rem 0;
+  font-size: 0.9375rem;
+}
+
+.meloq-bereich {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px dashed var(--linie-stark);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+.meloq-kopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.meloq-kopf h5 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.meloq-kopf .hinweis-leise {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.meloq-tabelle tbody th {
+  font-weight: 500;
+  white-space: normal;
+  min-width: 12rem;
+}
+
+.meloq-relativ,
+.meloq-vergleich {
+  color: var(--text-leise);
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.meloq-einstellung > div {
+  margin-top: 1rem;
+}
+
+.meloq-einstellung h3 {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.meloq-einstellung .hinweis-leise {
+  margin: 0.15rem 0 0;
+  font-size: 0.8125rem;
+}

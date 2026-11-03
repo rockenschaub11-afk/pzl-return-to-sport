@@ -1,5 +1,5 @@
 # Veröffentlichen auf GitHub Pages (Etappe 11): bei jedem Push auf master
-# werden Tests ausgeführt, die App gebaut und unter https://rockenschaub11-afk.github.io/pzl-return-to-sport/ bereitgestellt.
+# werden Linter, Unit- und End-to-End-Tests ausgeführt, die App gebaut und unter https://rockenschaub11-afk.github.io/pzl-return-to-sport/ bereitgestellt.
 # Im Repository enthalten ist nur Code – nie Pat.-Daten (die liegen nur im Browser der Laptops).
 name: Veröffentlichen
 
@@ -27,7 +27,17 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run lint
       - run: npm test
+      # End-to-End-Tests in Chromium (nur Testdaten „E2E-…“ in einem frischen Browser) – schlägt einer fehl, wird nicht veröffentlicht
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
       - run: npm run build
         env:
           BASE_PATH: /pzl-return-to-sport/

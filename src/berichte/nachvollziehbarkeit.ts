@@ -5,10 +5,12 @@
 import { KATALOG, protokollNach } from '../katalog'
 import type { Protokoll, TestDef } from '../katalog/typen'
 import type { Seite } from '../patienten/stammdaten'
+import { zahlDe } from '../rechnen/format'
 import { bestwert, variationskoeffizient } from '../rechnen/versuche'
 import { ERFASSUNG, parseZahl, VERSUCHE, type Berechnung, type TestEingabe } from '../testung/erfassung'
+import { versuchFeld, type Reihe } from '../testung/felder'
 
-const zahl = (v: number, nachkomma = 1) => v.toLocaleString('de-AT', { maximumFractionDigits: nachkomma })
+const zahl = (v: number, nachkomma = 1) => zahlDe(v, nachkomma)
 
 // ---------- Protokoll (Punkt 5) ----------
 
@@ -85,13 +87,13 @@ export function nachSeite<T>(links: T, rechts: T, seite: Seite | ''): { betroffe
 export function impulsRichtung(test: TestDef, e: TestEingabe, b: Berechnung, seite: Seite | ''): Richtung | null {
   if (test.id === 'cmj') {
     const n = b.besterVersuch.gesamt
-    const s = n ? nachSeite(parseZahl(e[`v${n}_impL`]), parseZahl(e[`v${n}_impR`]), seite) : null
+    const s = n ? nachSeite(parseZahl(e[versuchFeld('v', n, 'impL')]), parseZahl(e[versuchFeld('v', n, 'impR')]), seite) : null
     return s ? richtung(s.betroffen, s.gesund) : null
   }
   if (test.id === 'sl_cmj') {
     const ng = b.besterVersuch.gesund
     const nb = b.besterVersuch.betroffen
-    return richtung(nb ? parseZahl(e[`b${nb}_imp`]) : null, ng ? parseZahl(e[`g${ng}_imp`]) : null)
+    return richtung(nb ? parseZahl(e[versuchFeld('b', nb, 'imp')]) : null, ng ? parseZahl(e[versuchFeld('g', ng, 'imp')]) : null)
   }
   return null
 }
@@ -131,7 +133,7 @@ function bestIndex(werte: (number | null)[], zeitTest: boolean): number | null {
   return i < 0 ? null : i
 }
 
-const versuche = (e: TestEingabe, praefix: string, feld?: string) => VERSUCHE.map((n) => parseZahl(e[`${praefix}${n}${feld ? `_${feld}` : ''}`]))
+const versuche = (e: TestEingabe, reihe: Reihe, feld?: string) => VERSUCHE.map((n) => parseZahl(e[versuchFeld(reihe, n, feld)]))
 const nr = (n: number | undefined) => (n ? n - 1 : null)
 
 /** Einzelversuche eines Tests – null für Tests ohne Versuche (Klinik, Kraftausdauer, Fragebögen …) oder ohne Eingabe. */

@@ -400,7 +400,18 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - Testkarte: bei der Net-Impulse-Asymmetrie (CMJ, SL-CMJ) steht wie im Bericht, welche Seite schwächer ist.
 - Verlauf: senkrechter Strich = Spanne der Einzelversuche je Testung; graue Marke = VALD-Normdaten an ihrem Zeitpunkt (6/9/12 Mo), nur bei passendem Geschlecht und Altersband, ohne Vergleichsgruppe, ohne Einfluss auf die Ampel (`src/testung/verlaufZusatz.ts`).
 - LSI überall mit einer Nachkommastelle („80,0 %“) – der Befund aus dem E2E-Nachtrag ist damit erledigt. Arztbericht-Notiz nennt die Grenze für „knapp“ aus `regeln.json`.
-- Offen für Philipp: Korridor 90–110 % (Bericht-Audit Punkt 24) beibehalten?; Startseiten-Monitor (modellierte Kurven) als Illustration kennzeichnen?; Spinnennetz im Pat.-Bericht beibehalten?
+- Entschieden (Philipp, 03.11.2026): Korridor 90–110 % bleibt; Startseiten-Monitor bleibt ohne Kennzeichnung (rein dekorativ, keine Messdaten); Spinnennetz im Pat.-Bericht bleibt.
+
+**Nachtrag 03.11.2026 (Visualisierung Stufe 2, Restpunkte, Audit W5, W6, L1, L2, L4, K1–K4 – keine Rechnung, Ampel oder Schwelle geändert):**
+- Kürzel-Seite: „Absolutwerte der letzten Testung zur Phasenschwelle“ (Abstand = Wert − Schwelle in der Einheit des Tests, Balken ab 0, kein Gesamtwert; `src/testung/profil.ts`) und „Testungen im Überblick“ (welcher Test wann gemessen, Status wie im Kopf der Testkarte; `src/testung/abdeckung.ts`).
+- Verlauf: bis zu 4 weitere Größen nebeneinander mit gleicher Zeitachse; die Auswahl merkt sich der Browser je Kürzel (Darstellung, nicht in der Sicherung).
+- Testkarte: Richtung auch bei den Meloq-Werten links/rechts. Sprungleiste: Speicherstand unter dem Kürzel, damit ein langer Hinweis die Sprungziele nicht umbricht.
+- GitHub: vor dem Veröffentlichen laufen Linter, Unit- und E2E-Tests (Chromium); schlägt einer fehl, wird nicht veröffentlicht.
+- W5: Erfassungstyp je Test steht jetzt in `config/tests.json` („erfassung“) und wird beim Start geprüft; ein neuer Test mit bekanntem Typ braucht nur den Katalogeintrag. Ein Test sichert, dass die Zuordnung genau der bisherigen entspricht.
+- W6: `styles.css` ist nach Bereichen in `src/styles/` geteilt (Reihenfolge = Kaskade); 13 von 15 doppelten Selektoren zusammengeführt (`.leer` und `.sprung-kontext` bleiben bewusst getrennt – sie liegen vor bzw. nach einer @media-Regel). Geprüft mit 58 Bildern (Seiten hell/dunkel, Laptop/Handy, Druck): pixelgleich. Die verbleibenden `!important` stehen fast alle im Druck der Berichte.
+- L1: Lesen aus der Datenbank über Hooks in `src/daten.ts` (usePatient, useTestungenVon …). L2: Bericht in `berichte/teile.tsx`, `ArztAnsicht.tsx`, `PatAnsicht.tsx` geteilt; das Namensfeld rendert nur den Kopf neu. L4: Feldnamen der Eingaben in `src/testung/felder.ts` (gespeichert wird wie bisher).
+- K1 gemeinsamer Zahlformatierer `src/rechnen/format.ts`; K2 Katalog ohne `as unknown as`; K3 Erdbeschleunigung über den geprüften Katalog; K4 die zwei Monatsrechnungen sind kommentiert.
+- Offen: W2 (Wieder-Öffnen verwirft Entscheidung) wartet auf Philipps Entscheidung; L3 (Meloq-Import) braucht eine Beispiel-Exportdatei; L5/L6 bewusst nicht.
 
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 

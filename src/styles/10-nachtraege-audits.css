@@ -1,0 +1,369 @@
+/* ---------- Sicherung (Etappe 10) ---------- */
+
+.leiste-punkt {
+  position: absolute;
+  top: 8px;
+  right: 18px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--knapp);
+  box-shadow: 0 0 0 2px var(--tief);
+}
+
+.start-erinnerung {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin: 0;
+  padding: 0.6rem 0.75rem 0.6rem 1rem;
+  border: 1px solid var(--linie-stark);
+  border-left: 4px solid var(--knapp);
+  border-radius: var(--radius);
+  background: var(--flaeche);
+}
+
+.sicherung > form,
+.sicherung > .karte {
+  margin-bottom: 1.25rem;
+}
+
+.import-vorschau ul {
+  margin: 0.25rem 0 0.75rem;
+  padding-left: 1.2rem;
+}
+
+.import-vorschau .meldung {
+  margin: 0.5rem 0;
+}
+
+/* Deaktivierte Knöpfe (DESIGNKONZEPT 10.5): 45 % und kein Hover */
+.knopf:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.knopf:disabled:hover {
+  border-color: var(--linie-stark);
+  background: transparent;
+}
+
+.knopf-haupt:disabled:hover {
+  border-color: var(--aktion);
+  background: var(--aktion);
+}
+
+/* Kurzinfo „i“ neben dem Testnamen (z. B. Stroke-Test) – bei Maus, Fokus oder Tippen */
+.test-info {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.5rem;
+  vertical-align: 2px;
+}
+
+.test-info-knopf:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.test-info-text strong {
+  font-weight: 600;
+}
+
+.test-info-text .kat-quelle {
+  color: #a4adb8;
+}
+
+.test-info:hover .test-info-text,
+.test-info:focus-within .test-info-text,
+.test-info-text.offen {
+  display: flex;
+}
+
+/* Eingabe prüfen (UI-Audit Punkt 1) */
+.zahl-falsch {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.zahl-falsch input {
+  border-color: var(--fehler);
+}
+
+.zahl-fehler {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--fehler);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.zahl-fehler::before {
+  content: '!';
+  font-weight: 700;
+}
+
+/* Karten zuklappen (UI-Audit Punkt 4) */
+.test-kopf-rechts {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.test-klapp {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text-leise);
+  font-size: 1.375rem;
+  cursor: pointer;
+}
+
+.test-klapp:hover {
+  background: var(--flaeche-hoch);
+  color: var(--text);
+}
+
+.test-klapp:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.test-kurz {
+  margin: 0.25rem 0 0;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.testung-block-kopf {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.knopf-leise {
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text-leise);
+  font: 500 0.8125rem var(--schrift);
+  cursor: pointer;
+}
+
+.knopf-leise:hover {
+  color: var(--text);
+}
+
+.knopf-leise:focus-visible {
+  outline: 2px solid var(--fokus);
+  outline-offset: 2px;
+}
+
+.uebersicht-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.uebersicht-w {
+  color: var(--text-leise);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Weniger Chips (UI-Audit Punkt 12): Pille nur im Kartenkopf, in Zeilen und Übersicht Zeichen + Wort */
+.kriterium-ampel .ampel-marke,
+.testung-uebersicht .ampel-marke {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.kriterium-ampel .ampel-marke.ampel-gruen,
+.testung-uebersicht .ampel-marke.ampel-gruen {
+  color: var(--text-leise);
+}
+
+.kriterium-ampel .ampel-marke.ampel-gruen::before,
+.testung-uebersicht .ampel-marke.ampel-gruen::before {
+  color: var(--erfuellt);
+}
+
+/* Zähler in der Sprungleiste (Punkt 5) */
+.sprung-zahl {
+  margin-left: 0.3rem;
+  color: var(--knapp);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.sprung-zahl.sprung-fertig {
+  color: var(--text-leise);
+}
+
+/* Zum Inhalt (Punkt 14) */
+.zum-inhalt {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 50;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius);
+  background: var(--aktion);
+  color: var(--aktion-text);
+  font-weight: 600;
+  transform: translateY(-200%);
+}
+
+.zum-inhalt:focus {
+  transform: none;
+}
+
+.inhalt:focus {
+  outline: none;
+}
+
+/* Seitenvergleich und Diagrammstand (Punkte 6, 7) */
+.seitenvergleich .lsi-text {
+  font-size: 12px;
+}
+
+.seitenvergleich .lsi-name,
+.seitenvergleich .lsi-zeichen {
+  font-size: 13px;
+}
+
+.seitenvergleich .bericht-legende {
+  font-size: 0.75rem;
+}
+
+.dashboard-raster + .verlauf {
+  margin-top: 1.25rem;
+}
+
+.diagramm-stand {
+  margin: 0.15rem 0 0.25rem;
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.bericht .diagramm-stand {
+  font-size: 8pt;
+}
+
+/* Pat.-Liste */
+.liste-filter input {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.liste-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 1rem;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+/* Ziele groß genug (Punkt 15) */
+.test-info-knopf {
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 1.5px solid var(--text-leise);
+  border-radius: 50%;
+  background: none;
+  color: var(--text-leise);
+  font: 600 0.75rem var(--schrift);
+  cursor: help;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.test-protokoll summary,
+.test-mehr summary {
+  width: fit-content;
+  color: var(--text-leise);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.2rem 0;
+}
+
+@media screen and (max-width: 720px) {
+  .block-sprung {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .sprung-kontext {
+    display: none;
+  }
+
+  .test-eingabe,
+  .test-mehr,
+  .liste-rahmen {
+    overflow-x: auto;
+  }
+
+  .zahl-feld input {
+    width: 4.25rem;
+    font-size: 1rem;
+  }
+
+  .test-protokoll summary,
+  .test-mehr summary {
+    padding: 0.6rem 0;
+  }
+
+  .liste-filter {
+    margin: 0.5rem 0 0;
+  }
+}
+
+.kuerzel-wahl input {
+  width: 17rem;
+  max-width: 100%;
+}
+
+/* Speicherfehler und Auffangnetz (Web-Interface-Audit K2, K3) */
+.speicher-status.speicher-fehler,
+.sprung-speicher.speicher-fehler {
+  color: var(--fehler);
+  font-weight: 600;
+}
+
+.auffangnetz {
+  max-width: 36rem;
+  margin: 15vh auto;
+  padding: 1.5rem;
+  border-radius: var(--radius-karte);
+  background: var(--flaeche);
+  color: var(--text);
+  font-family: var(--schrift);
+}
+
+.auffangnetz h1 {
+  margin: 0 0 0.5rem;
+  font: 600 1.375rem var(--schrift-titel);
+}
+
+.auffangnetz p {
+  color: var(--text-leise);
+}

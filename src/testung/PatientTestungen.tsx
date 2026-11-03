@@ -1,4 +1,4 @@
-import { useLiveQuery } from 'dexie-react-hooks'
+import { usePatient, useTestungenVon } from '../daten'
 import { Link, useNavigate } from 'react-router-dom'
 import { db, neueTestung } from '../db'
 import { KATALOG } from '../katalog'
@@ -21,12 +21,9 @@ export function useNeueTestung(patientId: string) {
 /** Testungen eines Kürzels (Reiter „Testungen“ der Kürzel-Seite). */
 export default function PatientTestungen({ patientId, mitKnopf = true }: { patientId: string; mitKnopf?: boolean }) {
   const starten = useNeueTestung(patientId)
-  const testungen = useLiveQuery(
-    () => db.testungen.where('patientId').equals(patientId).reverse().sortBy('datum'),
-    [patientId],
-  )
+  const testungen = useTestungenVon(patientId, 'neueste')
 
-  const patient = useLiveQuery(() => db.patienten.get(patientId), [patientId])
+  const patient = usePatient(patientId)
 
 
 

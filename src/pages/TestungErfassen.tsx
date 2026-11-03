@@ -1,4 +1,4 @@
-import { useLiveQuery } from 'dexie-react-hooks'
+import { useEinstellung, usePatient, useTestung } from '../daten'
 import Frage from '../Frage'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -38,8 +38,8 @@ export default function TestungErfassen() {
   const { id } = useParams()
   const navigate = useNavigate()
   // null = gibt es nicht, undefined = lädt noch
-  const gespeichert = useLiveQuery(async () => (id ? ((await db.testungen.get(id)) ?? null) : null), [id])
-  const patient = useLiveQuery(() => (gespeichert ? db.patienten.get(gespeichert.patientId) : undefined), [gespeichert?.patientId])
+  const gespeichert = useTestung(id)
+  const patient = usePatient(gespeichert?.patientId)
   const [testung, setTestung] = useState<Testung | null>(null)
   const [speichert, setSpeichert] = useState(false)
   const [speicherFehler, setSpeicherFehler] = useState(false)
@@ -65,7 +65,7 @@ export default function TestungErfassen() {
   const [klappen, setKlappen] = useState<Record<string, boolean>>({})
   useEffect(() => setKlappen({}), [id])
   const meloqAuswahl = useMeloqAuswahl()
-  const therapeutStandard = useLiveQuery(async () => ((await db.einstellungen.get(THERAPEUT_SCHLUESSEL))?.wert as string | undefined) ?? '', [])
+  const therapeutStandard = useEinstellung(THERAPEUT_SCHLUESSEL, '')
 
   // einmal laden – danach ist der lokale Stand führend
   useEffect(() => {
@@ -365,7 +365,9 @@ export default function TestungErfassen() {
 
       <nav className="block-sprung" aria-label="Blöcke">
         <span className="sprung-kontext">
-          <strong>{patient.kuerzel}</strong> · {ART_TEXT[ph.art]} · {phaseNach(phase).name}
+          <span>
+            <strong>{patient.kuerzel}</strong> · {ART_TEXT[ph.art]} · {phaseNach(phase).name}
+          </span>
           <span className={`sprung-speicher${speicherFehler || konflikt ? ' speicher-fehler' : ''}`}>
             <span key={speicherText} className="speicher-wechsel">
               {speicherText}
@@ -425,6 +427,7 @@ export default function TestungErfassen() {
                           koerpergewichtKg={kg}
                           meloqAuswahl={meloqAuswahl}
                           richtung={impulsRichtung(t, testung.eingaben[t.id] ?? {}, a.berechnung, patient.seite)}
+                          betroffeneSeite={patient.seite}
                           hinweise={[
                             ...(t.messgeraet === 'dynamo' && hhdZuFrueh
                               ? [`Read: HHD-Krafttests erst ab ca. ${KATALOG.regeln.hhdAbWochen} Wochen post-OP – jetzt ${wochen} Wochen.`]

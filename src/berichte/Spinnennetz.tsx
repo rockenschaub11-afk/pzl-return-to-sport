@@ -5,6 +5,7 @@
 // beginnt die Mitte tiefer (in 10er-Schritten), damit kein Wert in der Mitte verschwindet. Vorige Testung als hohler Punkt.
 
 import type { Ampel } from '../rechnen/bewertung'
+import { zahlDe } from '../rechnen/format'
 import { AMPEL_ZEICHEN } from './bericht'
 
 export interface NetzAchse {
@@ -26,7 +27,7 @@ const MAX = 120
 const MIN = 50
 const RINGE = [70, 100, 120]
 
-const zahl = (v: number) => v.toLocaleString('de-AT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+const zahl = (v: number) => zahlDe(v, 1, true)
 const mitZeichen = (a: NetzAchse) => `${zahl(a.lsi)} %${a.ampel ? ` ${AMPEL_ZEICHEN[a.ampel]}` : ''}`
 const ampelKlasse = (a: NetzAchse) => (a.ampel ? ` netz-${a.ampel}` : '')
 

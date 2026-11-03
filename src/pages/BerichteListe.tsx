@@ -1,7 +1,6 @@
-import { useLiveQuery } from 'dexie-react-hooks'
+import { usePatienten, useTestungen } from '../daten'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { db } from '../db'
 import Laedt from '../Laedt'
 import { phaseNach } from '../katalog'
 import { datumDeutsch, normalisiereKuerzel } from '../patienten/stammdaten'
@@ -9,8 +8,8 @@ import { ART_TEXT, phasenStand, statusText } from '../testung/ablauf'
 
 /** Menüpunkt „Berichte“: alle Testungen, je Testung Arztbericht und Pat./Trainer-Bericht. */
 export default function BerichteListe() {
-  const testungen = useLiveQuery(() => db.testungen.toArray())
-  const patienten = useLiveQuery(() => db.patienten.toArray())
+  const testungen = useTestungen()
+  const patienten = usePatienten()
   const [suche, setSuche] = useState('')
 
   if (!testungen || !patienten) return <Laedt />

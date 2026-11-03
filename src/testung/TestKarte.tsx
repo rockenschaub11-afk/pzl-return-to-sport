@@ -2,9 +2,11 @@ import { useId, useState, type ReactNode } from 'react'
 import { boxStandard, RICHTUNG_ARZT, type Richtung } from '../berichte/nachvollziehbarkeit'
 import { protokollNach } from '../katalog'
 import type { TestDef } from '../katalog/typen'
+import type { Seite } from '../patienten/stammdaten'
 import type { KriteriumErgebnis, TestErgebnis } from '../rechnen/bewertung'
 import { einheitFest, ERFASSUNG, HQ_HINWEIS, istKeineZahl, KOOS_SUBSKALEN, VERSUCHE, type Berechnung, type hqQuotient, type TestEingabe } from './erfassung'
 import type { KartenStatus } from './kartenStatus'
+import { koosFeld, versuchFeld } from './felder'
 import { istMeloqTest } from '../katalog/meloq'
 import Ladebalken, { AmpelMarke } from './Ladebalken'
 import FragebogenRechner from './FragebogenRechner'
@@ -38,6 +40,8 @@ interface Props {
   hq?: ReturnType<typeof hqQuotient>
   /** Richtung der Impuls-Asymmetrie (CMJ, SL-CMJ) – betroffene Seite schwächer/stärker */
   richtung?: Richtung | null
+  /** betroffene Seite – für die Richtung bei den Meloq-Werten links/rechts */
+  betroffeneSeite?: Seite | ''
   /** Normdaten als graue Zusatzinfo (ohne Einfluss auf die Ampel) */
   normdaten?: NormAnzeige | null
   /** Datum der Testung – für den Standard der Boxhöhe (bis 28.10.2026 30 cm) */
@@ -117,11 +121,11 @@ function Eingaben({ test, eingabe: e, setze, seiten, berechnung }: Props) {
       <Knoepfe optionen={[['kg', 'kg'], ['N', 'N']]} wert={e.einheit === 'N' ? 'N' : 'kg'} onChange={(v) => setze('einheit', v || 'kg')} />
     </div>
   )
-  const seitenVersuche = (einheit: string, praefix = '') =>
+  const seitenVersuche = (einheit: string) =>
     (['g', 'b'] as const).map((s) => ({
       titel: s === 'g' ? seiten.gesund : seiten.betroffen,
       zellen: [
-        ...VERSUCHE.map((n) => <Zahl key={n} wert={e[`${praefix}${s}${n}`]} onChange={(v) => setze(`${praefix}${s}${n}`, v)} label={`${s === 'g' ? seiten.gesund : seiten.betroffen} Versuch ${n}`} />),
+        ...VERSUCHE.map((n) => <Zahl key={n} wert={e[versuchFeld(s, n)]} onChange={(v) => setze(versuchFeld(s, n), v)} label={`${s === 'g' ? seiten.gesund : seiten.betroffen} Versuch ${n}`} />),
         best(s === 'g' ? berechnung.seiten?.gesund : berechnung.seiten?.betroffen, einheit),
       ],
     }))
@@ -134,7 +138,7 @@ function Eingaben({ test, eingabe: e, setze, seiten, berechnung }: Props) {
             <span className="raster-versuch">Versuch {n}</span>
           </>
         ),
-        zellen: felder.map(([f, label]) => <Zahl key={f} wert={e[`${s}${n}_${f}`]} onChange={(v) => setze(`${s}${n}_${f}`, v)} label={`${s === 'g' ? seiten.gesund : seiten.betroffen} Versuch ${n} ${label}`} />),
+        zellen: felder.map(([f, label]) => <Zahl key={f} wert={e[versuchFeld(s, n, f)]} onChange={(v) => setze(versuchFeld(s, n, f), v)} label={`${s === 'g' ? seiten.gesund : seiten.betroffen} Versuch ${n} ${label}`} />),
       })),
     )
 
@@ -171,7 +175,7 @@ function Eingaben({ test, eingabe: e, setze, seiten, berechnung }: Props) {
       return (
         <div className="seiten-paar">
           {KOOS_SUBSKALEN.map(([id, name]) => (
-            <Zahl key={id} wert={e[`koos_${id}`]} onChange={(v) => setze(`koos_${id}`, v)} label={name} einheit={name} breit />
+            <Zahl key={id} wert={e[koosFeld(id)]} onChange={(v) => setze(koosFeld(id), v)} label={name} einheit={name} breit />
           ))}
         </div>
       )
@@ -193,7 +197,7 @@ function Eingaben({ test, eingabe: e, setze, seiten, berechnung }: Props) {
           {einheitWahl}
           <Raster
             kopf={['Versuch 1', 'Versuch 2', 'Versuch 3']}
-            zeilen={[{ titel: `Peak Force (${einheit})`, zellen: VERSUCHE.map((n) => <Zahl key={n} wert={e[`v${n}`]} onChange={(v) => setze(`v${n}`, v)} label={`Versuch ${n}`} />) }]}
+            zeilen={[{ titel: `Peak Force (${einheit})`, zellen: VERSUCHE.map((n) => <Zahl key={n} wert={e[versuchFeld('v', n)]} onChange={(v) => setze(versuchFeld('v', n), v)} label={`Versuch ${n}`} />) }]}
           />
         </>
       )
@@ -204,7 +208,7 @@ function Eingaben({ test, eingabe: e, setze, seiten, berechnung }: Props) {
           kopf={['Sprunghöhe (cm)', 'Net Impulse L (kg·s)', 'Net Impulse R (kg·s)', 'Contraction Time (ms)']}
           zeilen={VERSUCHE.map((n) => ({
             titel: `Versuch ${n}`,
-            zellen: (['hoehe', 'impL', 'impR', 'ct'] as const).map((f) => <Zahl key={f} wert={e[`v${n}_${f}`]} onChange={(v) => setze(`v${n}_${f}`, v)} label={`Versuch ${n} ${f}`} />),
+            zellen: (['hoehe', 'impL', 'impR', 'ct'] as const).map((f) => <Zahl key={f} wert={e[versuchFeld('v', n, f)]} onChange={(v) => setze(versuchFeld('v', n, f), v)} label={`Versuch ${n} ${f}`} />),
           }))}
         />
       )
@@ -390,6 +394,7 @@ export default function TestKarte(props: Props) {
           berechnung={b}
           auswahl={props.meloqAuswahl}
           kg={props.koerpergewichtKg}
+          seite={props.betroffeneSeite}
         />
       )}
 

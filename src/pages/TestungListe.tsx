@@ -1,7 +1,7 @@
-import { useLiveQuery } from 'dexie-react-hooks'
+import { usePatienten, useTestungen } from '../daten'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { db, neueTestung } from '../db'
+import { neueTestung } from '../db'
 import Laedt from '../Laedt'
 import { KATALOG } from '../katalog'
 import { datumDeutsch, isoDatum } from '../patienten/stammdaten'
@@ -9,8 +9,8 @@ import { ART_TEXT, fortschritt, monateBisTestung, phaseAusMonaten, phasenStand, 
 
 export default function TestungListe() {
   const navigate = useNavigate()
-  const testungen = useLiveQuery(() => db.testungen.orderBy('geaendertAm').reverse().toArray())
-  const patienten = useLiveQuery(() => db.patienten.orderBy('kuerzelNorm').toArray())
+  const testungen = useTestungen('zuletzt')
+  const patienten = usePatienten('kuerzel')
   const [eingabe, setEingabe] = useState('')
 
   if (!testungen || !patienten) return <Laedt />

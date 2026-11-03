@@ -3,74 +3,19 @@
 // Eingaben werden als Text gespeichert, genau wie getippt („7,5“) – gerechnet wird erst hier.
 
 import { KATALOG } from '../katalog'
-import type { TestDef } from '../katalog/typen'
+import type { Erfassung, TestDef } from '../katalog/typen'
 import type { Eingabe } from '../rechnen/bewertung'
 import { alsNewton, nmProKg, nProKg, nsProKg } from '../rechnen/einheiten'
 import { asymmetrie, bestwert, lsi, variationskoeffizient } from '../rechnen/versuche'
+import { versuchFeld, type Reihe } from './felder'
 
 /** Felder eines Tests, z. B. { g1: '21,4', b1: '18,9', einheit: 'kg' } */
 export type TestEingabe = Record<string, string>
 
-export type Erfassung =
-  | { typ: 'auswahl' }
-  | { typ: 'defizit' }
-  | { typ: 'flexion' }
-  | { typ: 'janein' }
-  | { typ: 'kraft' }
-  | { typ: 'cmj' }
-  | { typ: 'sl_sprung' }
-  | { typ: 'sl_dj' }
-  | { typ: 'imtp' }
-  | { typ: 'versuche'; einheit: 'cm' | 's' }
-  /** ein Wert je Seite; kriterium = welches Kriterium den Wert der betroffenen Seite bekommt */
-  | { typ: 'einzeln'; einheit: string; kriterium: string }
-  /** Werte direkt wie am Gerät abgelesen, je Feld ein Kriterium (Verlaufstests, Etappe 7) */
-  | { typ: 'direkt'; felder: { kriterium: string; label: string; einheit: string }[] }
-  | { typ: 'score' }
-  | { typ: 'koos' }
+export type { Erfassung } from '../katalog/typen'
 
-export const ERFASSUNG: Record<string, Erfassung> = {
-  erguss: { typ: 'auswahl' },
-  rom_extension: { typ: 'defizit' },
-  rom_flexion: { typ: 'flexion' },
-  slr: { typ: 'janein' },
-  hhd_knie_ext: { typ: 'kraft' },
-  hhd_knie_flex: { typ: 'kraft' },
-  hhd_knie_flex_60: { typ: 'kraft' },
-  hhd_knie_flex_30: { typ: 'kraft' },
-  hhd_hueft_abd: { typ: 'kraft' },
-  plantarflexion: { typ: 'kraft' },
-  cmj: { typ: 'cmj' },
-  sl_cmj: { typ: 'sl_sprung' },
-  sl_dj: { typ: 'sl_dj' },
-  imtp: { typ: 'imtp' },
-  single_hop: { typ: 'versuche', einheit: 'cm' },
-  triple_hop: { typ: 'versuche', einheit: 'cm' },
-  crossover_hop: { typ: 'versuche', einheit: 'cm' },
-  timed_hop: { typ: 'versuche', einheit: 's' },
-  side_hop: { typ: 'einzeln', einheit: 'Wdh.', kriterium: 'wdh' },
-  sl_bridge: { typ: 'einzeln', einheit: 'Wdh.', kriterium: 'wdh' },
-  sl_calf_raise: { typ: 'einzeln', einheit: 'Wdh.', kriterium: 'wdh' },
-  sl_sit_to_stand: { typ: 'einzeln', einheit: 'Wdh.', kriterium: 'wdh' },
-  // Verlaufstests (Etappe 7)
-  sl_squat: { typ: 'einzeln', einheit: '°', kriterium: 'winkel' },
-  sl_balance: { typ: 'einzeln', einheit: 'mm', kriterium: 'schwankweg' },
-  bridge_beidbeinig: { typ: 'direkt', felder: [{ kriterium: 'wdh', label: 'Wiederholungen', einheit: 'Wdh.' }] },
-  calf_raise_beidbeinig: { typ: 'direkt', felder: [{ kriterium: 'wdh', label: 'Wiederholungen', einheit: 'Wdh.' }] },
-  kniebeuge_asym: { typ: 'direkt', felder: [{ kriterium: 'asymmetrie', label: 'Asymmetrie (Meloq)', einheit: '%' }] },
-  hop_platte: { typ: 'direkt', felder: [{ kriterium: 'impuls_asymmetrie', label: 'Impuls-Asymmetrie (Meloq)', einheit: '%' }] },
-  dj_bilateral: {
-    typ: 'direkt',
-    felder: [
-      { kriterium: 'hoehe', label: 'Sprunghöhe (bester Versuch)', einheit: 'cm' },
-      { kriterium: 'asymmetrie', label: 'Asymmetrie (Meloq)', einheit: '%' },
-    ],
-  },
-  acl_rsi: { typ: 'score' },
-  ikdc: { typ: 'score' },
-  tampa: { typ: 'score' },
-  koos: { typ: 'koos' },
-}
+/** Erfassungstyp je Test-id – aus config/tests.json (Audit W5), geprüft beim Start in katalog/pruefen.ts. */
+export const ERFASSUNG: Record<string, Erfassung> = Object.fromEntries(KATALOG.tests.flatMap((t) => (t.erfassung ? [[t.id, t.erfassung]] : [])))
 
 export const KOOS_SUBSKALEN = [
   ['symptome', 'Symptome'],
@@ -129,18 +74,17 @@ interface Kontext {
   regeln?: typeof KATALOG.regeln
 }
 
-const versuche = (e: TestEingabe, praefix: string, feld?: string) =>
-  VERSUCHE.map((n) => parseZahl(e[`${praefix}${n}${feld ? `_${feld}` : ''}`]))
+const versuche = (e: TestEingabe, reihe: Reihe, feld?: string) => VERSUCHE.map((n) => parseZahl(e[versuchFeld(reihe, n, feld)]))
 
 /** Versuch mit der größten Sprunghöhe – seine Werte zählen gemeinsam (Etappe-4-Frage 5). */
-function besterSprung(e: TestEingabe, praefix: string, felder: string[]) {
+function besterSprung(e: TestEingabe, reihe: Reihe, felder: string[]) {
   let bester: Record<string, number | null> | null = null
   for (const n of VERSUCHE) {
-    const h = parseZahl(e[`${praefix}${n}_hoehe`])
+    const h = parseZahl(e[versuchFeld(reihe, n, 'hoehe')])
     if (h === null) continue
     if (!bester || h > (bester.hoehe ?? -Infinity)) {
       bester = { hoehe: h, n }
-      for (const f of felder) bester[f] = parseZahl(e[`${praefix}${n}_${f}`])
+      for (const f of felder) bester[f] = parseZahl(e[versuchFeld(reihe, n, f)])
     }
   }
   return bester

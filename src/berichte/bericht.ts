@@ -37,6 +37,8 @@ import {
   type ProtokollTeil,
   type RohTest,
 } from './nachvollziehbarkeit'
+import { prozentDe, zahlDe } from '../rechnen/format'
+import { koosFeld } from '../testung/felder'
 import { normdatenFuer } from '../testung/normdaten'
 import { pflichtStatus, pflichtVerfehlt, RTS_TEXT, rtsVorschlag, wertText, zielText, type RtsVorschlag } from '../testung/rts'
 
@@ -44,7 +46,7 @@ import { pflichtStatus, pflichtVerfehlt, RTS_TEXT, rtsVorschlag, wertText, zielT
 export const AMPEL_ZEICHEN: Record<Ampel, string> = { gruen: '✓', gelb: '~', rot: '✗' }
 
 const zahl = (v: number | null | undefined, nachkomma = 1) =>
-  v === null || v === undefined ? '–' : v.toLocaleString('de-AT', { maximumFractionDigits: nachkomma })
+  v === null || v === undefined ? '–' : zahlDe(v, nachkomma)
 
 const mitEinheit = (v: number | null | undefined, einheit: string) => {
   if (v === null || v === undefined) return '–'
@@ -326,7 +328,7 @@ function arztTest(
     kriterien.push({
       bezeichnung: 'LSI zur Vorverletzung',
       status: 'Info',
-      wert: `${b.lsiVorverletzung.toLocaleString('de-AT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`,
+      wert: prozentDe(b.lsiVorverletzung),
       wertHinweis: null,
       ziel: '–',
       bewertung: { ampel: null, text: 'Info (ohne Ampel)' },
@@ -344,7 +346,7 @@ function arztTest(
   if (hopBein) zusatz.push(hopBein)
   if (test.id === 'koos') {
     const e = testung.eingaben.koos ?? {}
-    const teile = KOOS_SUBSKALEN.filter(([id]) => parseZahl(e[`koos_${id}`]) !== null).map(([id, name]) => `${name} ${zahl(parseZahl(e[`koos_${id}`]))}`)
+    const teile = KOOS_SUBSKALEN.filter(([id]) => parseZahl(e[koosFeld(id)]) !== null).map(([id, name]) => `${name} ${zahl(parseZahl(e[koosFeld(id)]))}`)
     if (teile.length > 0) zusatz.push(`KOOS-Subskalen: ${teile.join(' · ')}`)
   }
   const anders = vorschlag?.pflicht.find((p) => p.test.id === test.id)?.klinischAnders

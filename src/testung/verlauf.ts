@@ -178,7 +178,10 @@ export function verlaufsDaten(
     .filter((p) => p.gesund !== null || p.betroffen !== null || p.wert !== null)
 }
 
-/** Monate seit OP mit Nachkommastellen (für die Lage auf der Zeitachse; die Phase rechnet weiter mit vollen Monaten). */
+/**
+ * Monate seit OP mit Nachkommastellen (Tage / 30,4375) – nur für die Lage auf der Zeitachse.
+ * Phase und Zeitkriterium rechnen weiter mit vollen Kalendermonaten (monateSeit in stammdaten.ts), Audit K4.
+ */
 export function monateGenau(opDatum: string, datum: string): number | null {
   if (!opDatum || !datum) return null
   const tage = (new Date(`${datum}T12:00:00`).getTime() - new Date(`${opDatum}T12:00:00`).getTime()) / 86_400_000

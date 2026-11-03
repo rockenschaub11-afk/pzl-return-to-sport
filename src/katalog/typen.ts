@@ -47,6 +47,27 @@ export interface Kriterium {
   hinweis?: string
 }
 
+/** Wie ein Test erfasst und gerechnet wird – der Typ steht in tests.json, die Logik dazu im Code (erfassung.ts, TestKarte.tsx). Audit W5. */
+export type Erfassung =
+  | { typ: 'auswahl' }
+  | { typ: 'defizit' }
+  | { typ: 'flexion' }
+  | { typ: 'janein' }
+  | { typ: 'kraft' }
+  | { typ: 'cmj' }
+  | { typ: 'sl_sprung' }
+  | { typ: 'sl_dj' }
+  | { typ: 'imtp' }
+  | { typ: 'versuche'; einheit: 'cm' | 's' }
+  /** ein Wert je Seite; kriterium = welches Kriterium den Wert der betroffenen Seite bekommt */
+  | { typ: 'einzeln'; einheit: string; kriterium: string }
+  /** Werte direkt wie am Gerät abgelesen, je Feld ein Kriterium (Verlaufstests, Etappe 7) */
+  | { typ: 'direkt'; felder: { kriterium: string; label: string; einheit: string }[] }
+  | { typ: 'score' }
+  | { typ: 'koos' }
+
+export const ERFASSUNGS_TYPEN = ['auswahl', 'defizit', 'flexion', 'janein', 'kraft', 'cmj', 'sl_sprung', 'sl_dj', 'imtp', 'versuche', 'einzeln', 'direkt', 'score', 'koos'] as const satisfies readonly Erfassung['typ'][]
+
 export interface TestDef {
   id: string
   name: string
@@ -62,6 +83,8 @@ export interface TestDef {
   /** Kurzinfo zum Test (i neben dem Namen), z. B. Ablauf und Stufen des Stroke-Tests */
   info?: { titel: string; zeilen: string[]; quelle: string }
   kriterien: Kriterium[]
+  /** Erfassungstyp (fehlt = Test wird nicht erfasst) */
+  erfassung?: Erfassung
 }
 
 export interface Protokoll {

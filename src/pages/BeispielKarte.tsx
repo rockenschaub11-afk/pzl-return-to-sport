@@ -1,13 +1,12 @@
-import { useLiveQuery } from 'dexie-react-hooks'
+import { usePatientMitKuerzel } from '../daten'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BEISPIEL_KUERZEL, beispielAnlegen, beispielLoeschen } from '../beispiel'
-import { db } from '../db'
 
 /** Beispiel-Pat. zum Durchklicken und Einschulen (Einstellungen/Info). */
 export default function BeispielKarte() {
   const navigate = useNavigate()
-  const vorhanden = useLiveQuery(() => db.patienten.where('kuerzelNorm').equals(BEISPIEL_KUERZEL).first(), [])
+  const vorhanden = usePatientMitKuerzel(BEISPIEL_KUERZEL)
   const [fragen, setFragen] = useState(false)
 
   return (

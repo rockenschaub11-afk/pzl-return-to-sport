@@ -1,6 +1,6 @@
-import { useLiveQuery } from 'dexie-react-hooks'
+import { useEinstellung, useTestungenVon } from '../daten'
 import { useSearchParams } from 'react-router-dom'
-import { db } from '../db'
+import { speichereEinstellung } from '../db'
 import { phaseNach } from '../katalog'
 import { datumDeutsch, type Patient } from '../patienten/stammdaten'
 import LinienDiagramm from './LinienDiagramm'
@@ -8,9 +8,14 @@ import { nachBloecken, verfuegbareOptionen } from './verlauf'
 import { verlaufsDiagramme } from './verlaufDiagramme'
 const zahl = (v: number | null) => (v === null ? '–' : v.toLocaleString('de-AT', { maximumFractionDigits: 1 }))
 
+/** Weitere Verläufe nebeneinander (Visualisierung Stufe 2, Konzept D) – Darstellung dieses Browsers, nicht in der Sicherung. */
+const MAX_WEITERE = 4
+const weitereSchluessel = (patientId: string) => `verlaufWeitere:${patientId}`
+
 /** Verlauf über alle Testungen eines Kürzels (Etappe-7-Frage 6). */
 export default function VerlaufBereich({ patient }: { patient: Patient }) {
-  const testungen = useLiveQuery(() => db.testungen.where('patientId').equals(patient.id).toArray(), [patient.id])
+  const testungen = useTestungenVon(patient.id)
+  const weitere = useEinstellung<string[]>(weitereSchluessel(patient.id), [])
   const [adresse, setAdresse] = useSearchParams()
   const wahl = adresse.get('verlauf') ?? ''
   const setWahl = (w: string) =>
@@ -21,7 +26,7 @@ export default function VerlaufBereich({ patient }: { patient: Patient }) {
       },
       { replace: true },
     )
-  if (!testungen) return null
+  if (!testungen || !weitere) return null
 
   const optionen = verfuegbareOptionen(patient, testungen)
   if (optionen.length === 0) {
@@ -34,6 +39,9 @@ export default function VerlaufBereich({ patient }: { patient: Patient }) {
   }
   const option = optionen.find((o) => o.id === wahl) ?? optionen.find((o) => o.id === 'hhd_knie_ext') ?? optionen[0]
   const { punkte, diagramme } = verlaufsDiagramme(patient, testungen, option)
+  const zusatz = weitere.map((id) => optionen.find((o) => o.id === id)).filter((o): o is (typeof optionen)[number] => !!o && o.id !== option.id)
+  const merke = (liste: string[]) => void speichereEinstellung(weitereSchluessel(patient.id), liste)
+  const hinzufuegbar = optionen.filter((o) => o.id !== option.id && !zusatz.some((z) => z.id === o.id))
 
   return (
     <div className="karte block verlauf">
@@ -60,6 +68,43 @@ export default function VerlaufBereich({ patient }: { patient: Patient }) {
           <LinienDiagramm key={d.titel} {...d} />
         ))}
       </div>
+
+      <section className="verlauf-weitere" aria-label="Weitere Verläufe">
+        <div className="block-kopf">
+          <h3 className="ods-titel">Weitere Verläufe nebeneinander</h3>
+          {zusatz.length < MAX_WEITERE && hinzufuegbar.length > 0 && (
+            <label className="feld feld-inline">
+              <span className="sr-only">Weiteren Verlauf hinzufügen</span>
+              <select value="" onChange={(e) => e.target.value && merke([...zusatz.map((z) => z.id), e.target.value])}>
+                <option value="">+ Verlauf hinzufügen</option>
+                {nachBloecken(hinzufuegbar).map((g) => (
+                  <optgroup key={g.name} label={g.name}>
+                    {g.optionen.map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {o.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
+        {zusatz.length === 0 ? (
+          <p className="hinweis-leise">Bis zu {MAX_WEITERE} Größen mit gleicher Zeitachse, z. B. Kraft, Sprung, Hop und ACL-RSI – die Auswahl merkt sich dieser Browser je Kürzel.</p>
+        ) : (
+          <div className="verlauf-diagramme verlauf-klein">
+            {zusatz.map((o) => (
+              <div key={o.id} className="verlauf-kachel">
+                <LinienDiagramm {...verlaufsDiagramme(patient, testungen, o).diagramme[0]} />
+                <button type="button" className="knopf-leise verlauf-weg" onClick={() => merke(zusatz.filter((z) => z.id !== o.id).map((z) => z.id))} aria-label={`${o.name} entfernen`}>
+                  entfernen
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       <details className="test-mehr">
         <summary>Werte als Tabelle</summary>
