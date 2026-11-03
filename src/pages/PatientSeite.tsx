@@ -3,6 +3,8 @@ import { useMemo } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { arztBericht, patBericht } from '../berichte/bericht'
 import LsiUebersicht from '../berichte/LsiUebersicht'
+import OdsVergleich, { OdsHinweis } from '../berichte/OdsVergleich'
+import { odsFuerTestung } from '../berichte/odsZeilen'
 import { lsiUebersicht } from '../berichte/lsiZeilen'
 import { db, type Testung } from '../db'
 import Laedt from '../Laedt'
@@ -126,6 +128,7 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
   // Alle Seitenvergleiche der letzten Testung statt einzelner Kennzahlen (UI-Audit Punkt 6) – Werte wie im Arztbericht
   const lsi = useMemo(() => (letzte ? lsiUebersicht(arztBericht(patient, letzte), patBericht(patient, letzte, testungen)) : []), [patient, letzte, testungen])
   const vorigeDatum = useMemo(() => (letzte ? patBericht(patient, letzte, testungen).vorigeDatum : null), [patient, letzte, testungen])
+  const ods = useMemo(() => (letzte ? odsFuerTestung(patient, letzte) : []), [patient, letzte])
 
   return (
     <>
@@ -196,6 +199,18 @@ function Uebersicht({ patient, testungen, zuTestungen }: { patient: Patient; tes
           {lsi.length > 0 ? <LsiUebersicht zeilen={lsi} vorigeDatum={vorigeDatum} zeile={21} bewegt /> : <p className="hinweis-leise">Sobald Tests mit Seitenvergleich erfasst sind, erscheint hier der LSI je Test.</p>}
         </section>
       </div>
+      {ods.length > 0 && (
+        <section className="karte block seitenvergleich" aria-label="Sprünge nach Output, Driver und Strategy">
+          <h2 className="block-titel">Sprünge: Ergebnis, Antrieb, Strategie</h2>
+          {ods.map((v) => (
+            <div key={v.test} className="ods-block">
+              <h3 className="ods-titel">{v.name}</h3>
+              <OdsVergleich vergleich={v} zeile={21} />
+            </div>
+          ))}
+          <OdsHinweis />
+        </section>
+      )}
       <VerlaufBereich patient={patient} />
     </>
   )

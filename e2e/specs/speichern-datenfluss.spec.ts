@@ -70,13 +70,13 @@ test.describe('Datenfluss zwischen den Modulen', () => {
     await expect(page.locator('#ergebnis')).toContainText(satz)
 
     await app.kuerzelSeite('E2E-FLUSS')
-    // Seitenvergleich zeigt eine Nachkommastelle nur, wenn sie nicht 0 ist („80 %“)
-    await expect(page.getByRole('img', { name: /^LSI je Test:/ })).toHaveAttribute('aria-label', /Knie-Extension \(HHD\) 80 % ~/)
+    // Seitenvergleich mit einer Nachkommastelle wie überall („80,0 %“)
+    await expect(page.getByRole('img', { name: /^LSI je Test:/ })).toHaveAttribute('aria-label', /Knie-Extension \(HHD\) 80,0 % ~/)
 
     await app.oeffne(`/berichte/${id}/arzt`)
     const arzt = page.getByRole('article', { name: 'Arztbericht' })
     await expect(arzt).toContainText(satz)
-    await expect(arzt.getByRole('img', { name: /^LSI je Test:/ })).toHaveAttribute('aria-label', /Knie-Extension \(HHD\) 80 % ~/)
+    await expect(arzt.getByRole('img', { name: /^LSI je Test:/ })).toHaveAttribute('aria-label', /Knie-Extension \(HHD\) 80,0 % ~/)
 
     await app.oeffne(`/berichte/${id}/pat`)
     const pat = page.getByRole('article', { name: 'Pat./Trainer-Bericht' })

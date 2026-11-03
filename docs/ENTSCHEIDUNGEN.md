@@ -394,6 +394,14 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - Bereiche: Berechnungen, Speichern/Datenfluss (Testkarte = Kürzel-Seite = Arzt- und Pat.-Bericht), Eingabefehler, Navigation, Berichte (Name nie im Speicher), Sicherung (Export → Import auf frischem Speicher), Darstellung (390/768/1440 px, Pat.-Bericht 1 A4-Seite).
 - Befund ohne Änderung: Der Seitenvergleich zeigt „80 %“, Testkarte und Berichtstext „80,0 %“ (eine Nachkommastelle nur, wenn sie nicht 0 ist).
 
+**Nachtrag 03.11.2026 (Visualisierung Stufe 1 – nur Darstellung, keine Rechnung und keine Ampel geändert):**
+- Seitenvergleich (Kürzel-Seite, Arztbericht): neben dem LSI die Bestwerte gesund | betroffen (gleiche Zahlen wie die Ergebnistabelle) – der LSI allein verdeckt, wenn beide Seiten schwach sind. Heller Balken = LSI aus allen Kombinationen der Einzelversuche (`src/rechnen/spanne.ts`), nur ab 2 Versuchen auf einer Seite.
+- Sprünge (SL-CMJ, SL-DJ): eigener Vergleich nach Output, Driver, Strategy (`src/berichte/odsZeilen.ts`) mit den Werten des gewerteten Versuchs. Farbe und Ziel nur beim Sprunghöhe-LSI aus dem Katalog; alles andere grau ohne Bewertung. Zeiten in Worten („betroffen länger“). Einordnung = Satz aus `config/meloq.json`.
+- Testkarte: bei der Net-Impulse-Asymmetrie (CMJ, SL-CMJ) steht wie im Bericht, welche Seite schwächer ist.
+- Verlauf: senkrechter Strich = Spanne der Einzelversuche je Testung; graue Marke = VALD-Normdaten an ihrem Zeitpunkt (6/9/12 Mo), nur bei passendem Geschlecht und Altersband, ohne Vergleichsgruppe, ohne Einfluss auf die Ampel (`src/testung/verlaufZusatz.ts`).
+- LSI überall mit einer Nachkommastelle („80,0 %“) – der Befund aus dem E2E-Nachtrag ist damit erledigt. Arztbericht-Notiz nennt die Grenze für „knapp“ aus `regeln.json`.
+- Offen für Philipp: Korridor 90–110 % (Bericht-Audit Punkt 24) beibehalten?; Startseiten-Monitor (modellierte Kurven) als Illustration kennzeichnen?; Spinnennetz im Pat.-Bericht beibehalten?
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.

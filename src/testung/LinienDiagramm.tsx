@@ -1,12 +1,14 @@
 // Verlaufsdiagramm „Korridor“ als eigenes SVG (docs/DESIGNKONZEPT.md 6, 10.6):
 // Zeitachse in Monaten seit OP, Phasen als feine Linien, Zielkorridor aus den Schwellen,
 // Linien = Seite (betroffen durchgezogen, gesund gestrichelt), Punkte = tatsächliche Ampel, Lücken sichtbar.
+// Visualisierung Stufe 1: senkrechter Strich = Spanne der Einzelversuche, graue Marke = Normdaten (VALD) an ihrem Zeitpunkt.
 
 import { useEffect, useRef, useState } from 'react'
 import { datumDeutsch } from '../patienten/stammdaten'
 import type { Ampel } from '../rechnen/bewertung'
 import { AMPEL_TEXT, AmpelMarke } from './Ladebalken'
 import type { Zielkorridor } from './verlauf'
+import type { NormMarke } from './verlaufZusatz'
 
 export interface Reihe {
   name: string
@@ -24,6 +26,8 @@ export interface DiagrammPunkt {
   werte: (number | null)[]
   /** Ampel der letzten Reihe (betroffen bzw. der einzige Wert) */
   ampel: Ampel | null
+  /** Spanne der Einzelversuche je Reihe (null = nur ein Versuch) */
+  spannen?: ([number, number] | null)[]
 }
 
 export interface FehlendePunkt {
@@ -47,6 +51,9 @@ interface Props {
   bewertet?: string
   /** Satz, wenn es kein Ziel gibt (DESIGNKONZEPT 6: kein Korridor, dafür ein Satz) */
   hinweis?: string
+  /** Normdaten „typisch nach VKB-OP“ – grau, ohne Einfluss auf die Ampel */
+  normen?: NormMarke[]
+  normText?: string
 }
 
 const H = 250
@@ -85,7 +92,7 @@ function useBreite(standard = 640) {
   return [ref, breite] as const
 }
 
-export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen, korridor, fehlend = [], abNull = true, nachkomma = 1, bewertet, hinweis }: Props) {
+export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen, korridor, fehlend = [], abNull = true, nachkomma = 1, bewertet, hinweis, normen = [], normText }: Props) {
   const [ref, B] = useBreite()
   const [aktiv, setAktiv] = useState<number | null>(null)
 
@@ -96,7 +103,18 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
 
   const werte = punkte.flatMap((p) => p.werte).filter((w): w is number => w !== null)
   const ziele = [...(korridor?.stufen.map((s) => s.wert) ?? []), ...(korridor?.grenze ? [korridor.grenze] : [])]
-  const alle = [...werte, ...ziele]
+  const sichtbareNormen = normen.filter((n) => n.monate <= xMax)
+  const zusatz = [
+    ...punkte.flatMap((p) => (p.spannen ?? []).flatMap((sp) => sp ?? [])),
+    ...sichtbareNormen.flatMap((n) => [n.mittel, ...(n.von === undefined ? [] : [n.von]), ...(n.bis === undefined ? [] : [n.bis])]),
+  ]
+  const alle = [...werte, ...ziele, ...zusatz]
+  const mitSpanne = punkte.some((p) => p.spannen?.some((sp) => sp !== null))
+  const versatz = (ri: number) => (reihen.length > 1 ? (ri === 0 ? -7 : 7) : 0)
+  const spanneText = (p: DiagrammPunkt, ri: number) => {
+    const sp = p.spannen?.[ri]
+    return sp ? ` (Versuche ${zahl(sp[0], nachkomma)}–${zahl(sp[1], nachkomma)})` : ''
+  }
   const lo = abNull ? 0 : Math.min(...alle) - 5
   const hi = abNull ? Math.max(...alle) * 1.12 : Math.max(...alle) + 5
   const striche = teilung(lo, hi)
@@ -212,6 +230,33 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
           Monate seit OP
         </text>
 
+        {/* Normdaten: grauer Balken ±1 SD, Strich = Mittelwert, je Seite leicht versetzt */}
+        {sichtbareNormen.map((n) => {
+          const cx = x(n.monate) + versatz(n.reihe)
+          return (
+            <g key={`n-${n.monate}-${n.reihe}`} className="diagramm-norm">
+              {n.von !== undefined && n.bis !== undefined && <rect x={cx - 4} y={y(n.bis)} width={8} height={Math.max(1, y(n.von) - y(n.bis))} rx={2} className="diagramm-norm-band" />}
+              <line x1={cx - 8} x2={cx + 8} y1={y(n.mittel)} y2={y(n.mittel)} className="diagramm-norm-mittel" strokeDasharray={reihen.length > 1 && n.reihe === 0 ? '3 2' : undefined} />
+            </g>
+          )
+        })}
+
+        {/* Spanne der Einzelversuche: senkrechter Strich in der Farbe der Seite */}
+        {mitZeit.map((p) =>
+          reihen.map((r, ri) => {
+            const sp = p.spannen?.[ri]
+            if (!sp) return null
+            const cx = x(p.monate!)
+            return (
+              <g key={`s-${p.datum}-${ri}`} className="diagramm-spanne" style={{ stroke: r.farbe }}>
+                <line x1={cx} x2={cx} y1={y(sp[1])} y2={y(sp[0])} />
+                <line x1={cx - 4} x2={cx + 4} y1={y(sp[1])} y2={y(sp[1])} />
+                <line x1={cx - 4} x2={cx + 4} y1={y(sp[0])} y2={y(sp[0])} />
+              </g>
+            )
+          }),
+        )}
+
         {/* Linien = Seite */}
         {linien.map((teile, ri) =>
           teile.map((t, ti) => (
@@ -276,7 +321,7 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
                 role="img"
                 aria-label={
                   z.art === 'punkt'
-                    ? `Werte vom ${datumDeutsch(mitZeit[z.i].datum)}: ${reihen.map((r, ri) => `${r.name} ${mitZeit[z.i].werte[ri] === null ? 'nicht gemessen' : wertText(mitZeit[z.i].werte[ri]!)}`).join(', ')} ${einheit}`
+                    ? `Werte vom ${datumDeutsch(mitZeit[z.i].datum)}: ${reihen.map((r, ri) => `${r.name} ${mitZeit[z.i].werte[ri] === null ? 'nicht gemessen' : wertText(mitZeit[z.i].werte[ri]!)}${spanneText(mitZeit[z.i], ri)}`).join(', ')} ${einheit}`
                     : `${datumDeutsch(fehlend[z.i].datum)}: nicht gemessen`
                 }
                 onMouseEnter={() => setAktiv(i)}
@@ -316,7 +361,7 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
                 {reihen.map((r, ri) => (
                   <div key={r.name} className="diagramm-fenster-zeile">
                     <dt>{r.name}</dt>
-                    <dd>{mitZeit[info.i].werte[ri] === null ? '–' : `${zahl(mitZeit[info.i].werte[ri]!, nachkomma)} ${einheit}`}</dd>
+                    <dd>{mitZeit[info.i].werte[ri] === null ? '–' : `${zahl(mitZeit[info.i].werte[ri]!, nachkomma)} ${einheit}${spanneText(mitZeit[info.i], ri)}`}</dd>
                   </div>
                 ))}
               </dl>
@@ -339,6 +384,16 @@ export default function LinienDiagramm({ titel, einheit, punkte, reihen, phasen,
         )}
         {punkte.some((p) => p.ampel) && <span>Punkte: ✓ erfüllt · ~ knapp · ✗ nicht erfüllt</span>}
         {fehlend.length > 0 && <span>○ nicht gemessen</span>}
+        {mitSpanne && (
+          <span>
+            <i className="diagramm-legende-spanne" /> Spanne der Einzelversuche
+          </span>
+        )}
+        {sichtbareNormen.length > 0 && normText && (
+          <span>
+            <i className="diagramm-legende-norm" /> {normText}
+          </span>
+        )}
         {!korridor && hinweis && <span>{hinweis}</span>}
       </p>
       {punkte.length < 2 && <p className="diagramm-hinweis">Erst eine Messung – der Verlauf entsteht ab zwei Testungen.</p>}

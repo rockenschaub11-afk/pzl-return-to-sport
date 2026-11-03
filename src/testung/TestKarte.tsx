@@ -1,5 +1,5 @@
 import { useId, useState, type ReactNode } from 'react'
-import { boxStandard } from '../berichte/nachvollziehbarkeit'
+import { boxStandard, RICHTUNG_ARZT, type Richtung } from '../berichte/nachvollziehbarkeit'
 import { protokollNach } from '../katalog'
 import type { TestDef } from '../katalog/typen'
 import type { KriteriumErgebnis, TestErgebnis } from '../rechnen/bewertung'
@@ -36,6 +36,8 @@ interface Props {
   infos?: string[]
   /** H/Q-Quotient (nur bei Knie-Flexion 90°) */
   hq?: ReturnType<typeof hqQuotient>
+  /** Richtung der Impuls-Asymmetrie (CMJ, SL-CMJ) – betroffene Seite schwächer/stärker */
+  richtung?: Richtung | null
   /** Normdaten als graue Zusatzinfo (ohne Einfluss auf die Ampel) */
   normdaten?: NormAnzeige | null
   /** Datum der Testung – für den Standard der Boxhöhe (bis 28.10.2026 30 cm) */
@@ -237,7 +239,8 @@ function kernwerte(ergebnis: TestErgebnis): string {
     .join(' · ')
 }
 
-function KriteriumZeile({ e }: { e: KriteriumErgebnis }) {
+/** richtung: welche Seite beim gewerteten Versuch den kleineren Net Impulse hat – nur bei der Impuls-Asymmetrie (ohne Vorzeichen gerechnet). */
+function KriteriumZeile({ e, richtung }: { e: KriteriumErgebnis; richtung?: Richtung | null }) {
   const k = e.kriterium
   if (e.zustand === 'nicht_anwendbar') return null
   const nachkomma = k.art === 'lsi' ? 1 : (k.nachkomma ?? 1)
@@ -257,6 +260,7 @@ function KriteriumZeile({ e }: { e: KriteriumErgebnis }) {
       <span className="kriterium-name">
         {k.bezeichnung}
         {k.status !== 'pflicht' && <span className="kriterium-status"> · {k.status === 'wuenschenswert' ? 'wünschenswert' : k.status}</span>}
+        {richtung && k.id === 'impuls_asymmetrie' && e.zustand === 'bewertet' && <small className="kriterium-richtung">{RICHTUNG_ARZT[richtung]}</small>}
       </span>
       <span className="kriterium-wert">{wertText}</span>
       <span className="kriterium-ziel">{ziel}</span>
@@ -338,7 +342,7 @@ export default function TestKarte(props: Props) {
       {/* 1. Ergebnis (laut) */}
       <div className="test-ergebnis">
         {ergebnis.kriterien.map((k) => (
-          <KriteriumZeile key={k.kriterium.id} e={k} />
+          <KriteriumZeile key={k.kriterium.id} e={k} richtung={props.richtung} />
         ))}
         {istMeloqTest(test.id) && <KernStrategie test={test.id} eingabe={e} berechnung={b} seiten={props.seiten} />}
         {b.lsiVorverletzung !== null && (

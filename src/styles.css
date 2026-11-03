@@ -5156,3 +5156,101 @@ input::file-selector-button:hover {
 .testung-konflikt p {
   margin: 0;
 }
+
+/* ---------- Visualisierung Stufe 1: Seitenwerte, Spanne der Versuche, ODS, Normband ---------- */
+.lsi-seite {
+  font-variant-numeric: tabular-nums;
+}
+
+.lsi-spanne {
+  fill: color-mix(in srgb, var(--seite-betroffen) 24%, transparent);
+}
+
+.legende-spanne {
+  display: inline-block;
+  width: 5mm;
+  height: 1.8mm;
+  margin-right: 1.2mm;
+  vertical-align: 0;
+  border-radius: 1mm;
+  background: color-mix(in srgb, var(--seite-betroffen) 24%, transparent);
+}
+
+.kriterium-richtung {
+  display: block;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.ods-kopf {
+  fill: var(--text);
+  font: 600 11px var(--schrift);
+}
+
+.ods-ziel {
+  stroke: var(--text-leise);
+  stroke-width: 1.5;
+}
+
+.ods-hinweis {
+  margin: 0.5rem 0 0;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+}
+
+.bericht .ods-hinweis {
+  font-size: 7.5pt;
+}
+
+.ods-vergleich + .ods-vergleich,
+.ods-block + .ods-block {
+  margin-top: 0.75rem;
+}
+
+.ods-titel {
+  margin: 0 0 0.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.diagramm-spanne line {
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+
+.diagramm-norm-band {
+  fill: color-mix(in srgb, var(--text-leise) 22%, transparent);
+}
+
+.diagramm-norm-mittel {
+  stroke: var(--text-leise);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.diagramm-legende .diagramm-legende-spanne {
+  width: 2px;
+  height: 0.8rem;
+  background: var(--text-leise);
+}
+
+.diagramm-legende .diagramm-legende-norm {
+  width: 0.9rem;
+  height: 0;
+  border-top: 2px solid var(--text-leise);
+}
+
+.bericht .ods-titel {
+  margin-bottom: 1mm;
+  font-size: 8.5pt;
+}
+
+.bericht .ods-hinweis .kat-quelle {
+  font-size: inherit;
+}
+
+.bericht .ods-block {
+  break-inside: avoid;
+}

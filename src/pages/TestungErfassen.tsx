@@ -25,7 +25,7 @@ import KlinischAnders from '../testung/KlinischAnders'
 import { AmpelMarke } from '../testung/Ladebalken'
 import { useMeloqAuswahl } from '../testung/meloqAuswahl'
 import { normdatenFuer } from '../testung/normdaten'
-import { boxTatsaechlich } from '../berichte/nachvollziehbarkeit'
+import { boxTatsaechlich, impulsRichtung } from '../berichte/nachvollziehbarkeit'
 import { pflichtStatus, rtsVorschlag } from '../testung/rts'
 import RtsKasten from '../testung/RtsKasten'
 import TestKarte, { type Seitennamen } from '../testung/TestKarte'
@@ -424,6 +424,7 @@ export default function TestungErfassen() {
                           koerpergewichtFehlt={kgFehlt}
                           koerpergewichtKg={kg}
                           meloqAuswahl={meloqAuswahl}
+                          richtung={impulsRichtung(t, testung.eingaben[t.id] ?? {}, a.berechnung, patient.seite)}
                           hinweise={[
                             ...(t.messgeraet === 'dynamo' && hhdZuFrueh
                               ? [`Read: HHD-Krafttests erst ab ca. ${KATALOG.regeln.hhdAbWochen} Wochen post-OP – jetzt ${wochen} Wochen.`]

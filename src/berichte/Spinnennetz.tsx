@@ -26,7 +26,7 @@ const MAX = 120
 const MIN = 50
 const RINGE = [70, 100, 120]
 
-const zahl = (v: number) => v.toLocaleString('de-AT', { maximumFractionDigits: 1 })
+const zahl = (v: number) => v.toLocaleString('de-AT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 const mitZeichen = (a: NetzAchse) => `${zahl(a.lsi)} %${a.ampel ? ` ${AMPEL_ZEICHEN[a.ampel]}` : ''}`
 const ampelKlasse = (a: NetzAchse) => (a.ampel ? ` netz-${a.ampel}` : '')
 

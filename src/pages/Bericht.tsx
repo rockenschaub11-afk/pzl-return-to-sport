@@ -4,6 +4,8 @@ import { Link, NavLink, useParams } from 'react-router-dom'
 import { AMPEL_ZEICHEN, arztBericht, patBericht, verlaufTabelle, type ArztBericht, type Bewertung, type PatBericht, type PatZeile, type VerlaufTabelle } from '../berichte/bericht'
 import LsiUebersicht from '../berichte/LsiUebersicht'
 import { lsiUebersicht } from '../berichte/lsiZeilen'
+import OdsVergleich, { OdsHinweis } from '../berichte/OdsVergleich'
+import { odsFuerTestung } from '../berichte/odsZeilen'
 import Spinnennetz from '../berichte/Spinnennetz'
 import { db, type Testung } from '../db'
 import Laedt from '../Laedt'
@@ -293,6 +295,7 @@ function ArztAnsicht({
   const b: ArztBericht = useMemo(() => arztBericht(patient, testung, meloqAuswahl), [patient, testung, meloqAuswahl])
   const pat: PatBericht = useMemo(() => patBericht(patient, testung, alle), [patient, testung, alle])
   const lsi = lsiUebersicht(b, pat)
+  const ods = useMemo(() => odsFuerTestung(patient, testung), [patient, testung])
   const bis = bisZu(alle, testung)
   const tabelle = verlaufTabelle(patient, bis, testung)
   // Quellen als Fußnoten statt eigener Spalte (Bericht-Audit Punkt 12): Nummer in Reihenfolge des ersten Auftretens
@@ -418,6 +421,13 @@ function ArztAnsicht({
           <div className="bericht-tafel bericht-tafel-innen">
             <LsiUebersicht zeilen={lsi} vorigeDatum={pat.vorigeDatum} />
           </div>
+          {ods.map((v) => (
+            <div key={v.test} className="bericht-tafel bericht-tafel-innen ods-block">
+              <h3 className="ods-titel">{v.name}: Ergebnis, Antrieb, Strategie</h3>
+              <OdsVergleich vergleich={v} />
+            </div>
+          ))}
+          {ods.length > 0 && <OdsHinweis />}
         </Abschnitt>
       )}
 
@@ -447,7 +457,7 @@ function ArztAnsicht({
         nr={nrErgebnisse}
         titel="Ergebnisse"
         className="bericht-lang bericht-neue-seite"
-        notiz={`Bewertet mit den Schwellen der Phase ${b.phase.name}. LSI = betroffen / gesund × 100 (Zeit-Tests umgekehrt). Ampel: ✓ erfüllt · ~ knapp · ✗ nicht erfüllt. Ohne Zusatz = Pflicht.`}
+        notiz={`Bewertet mit den Schwellen der Phase ${b.phase.name}. LSI = betroffen / gesund × 100 (Zeit-Tests umgekehrt). Ampel: ✓ erfüllt · ~ knapp (LSI ab ${KATALOG.regeln.lsi.gelbAb} % und unter ${KATALOG.regeln.lsi.gruenAb} %, ${KATALOG.regeln.lsi.quelle}) · ✗ nicht erfüllt. Ohne Zusatz = Pflicht.`}
       >
         <div className="bericht-tafel bericht-tafel-lang">
           <table className="bericht-tabelle bericht-ergebnis">
