@@ -386,6 +386,14 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - W3 Linter: `npm run lint` (oxlint) prüft nur die zwei React-Hooks-Regeln. ESLint mit typescript-eslint geht mit TypeScript 7 nicht (dort nur bis 6.1).
 - W4 Import: Sicherungsdateien werden vor dem Schreiben gründlich geprüft (Status, Art, Phase, Datum, Änderungszeitpunkt, Eingaben als Text, doppelte Einträge). Die Meldung nennt den Eintrag, z. B. „Testung 3: Datum ungültig“.
 
+**Nachtrag 03.11.2026 (End-to-End-Tests mit Playwright):**
+- `npm run e2e` baut die App und prüft sie im eigenen Chromium (Port 5175); Bericht danach mit `npm run e2e:bericht`. Unit-Tests bleiben `npm test` (Vitest, ohne `e2e/`).
+- Getestet wird die gebaute App, nicht der Entwicklungsserver (der hält beim ersten Aufruf Anfragen fest). Service Worker im Test aus.
+- Isoliert: jeder Test mit frischem Browser-Speicher, Kürzel nur „E2E-…“, feste Uhrzeit 15.06.2026; echte Daten werden nie berührt.
+- Sollwerte nur aus der App-Logik (`e2e/fixtures/sollwerte.ts` mit Rechenweg): LSI, Bestwert, Zeittest, N/kg, Rundungsgrenzen der Ampel (89,96 → 90,0 % erfüllt; 79,94 → 79,9 % nicht erfüllt).
+- Bereiche: Berechnungen, Speichern/Datenfluss (Testkarte = Kürzel-Seite = Arzt- und Pat.-Bericht), Eingabefehler, Navigation, Berichte (Name nie im Speicher), Sicherung (Export → Import auf frischem Speicher), Darstellung (390/768/1440 px, Pat.-Bericht 1 A4-Seite).
+- Befund ohne Änderung: Der Seitenvergleich zeigt „80 %“, Testkarte und Berichtstext „80,0 %“ (eine Nachkommastelle nur, wenn sie nicht 0 ist).
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.
