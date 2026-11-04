@@ -414,6 +414,15 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - W2 (Philipp, 03.11.2026: „soll erhalten bleiben“): „Wieder öffnen“ hebt den bisherigen Abschluss samt Entscheidung, Vorschlag der App, Begründung und Therapeut:in als „früheren Abschluss“ auf (Feld fruehereAbschluesse, wird mitgesichert und beim Import geprüft). Die neue Entscheidung wird wie bisher frisch getroffen. Sichtbar unter Ergebnis/Abschluss der Testung und im Arztbericht unter „Bestätigung“.
 - Offen: L3 (Meloq-Import) braucht eine Beispiel-Exportdatei; L5/L6 bewusst nicht.
 
+**Nachtrag 04.11.2026 (Motor Control – Entscheidungen Philipp, Fragerunde F1–F20):**
+- Eigene Karte „Motor Control“ in der Testung direkt nach Klinik, in allen Phasen; jeder Test optional. Tests: Double Leg Squat, Single Leg Squat, Front Squat, Single Leg RDL, Calf Raise beid- und einbeinig.
+- Bewertung nach dem Scoring-System aus „Aspetar Way – Athletic Groin Pain, Motor Control“ (S. 19–24): je Segment (Fuß/Sprunggelenk, Knie, Hüfte/Rumpf) Kompensationen ankreuzen; Segment ohne Kompensation = 1 Punkt → 3/3 bis 0/3; „nicht verlässlich durchführbar (Schmerz/Beschwerden)“ = 0/3. Front Squat nutzt die Squat-Liste (im Leisten-PDF nicht beschrieben; Ausstiegspunkt im Aspetar ACL Protocol S. 19).
+- Einbeinige Tests je Seite (betroffen/gesund), beidbeinige einmal. Freitext je Test, höchstens 300 Zeichen, Hinweis „keine Namen“. Keine „i“-Hinweise zur Ausführung.
+- Nur Info: keine Ampel, kein Einfluss auf RTS-Vorschlag und „Tests erfasst“. Hinweis „betroffen weniger Punkte als gesund“, sobald die betroffene Seite weniger Punkte hat (keine Schwelle).
+- Konfiguration in `config/motorcontrol.json` (Tests, Segmente, Kompensationen deutsch mit Originalbegriff, Quelle), beim Start geprüft. Gespeichert je Testung im Feld `motorControl`; wird mitgesichert und beim Import geprüft.
+- Arztbericht: eigener Abschnitt nach den Ergebnissen (Score je Seite, auffällige Segmente, Beobachtung, Quelle) und Score je Testung in der Verlaufstabelle. Kürzel-Seite: eigene Zeilen in „Testungen im Überblick“ (Score grau). Pat./Trainer-Bericht unverändert.
+- Bestehende Tests (SL-Squat-Tiefe, Kniebeuge-Asymmetrie, Calf Raise Wdh.) bleiben unverändert in ihren Blöcken.
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.

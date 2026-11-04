@@ -1,0 +1,67 @@
+{
+  "_info": [
+    "Motor Control (Bewegungsqualität) – Entscheidung Philipp 04.11.2026, siehe docs/ENTSCHEIDUNGEN.md.",
+    "Scoring nach Aspetar: je Segment (Fuß/Sprunggelenk, Knie, Hüfte/Rumpf) ein Punkt, wenn keine Kompensation beobachtet wird → 3/3 bis 1/3; 0/3 bei allen drei Segmenten oder wenn der Test wegen Schmerz/Beschwerden nicht verlässlich durchführbar ist.",
+    "Nur Info: keine Ampel, kein Einfluss auf den RTS-Vorschlag. Hinweis, wenn die betroffene Seite weniger Punkte hat als die gesunde.",
+    "kompensationen je Liste und Segment: name = Text in der App, original = Begriff im Aspetar-Material. Änderungen nur per Update durch Philipp (F33)."
+  ],
+  "quelle": "Aspetar Way – Athletic Groin Pain, Motor Control: Assessment und Scoring System (S. 19–24)",
+  "segmente": [
+    { "id": "fuss", "name": "Fuß / Sprunggelenk" },
+    { "id": "knie", "name": "Knie" },
+    { "id": "rumpf", "name": "Hüfte / Rumpf" }
+  ],
+  "listen": {
+    "squat": {
+      "fuss": [
+        { "id": "aussenrotation", "name": "Fuß dreht nach außen", "original": "external rotation" },
+        { "id": "kollaps", "name": "Fuß kollabiert nach innen/außen", "original": "foot collapses in/out" }
+      ],
+      "knie": [
+        { "id": "valgus", "name": "Valgus", "original": "valgus" },
+        { "id": "varus", "name": "Varus", "original": "varus" }
+      ],
+      "rumpf": [
+        { "id": "becken", "name": "Becken verliert die Kippkontrolle vor 90° Hüftbeugung", "original": "loss of pelvic tilt control before 90° of hip flexion" },
+        { "id": "vorne", "name": "Rumpf neigt nach vorne", "original": "trunk forward leaning" },
+        { "id": "seite", "name": "Rumpf weicht zur Seite aus", "original": "side shift" },
+        { "id": "bws", "name": "Verlust der BWS-Streckung", "original": "loss of thoracic extension" }
+      ]
+    },
+    "rdl": {
+      "fuss": [
+        { "id": "aussenrotation", "name": "Fuß dreht nach außen", "original": "external rotation" },
+        { "id": "kollaps", "name": "Fuß kollabiert nach innen/außen", "original": "foot collapses in/out" }
+      ],
+      "knie": [
+        { "id": "valgus", "name": "Valgus", "original": "valgus" },
+        { "id": "flexion", "name": "zu viel Kniebeugung", "original": "excessive flexion strategy" }
+      ],
+      "rumpf": [
+        { "id": "rotation", "name": "zu viel Rotation von Hüfte/Rumpf", "original": "excessive hip / trunk rotation" },
+        { "id": "becken", "name": "Verlust der neutralen Beckenkippung", "original": "loss of neutral pelvic tilt" }
+      ]
+    },
+    "calf": {
+      "fuss": [
+        { "id": "aussenrand", "name": "Last auf dem Fußaußenrand", "original": "bias lateral border of foot" },
+        { "id": "inversion", "name": "zu wenig Rückfußinversion am Ende der Bewegung", "original": "reduced rearfoot inversion at inner-range" }
+      ],
+      "knie": [
+        { "id": "extension", "name": "Knie nicht voll gestreckt", "original": "lack of full extension" }
+      ],
+      "rumpf": [
+        { "id": "becken", "name": "Becken sinkt ab", "original": "pelvic drop" },
+        { "id": "seite", "name": "Rumpf schwankt zur Seite", "original": "lateral trunk sway" }
+      ]
+    }
+  },
+  "tests": [
+    { "id": "mc_dl_squat", "name": "Double Leg Squat", "einbeinig": false, "liste": "squat", "quelle": "S. 22" },
+    { "id": "mc_sl_squat", "name": "Single Leg Squat", "einbeinig": true, "liste": "squat", "quelle": "S. 22" },
+    { "id": "mc_front_squat", "name": "Front Squat", "einbeinig": false, "liste": "squat", "quelle": "Kompensationen wie Double Leg Squat (S. 22) – Front Squat selbst ist dort nicht beschrieben; Ausstiegspunkt im Aspetar ACL Rehabilitation Protocol S. 19" },
+    { "id": "mc_sl_rdl", "name": "Single Leg RDL", "einbeinig": true, "liste": "rdl", "quelle": "S. 23–24" },
+    { "id": "mc_dl_calf", "name": "Calf Raise beidbeinig", "einbeinig": false, "liste": "calf", "quelle": "S. 24" },
+    { "id": "mc_sl_calf", "name": "Calf Raise einbeinig", "einbeinig": true, "liste": "calf", "quelle": "S. 24" }
+  ]
+}

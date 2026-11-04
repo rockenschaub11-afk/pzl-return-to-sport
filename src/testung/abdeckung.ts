@@ -10,6 +10,8 @@ import { ERFASSBARE_TESTS, phasenStand, sichtbareTests, werteAus } from './ablau
 import { hatEingabe } from './erfassung'
 import { kartenStatus } from './kartenStatus'
 import { monateGenau } from './verlauf'
+import { MOTOR } from '../katalog/motorcontrol'
+import { scoreKurz } from './motorik'
 
 export type AbdeckungZelle =
   /** gemessen; ampel null = ohne Pflicht-Bewertung (z. B. nur Info) */
@@ -18,6 +20,8 @@ export type AbdeckungZelle =
   | { zustand: 'fehlt' }
   /** gehört nicht zu dieser Testung */
   | { zustand: 'nicht_im_set' }
+  /** Motor Control: Score als Text, ohne Ampel (Philipp 04.11.2026) */
+  | { zustand: 'motor'; text: string }
 
 export interface AbdeckungSpalte {
   testungId: string
@@ -28,7 +32,7 @@ export interface AbdeckungSpalte {
 
 export interface Abdeckung {
   spalten: AbdeckungSpalte[]
-  bloecke: { block: Block; name: string; zeilen: { id: string; name: string; zellen: AbdeckungZelle[] }[] }[]
+  bloecke: { block: Block | 'motor'; name: string; zeilen: { id: string; name: string; zellen: AbdeckungZelle[] }[] }[]
 }
 
 /** höchstens so viele Testungen – die erste (Ausgangswert) bleibt, dazu die letzten (wie in der Verlaufstabelle des Arztberichts) */
@@ -53,11 +57,24 @@ export function testAbdeckung(patient: Pick<Patient, 'opDatum' | 'geschlecht'>, 
     }),
   })).filter((z) => z.zellen.some((c) => c.zustand !== 'nicht_im_set'))
 
-  const bloecke = [...new Set(zeilen.map((z) => z.test.block))].map((block) => ({
+  const bloecke: Abdeckung['bloecke'] = [...new Set(zeilen.map((z) => z.test.block))].map((block) => ({
     block,
     name: BLOCK_NAMEN[block],
     zeilen: zeilen.filter((z) => z.test.block === block).map((z) => ({ id: z.test.id, name: z.test.name, zellen: z.zellen })),
   }))
+
+  // Motor Control nach Klinik – nur Tests, die in einer der Testungen bewertet wurden; Score grau als Text
+  const motor = MOTOR.tests
+    .map((def) => ({
+      id: def.id,
+      name: def.name,
+      zellen: je.map(({ t }): AbdeckungZelle => {
+        const k = scoreKurz(def, t.motorControl?.[def.id])
+        return k ? { zustand: 'motor', text: k } : { zustand: 'nicht_im_set' }
+      }),
+    }))
+    .filter((z) => z.zellen.some((c) => c.zustand === 'motor'))
+  if (motor.length > 0) bloecke.splice(bloecke.findIndex((b) => b.block === 'klinik') + 1, 0, { block: 'motor', name: 'Motor Control', zeilen: motor })
 
   return {
     spalten: je.map(({ t, phase }) => ({ testungId: t.id, datum: t.datum, monate: monateGenau(patient.opDatum, t.datum), phase: phaseNach(phase).name })),

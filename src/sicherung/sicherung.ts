@@ -86,6 +86,19 @@ function testungFehler(t: unknown, patientIds: ReadonlySet<string>): string | nu
     if (t[feld] !== undefined && !istObjekt(t[feld])) return `${feld} ungültig`
   }
   if (istObjekt(t.entscheidung) && !einerVon(t.entscheidung.art, ['bestaetigt', 'ueberstimmt_erfuellt', 'ueberstimmt_nicht_erfuellt', ''])) return 'Entscheidung ungültig'
+  // Motor Control (Philipp 04.11.2026): je Test Seiten b/g/v mit Status und Kompensationen als Text, Freitext
+  if (t.motorControl !== undefined) {
+    if (!istObjekt(t.motorControl)) return 'Motor Control ungültig'
+    for (const m of Object.values(t.motorControl)) {
+      if (!istObjekt(m)) return 'Motor Control ungültig'
+      if (m.text !== undefined && !istText(m.text)) return 'Motor Control ungültig'
+      for (const s of ['b', 'g', 'v'] as const) {
+        const w = m[s]
+        if (w === undefined) continue
+        if (!istObjekt(w) || !einerVon(w.status, ['bewertet', 'nicht_durchfuehrbar']) || !Array.isArray(w.kompensationen) || !w.kompensationen.every(istText)) return 'Motor Control ungültig'
+      }
+    }
+  }
   if (t.fruehereAbschluesse !== undefined) {
     if (!Array.isArray(t.fruehereAbschluesse)) return 'frühere Abschlüsse ungültig'
     for (const f of t.fruehereAbschluesse) {

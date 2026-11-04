@@ -353,6 +353,14 @@
   vertical-align: middle;
 }
 
+/* Motor Control in der Testabdeckung: Score als Text, grau – nie Ampelfarbe */
+.abdeckung-motor {
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
 .abdeckung .diagramm-legende .abdeckung-punkt {
   width: 0.9rem;
   height: 0.9rem;

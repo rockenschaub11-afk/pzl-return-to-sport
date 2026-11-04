@@ -1259,6 +1259,11 @@
   }
 }
 
+/* Motor Control im Arztbericht */
+.bericht-motor-tabelle td {
+  vertical-align: top;
+}
+
 /* Frühere Abschlüsse im Arztbericht (Audit W2) */
 .bericht-fruehere p {
   margin: 1.5mm 0 0.5mm;

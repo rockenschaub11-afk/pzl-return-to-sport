@@ -1,8 +1,8 @@
 import { useEinstellung, usePatient, useTestung } from '../daten'
 import Frage from '../Frage'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { db, loescheTestung, speichereEinstellung, speichereTestung, TestungKonfliktFehler, type Entscheidung, type FruehererAbschluss, type Testung } from '../db'
+import { db, loescheTestung, speichereEinstellung, speichereTestung, TestungKonfliktFehler, type Entscheidung, type FruehererAbschluss, type MotorTest, type Testung } from '../db'
 import { KATALOG, phaseNach, protokollNach } from '../katalog'
 import { BLOCK_NAMEN, BLOECKE, PHASEN_IDS, type PhaseId, type TestDef } from '../katalog/typen'
 import { datumDeutsch, TEGNER_STUFEN, type Patient } from '../patienten/stammdaten'
@@ -22,6 +22,8 @@ import { hatEingabe, hqQuotient, istKeineZahl, parseZahl } from '../testung/erfa
 import { kartenStatus, type KartenStatus } from '../testung/kartenStatus'
 import { stammdatenHinweise } from '../testung/stammdatenHinweise'
 import KlinischAnders from '../testung/KlinischAnders'
+import MotorControl from '../testung/MotorControl'
+import { motorBewertungen } from '../testung/motorik'
 import { AmpelMarke } from '../testung/Ladebalken'
 import { useMeloqAuswahl } from '../testung/meloqAuswahl'
 import { normdatenFuer } from '../testung/normdaten'
@@ -185,9 +187,19 @@ export default function TestungErfassen() {
   const aendern = (teil: Partial<Testung>) => setTestung((t) => (t ? { ...t, ...teil } : t))
   const setzeFeld = (testId: string) => (feld: string, wert: string) =>
     setTestung((t) => (t ? { ...t, eingaben: { ...t.eingaben, [testId]: { ...t.eingaben[testId], [feld]: wert } } } : t))
+  /** Motor Control je Test – leere Bewertung wird entfernt, damit nichts als „bewertet“ gespeichert bleibt */
+  const setzeMotor = (id: string, wert: MotorTest | undefined) =>
+    setTestung((t) => {
+      if (!t) return t
+      const neu = { ...t.motorControl }
+      if (wert) neu[id] = wert
+      else delete neu[id]
+      return { ...t, motorControl: Object.keys(neu).length ? neu : undefined }
+    })
   const testHinzu = (testId: string) => aendern({ optionaleTests: [...testung.optionaleTests, testId] })
   const testWeg = (testId: string) => aendern({ optionaleTests: testung.optionaleTests.filter((o) => o !== testId) })
   const kgFehlt = kg === null || kg <= 0
+  const motorBewertet = motorBewertungen(testung).length
   const monate = monateBisTestung(patient.opDatum, testung.datum)
   const wochen = wochenBisTestung(patient.opDatum, testung.datum)
   const hhdZuFrueh = wochen !== null && wochen < KATALOG.regeln.hhdAbWochen
@@ -385,12 +397,20 @@ export default function TestungErfassen() {
           const tests = sichtbar.filter((t) => t.block === b)
           const erfasst = tests.filter((t) => hatEingabe(testung.eingaben[t.id])).length
           return (
-            <a key={b} href={`#block-${b}`} aria-current={aktiverBlock === `block-${b}` ? 'location' : undefined} onClick={(e) => springen(e, `block-${b}`)} aria-label={`${BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}: ${erfasst} von ${tests.length} erfasst`}>
-              {BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}
-              <span className={`sprung-zahl${erfasst === tests.length ? ' sprung-fertig' : ''}`}>
-                {erfasst}/{tests.length}
-              </span>
-            </a>
+            <Fragment key={b}>
+              <a href={`#block-${b}`} aria-current={aktiverBlock === `block-${b}` ? 'location' : undefined} onClick={(e) => springen(e, `block-${b}`)} aria-label={`${BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}: ${erfasst} von ${tests.length} erfasst`}>
+                {BLOCK_NAMEN[b].replace(/ \(.*\)$/, '')}
+                <span className={`sprung-zahl${erfasst === tests.length ? ' sprung-fertig' : ''}`}>
+                  {erfasst}/{tests.length}
+                </span>
+              </a>
+              {b === 'klinik' && (
+                <a href="#block-motor" aria-current={aktiverBlock === 'block-motor' ? 'location' : undefined} onClick={(e) => springen(e, 'block-motor')} aria-label={`Motor Control: ${motorBewertet} bewertet`}>
+                  Motor Control
+                  <span className="sprung-zahl">{motorBewertet}</span>
+                </a>
+              )}
+            </Fragment>
           )
         })}
         {ph.art === 'endtestung' && (
@@ -408,70 +428,73 @@ export default function TestungErfassen() {
               const optional = zumHinzufuegen.optional.filter((t) => t.block === block)
               if (anzeigen.length === 0 && optional.length === 0) return null
               return (
-                <div key={block} id={`block-${block}`} className="testung-block">
-                  <div className="testung-block-kopf">
-                    <h2 className="testung-block-titel">{BLOCK_NAMEN[block]}</h2>
-                    {anzeigen.length > 0 && (
-                      <button type="button" className="knopf-leise" onClick={() => setKlappen((k) => ({ ...k, ...Object.fromEntries(anzeigen.map((t) => [t.id, !anzeigen.every((x) => istOffen(x.id))])) }))}>
-                        {anzeigen.every((t) => istOffen(t.id)) ? 'Alle zuklappen' : 'Alle aufklappen'}
+                <Fragment key={block}>
+                  <div id={`block-${block}`} className="testung-block">
+                    <div className="testung-block-kopf">
+                      <h2 className="testung-block-titel">{BLOCK_NAMEN[block]}</h2>
+                      {anzeigen.length > 0 && (
+                        <button type="button" className="knopf-leise" onClick={() => setKlappen((k) => ({ ...k, ...Object.fromEntries(anzeigen.map((t) => [t.id, !anzeigen.every((x) => istOffen(x.id))])) }))}>
+                          {anzeigen.every((t) => istOffen(t.id)) ? 'Alle zuklappen' : 'Alle aufklappen'}
+                        </button>
+                      )}
+                    </div>
+                    {anzeigen.map((t) => {
+                      const a = auswertung.get(t.id)!
+                      const p = pflichtStatus(a)
+                      const ausserhalb = !t.phasen.includes(phase)
+                      return (
+                        <div key={t.id} className="test-huelle">
+                          <TestKarte
+                            test={t}
+                            eingabe={testung.eingaben[t.id] ?? {}}
+                            setze={setzeFeld(t.id)}
+                            seiten={seiten}
+                            berechnung={a.berechnung}
+                            ergebnis={a.ergebnis}
+                            koerpergewichtFehlt={kgFehlt}
+                            koerpergewichtKg={kg}
+                            meloqAuswahl={meloqAuswahl}
+                            richtung={impulsRichtung(t, testung.eingaben[t.id] ?? {}, a.berechnung, patient.seite)}
+                            betroffeneSeite={patient.seite}
+                            hinweise={[
+                              ...(t.messgeraet === 'dynamo' && hhdZuFrueh
+                                ? [`Read: HHD-Krafttests erst ab ca. ${KATALOG.regeln.hhdAbWochen} Wochen post-OP – jetzt ${wochen} Wochen.`]
+                                : []),
+                              ...(ausserhalb ? [`Nicht im Testset der Phase „${phaseNach(phase).name}“ – zusätzlich hinzugefügt.`] : []),
+                            ]}
+                            infos={stammdatenHinweise(t.id, patient)}
+                            hq={t.id === 'hhd_knie_flex' ? hqQuotient(a.berechnung, auswertung.get('hhd_knie_ext')?.berechnung) : null}
+                            normdaten={normdatenFuer(t.id, patient, testung.datum, monate, boxTatsaechlich(t, testung.eingaben[t.id] ?? {}, testung.datum))}
+                            datum={testung.datum}
+                            status={statusVon(t.id)}
+                            offen={istOffen(t.id)}
+                            onKlappen={() => setKlappen((k) => ({ ...k, [t.id]: !istOffen(t.id) }))}
+                            fuss={
+                              p && ph.art === 'endtestung' ? (
+                                <KlinischAnders
+                                  wert={testung.klinischAnders?.[t.id]}
+                                  ampelStatus={p.status}
+                                  setze={(w) => aendern({ klinischAnders: { ...testung.klinischAnders, [t.id]: w } })}
+                                />
+                              ) : null
+                            }
+                          />
+                          {testung.optionaleTests.includes(t.id) && !hatEingabe(testung.eingaben[t.id]) && (
+                            <button type="button" className="text-knopf test-entfernen" onClick={() => testWeg(t.id)}>
+                              {t.name} wieder ausblenden
+                            </button>
+                          )}
+                        </div>
+                      )
+                    })}
+                    {optional.map((t) => (
+                      <button key={t.id} type="button" className="knopf test-hinzu" onClick={() => testHinzu(t.id)}>
+                        <span>+ {t.name} hinzufügen (optional)</span>
                       </button>
-                    )}
+                    ))}
                   </div>
-                  {anzeigen.map((t) => {
-                    const a = auswertung.get(t.id)!
-                    const p = pflichtStatus(a)
-                    const ausserhalb = !t.phasen.includes(phase)
-                    return (
-                      <div key={t.id} className="test-huelle">
-                        <TestKarte
-                          test={t}
-                          eingabe={testung.eingaben[t.id] ?? {}}
-                          setze={setzeFeld(t.id)}
-                          seiten={seiten}
-                          berechnung={a.berechnung}
-                          ergebnis={a.ergebnis}
-                          koerpergewichtFehlt={kgFehlt}
-                          koerpergewichtKg={kg}
-                          meloqAuswahl={meloqAuswahl}
-                          richtung={impulsRichtung(t, testung.eingaben[t.id] ?? {}, a.berechnung, patient.seite)}
-                          betroffeneSeite={patient.seite}
-                          hinweise={[
-                            ...(t.messgeraet === 'dynamo' && hhdZuFrueh
-                              ? [`Read: HHD-Krafttests erst ab ca. ${KATALOG.regeln.hhdAbWochen} Wochen post-OP – jetzt ${wochen} Wochen.`]
-                              : []),
-                            ...(ausserhalb ? [`Nicht im Testset der Phase „${phaseNach(phase).name}“ – zusätzlich hinzugefügt.`] : []),
-                          ]}
-                          infos={stammdatenHinweise(t.id, patient)}
-                          hq={t.id === 'hhd_knie_flex' ? hqQuotient(a.berechnung, auswertung.get('hhd_knie_ext')?.berechnung) : null}
-                          normdaten={normdatenFuer(t.id, patient, testung.datum, monate, boxTatsaechlich(t, testung.eingaben[t.id] ?? {}, testung.datum))}
-                          datum={testung.datum}
-                          status={statusVon(t.id)}
-                          offen={istOffen(t.id)}
-                          onKlappen={() => setKlappen((k) => ({ ...k, [t.id]: !istOffen(t.id) }))}
-                          fuss={
-                            p && ph.art === 'endtestung' ? (
-                              <KlinischAnders
-                                wert={testung.klinischAnders?.[t.id]}
-                                ampelStatus={p.status}
-                                setze={(w) => aendern({ klinischAnders: { ...testung.klinischAnders, [t.id]: w } })}
-                              />
-                            ) : null
-                          }
-                        />
-                        {testung.optionaleTests.includes(t.id) && !hatEingabe(testung.eingaben[t.id]) && (
-                          <button type="button" className="text-knopf test-entfernen" onClick={() => testWeg(t.id)}>
-                            {t.name} wieder ausblenden
-                          </button>
-                        )}
-                      </div>
-                    )
-                  })}
-                  {optional.map((t) => (
-                    <button key={t.id} type="button" className="knopf test-hinzu" onClick={() => testHinzu(t.id)}>
-                      <span>+ {t.name} hinzufügen (optional)</span>
-                    </button>
-                  ))}
-                </div>
+                  {block === 'klinik' && <MotorControl testung={testung} setze={setzeMotor} seiten={seiten} />}
+                </Fragment>
               )
             })}
 

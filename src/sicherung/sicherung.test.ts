@@ -137,5 +137,10 @@ describe('Gesamtsicherung', () => {
     expect(inhaltPruefen(kaputt({ fruehereAbschluesse: [frueher] }), 'gesamt').testungen[0].fruehereAbschluesse).toHaveLength(1)
     expect(() => inhaltPruefen(kaputt({ fruehereAbschluesse: [{ ...frueher, art: 'egal' }] }), 'gesamt')).toThrow(/frühere Abschlüsse ungültig/)
     expect(() => inhaltPruefen(kaputt({ fruehereAbschluesse: 'ja' }), 'gesamt')).toThrow(/frühere Abschlüsse ungültig/)
+    // Motor Control: gültige Bewertung bleibt, kaputte wird abgelehnt
+    const mc = { mc_sl_squat: { b: { status: 'bewertet', kompensationen: ['knie:valgus'] }, g: { status: 'bewertet', kompensationen: [] }, text: 'mit Stab besser' } }
+    expect(inhaltPruefen(kaputt({ motorControl: mc }), 'gesamt').testungen[0].motorControl).toEqual(mc)
+    expect(() => inhaltPruefen(kaputt({ motorControl: { mc_sl_squat: { b: { status: 'super', kompensationen: [] } } } }), 'gesamt')).toThrow(/Motor Control ungültig/)
+    expect(() => inhaltPruefen(kaputt({ motorControl: { mc_sl_squat: { v: { status: 'bewertet', kompensationen: [1] } } } }), 'gesamt')).toThrow(/Motor Control ungültig/)
   })
 })

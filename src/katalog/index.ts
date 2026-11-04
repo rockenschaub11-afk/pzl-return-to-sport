@@ -5,6 +5,7 @@ import protokolleDatei from '../../config/protokolle.json'
 import regelnDatei from '../../config/regeln.json'
 import testsDatei from '../../config/tests.json'
 import { MELOQ, pruefeMeloq } from './meloq'
+import { MOTOR, pruefeMotor } from './motorcontrol'
 import { pruefeKatalog } from './pruefen'
 import type { Katalog, Phase, PhaseId, Protokoll, Regeln, TestDef } from './typen'
 
@@ -16,7 +17,7 @@ export const KATALOG: Katalog = {
 }
 
 /** Leer, wenn alles passt – sonst eine Meldung je Problem. */
-export const KATALOG_FEHLER: readonly string[] = [...pruefeKatalog(KATALOG), ...pruefeMeloq(MELOQ)]
+export const KATALOG_FEHLER: readonly string[] = [...pruefeKatalog(KATALOG), ...pruefeMeloq(MELOQ), ...pruefeMotor(MOTOR)]
 
 export const testNach = (id: string) => KATALOG.tests.find((t) => t.id === id)
 export const protokollNach = (id: string) => KATALOG.protokolle.find((p) => p.id === id)

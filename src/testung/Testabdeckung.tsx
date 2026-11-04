@@ -8,6 +8,7 @@ import type { Abdeckung, AbdeckungZelle } from './abdeckung'
 const ZEICHEN = { gruen: '✓', gelb: '~', rot: '✗' } as const
 
 function Zelle({ z }: { z: AbdeckungZelle }) {
+  if (z.zustand === 'motor') return <span className="abdeckung-motor">{z.text}</span>
   if (z.zustand === 'nicht_im_set') return <span className="abdeckung-leer" aria-label="gehört nicht zur Testung" />
   if (z.zustand === 'fehlt') return <span className="abdeckung-punkt abdeckung-fehlt" role="img" aria-label="nicht gemessen" title="nicht gemessen" />
   return (

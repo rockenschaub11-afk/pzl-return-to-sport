@@ -25,11 +25,28 @@ export interface Testung {
   klinischAnders?: Record<string, KlinischAnders>
   /** Entscheidung der Therapeut:in (F10) – Entwurf, bis die Testung abgeschlossen wird */
   entscheidung?: Entscheidung
+  /** Motor Control je Test (config/motorcontrol.json) – nur Info, ohne Ampel (Philipp 04.11.2026) */
+  motorControl?: Record<string, MotorTest>
   /** Abschlüsse vor einem „Wieder öffnen“ – bleiben dokumentiert (Audit W2, Philipp 03.11.2026) */
   fruehereAbschluesse?: FruehererAbschluss[]
   abgeschlossenAm?: string
   angelegtAm: string
   geaendertAm: string
+}
+
+/** Bewertung einer Seite (b/g) bzw. beidbeinig (v): fehlt = noch nicht bewertet */
+export interface MotorSeite {
+  status: 'bewertet' | 'nicht_durchfuehrbar'
+  /** angekreuzte Kompensationen als „segment:id“, z. B. „knie:valgus“ */
+  kompensationen: string[]
+}
+
+export interface MotorTest {
+  b?: MotorSeite
+  g?: MotorSeite
+  v?: MotorSeite
+  /** Beobachtung in eigenen Worten, höchstens 300 Zeichen, keine Namen */
+  text?: string
 }
 
 export interface FruehererAbschluss {

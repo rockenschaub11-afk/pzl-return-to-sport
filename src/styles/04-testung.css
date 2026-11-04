@@ -603,3 +603,90 @@
   gap: 0.1rem;
   font-size: 0.875rem;
 }
+
+/* Motor Control (Philipp 04.11.2026): Score nach Aspetar, nur Info – grau, nie Ampelfarbe */
+.mc-erklaerung {
+  margin: -0.25rem 0 0.75rem;
+}
+
+.mc-score-kopf,
+.mc-score {
+  color: var(--text-leise);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.mc-seiten {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.mc-seiten.mc-zwei {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+}
+
+.mc-seite {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  border: 1px solid var(--linie);
+  border-radius: var(--radius);
+}
+
+.mc-seite-kopf {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.mc-segmente {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.mc-segment {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.mc-segment legend {
+  padding: 0;
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+}
+
+.mc-auffaellig,
+.mc-ruhig {
+  margin-left: 0.4rem;
+  color: var(--text-leise);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.mc-auffaellig {
+  color: var(--text);
+}
+
+.mc-kompensation {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.mc-kompensation input {
+  margin-top: 0.2rem;
+}
+
+.mc-text {
+  margin-top: 0.75rem;
+}
+
+.mc-test .kat-quelle {
+  margin: 0.5rem 0 0;
+}

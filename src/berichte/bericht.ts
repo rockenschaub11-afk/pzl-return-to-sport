@@ -38,6 +38,8 @@ import {
   type RohTest,
 } from './nachvollziehbarkeit'
 import { prozentDe, zahlDe } from '../rechnen/format'
+import { MOTOR } from '../katalog/motorcontrol'
+import { kompensationenText, motorBewertungen, score, scoreKurz, scoreText, SEITEN_NAME, seitenunterschied, seitenVon } from '../testung/motorik'
 import { koosFeld } from '../testung/felder'
 import { normdatenFuer } from '../testung/normdaten'
 import { pflichtStatus, pflichtVerfehlt, RTS_TEXT, rtsVorschlag, wertText, zielText, type RtsVorschlag } from '../testung/rts'
@@ -130,6 +132,28 @@ export interface ArztTest {
   ausserhalbTestset: boolean
 }
 
+export interface MotorBerichtTest {
+  name: string
+  seiten: { titel: string; score: string; nichtDurchfuehrbar: boolean; kompensationen: string[] }[]
+  text: string
+  /** betroffene Seite hat weniger Punkte als die gesunde */
+  hinweis: boolean
+  quelle: string
+}
+
+/** Motor Control einer Testung für den Arztbericht: Score je Seite, auffällige Segmente in Worten, Freitext. */
+function motorBericht(testung: Testung): MotorBerichtTest[] {
+  return motorBewertungen(testung).map(({ def, t }) => ({
+    name: def.name,
+    seiten: seitenVon(def)
+      .filter((s) => t[s])
+      .map((s) => ({ titel: SEITEN_NAME[s], score: scoreText(score(t[s])), nichtDurchfuehrbar: t[s]!.status === 'nicht_durchfuehrbar', kompensationen: kompensationenText(def, t[s]!) })),
+    text: t.text?.trim() ?? '',
+    hinweis: seitenunterschied(t),
+    quelle: def.quelle,
+  }))
+}
+
 export interface ArztBericht {
   kuerzel: string
   datum: string
@@ -151,6 +175,8 @@ export interface ArztBericht {
   bloecke: { block: Block; name: string; tests: ArztTest[] }[]
   therapeut: string
   abgeschlossenAm: string | null
+  /** Motor Control je bewertetem Test (Philipp 04.11.2026) – nur Info, ohne Ampel */
+  motorControl: MotorBerichtTest[]
   /** Abschlüsse vor einem „Wieder öffnen“ (Audit W2) */
   fruehereAbschluesse: ReturnType<typeof fruehererAbschlussText>[]
   /** Anhang: Ablauf der Protokolle der gemessenen Tests (Audit Punkt 8) */
@@ -429,6 +455,7 @@ export function arztBericht(patient: Patient, testung: Testung, auswahl?: MeloqA
     bloecke,
     therapeut: testung.entscheidung?.therapeut.trim() ?? '',
     abgeschlossenAm: abgeschlossen && testung.abgeschlossenAm ? datumDeutsch(testung.abgeschlossenAm.slice(0, 10)) : null,
+    motorControl: motorBericht(testung),
     fruehereAbschluesse: (testung.fruehereAbschluesse ?? []).map(fruehererAbschlussText),
     protokolle,
     rohdaten: roh,
@@ -516,6 +543,11 @@ export function verlaufTabelle(patient: Patient, testungen: readonly Testung[], 
     }
     const kriterium = test.name.includes(k.bezeichnung) ? '' : k.bezeichnung
     if (werte.some((w) => w.wert !== '–')) zeilen.push({ name: test.name, kriterium, werte, veraenderung })
+  }
+  // Motor Control (Philipp 04.11.2026): Score je Testung als Info-Zeile, ohne Ampel und ohne Veränderung
+  for (const def of MOTOR.tests) {
+    const werte = ausgewertet.map(({ t }) => ({ wert: scoreKurz(def, t.motorControl?.[def.id]) ?? '–', ziel: null, seiten: null }))
+    if (werte.some((w) => w.wert !== '–')) zeilen.push({ name: `Motor Control: ${def.name}`, kriterium: 'Score (Aspetar), Info', werte, veraenderung: null })
   }
   return {
     spalten: ausgewertet.map(({ t, ph }) => ({ datum: datumDeutsch(t.datum), phase: phaseNach(ph).name })),

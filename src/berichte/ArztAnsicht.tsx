@@ -4,6 +4,7 @@ import { memo, useMemo } from 'react'
 import type { Testung } from '../db'
 import { KATALOG } from '../katalog'
 import { MELOQ } from '../katalog/meloq'
+import { MOTOR } from '../katalog/motorcontrol'
 import type { Patient } from '../patienten/stammdaten'
 import { einheitFest } from '../testung/erfassung'
 import LinienDiagramm from '../testung/LinienDiagramm'
@@ -63,7 +64,8 @@ function ArztAnsicht({
   const nrLsi = lsi.length > 0 ? 2 : null
   const nrStamm = nrLsi ? 3 : 2
   const nrErgebnisse = nrStamm + 1
-  const nrVerlauf = nrErgebnisse + 1
+  const nrMotor = b.motorControl.length > 0 ? nrErgebnisse + 1 : null
+  const nrVerlauf = (nrMotor ?? nrErgebnisse) + 1
   const nrUnterschrift = nrVerlauf + 1
 
   return (
@@ -256,6 +258,8 @@ function ArztAnsicht({
         )}
       </Abschnitt>
 
+      {nrMotor && <MotorAbschnitt nr={nrMotor} tests={b.motorControl} />}
+
       <VerlaufAbschnitt nr={nrVerlauf} patient={patient} testungen={bis} tabelle={tabelle} wahl={verlaufWahl} />
 
       <Abschnitt nr={nrUnterschrift} titel="Bestätigung" className="bericht-unterschrift-abschnitt">
@@ -301,6 +305,54 @@ const QUELLEN = [
   'VALD Research Normative Data Report – ACL.',
   'Hawkin Dynamics, ODS System; McMahon et al., Strength Cond J 2021 (Output / Driver / Strategy).',
 ]
+
+/** Motor Control (Philipp 04.11.2026): Score je Seite, auffällige Segmente, Beobachtung – ohne Ampel. */
+function MotorAbschnitt({ nr, tests }: { nr: number; tests: ArztBericht['motorControl'] }) {
+  return (
+    <Abschnitt nr={nr} titel="Motor Control" className="bericht-motor" notiz={`Score je Segment (Fuß/Sprunggelenk, Knie, Hüfte/Rumpf): ein Punkt ohne Kompensation, 3/3 = keine; 0/3 auch, wenn nicht verlässlich durchführbar. Nur Info – keine Ampel, kein Einfluss auf den RTS-Vorschlag. Quelle: ${MOTOR.quelle}.`}>
+      <div className="bericht-tafel bericht-tafel-lang">
+        <table className="bericht-tabelle bericht-motor-tabelle">
+          <thead>
+            <tr>
+              <th scope="col">Test</th>
+              <th scope="col">Seite</th>
+              <th scope="col" className="bericht-zahl">
+                Score
+              </th>
+              <th scope="col">Auffällige Segmente</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tests.flatMap((t) => [
+              ...t.seiten.map((s, i) => (
+                <tr key={`${t.name}-${s.titel}`}>
+                  {i === 0 && (
+                    <td rowSpan={t.seiten.length + (t.text ? 1 : 0)}>
+                      <strong>{t.name}</strong>
+                      {t.hinweis && <span className="bericht-eingabe bericht-links">betroffen weniger Punkte als gesund</span>}
+                    </td>
+                  )}
+                  <td>{s.titel}</td>
+                  <td className="bericht-zahl">
+                    <strong>{s.score}</strong>
+                  </td>
+                  <td>{s.nichtDurchfuehrbar ? 'nicht verlässlich durchführbar (Schmerz/Beschwerden)' : s.kompensationen.length ? s.kompensationen.join(' · ') : 'ohne Kompensation'}</td>
+                </tr>
+              )),
+              ...(t.text
+                ? [
+                    <tr key={`${t.name}-text`} className="bericht-unterzeile">
+                      <td colSpan={3}>Beobachtung: {t.text}</td>
+                    </tr>,
+                  ]
+                : []),
+            ])}
+          </tbody>
+        </table>
+      </div>
+    </Abschnitt>
+  )
+}
 
 function Methodik({ protokolle, endtestung }: { protokolle: ArztBericht['protokolle']; endtestung: boolean }) {
   const r = KATALOG.regeln
