@@ -3,6 +3,7 @@
 // Werte mit einer Nachkommastelle wie in der Tabelle, Punkt und Zeichen ✓ ~ ✗ nach der LSI-Ampel (Bericht-Audit Punkt 1).
 // Bericht-Redesign (Muster 27.10.2026): Skala ab 50 % (Mitte) bis 120 %, damit Unterschiede um 90 % sichtbar werden – liegt ein Wert darunter,
 // beginnt die Mitte tiefer (in 10er-Schritten), damit kein Wert in der Mitte verschwindet. Vorige Testung als hohler Punkt.
+// Erster Pat. 04.11.2026 (Philipp): bei 1–2 Tests mit Seitenvergleich statt Hinweis waagrechte Balken in derselben Skala und Legende.
 
 import type { Ampel } from '../rechnen/bewertung'
 import { zahlDe } from '../rechnen/format'
@@ -41,9 +42,9 @@ const linie = (pts: { x: number; y: number }[]) => pts.map((p) => `${p.x.toFixed
 
 export default function Spinnennetz({ achsen, ziel = 90, vorigeDatum = null }: { achsen: NetzAchse[]; ziel?: number; vorigeDatum?: string | null }) {
   const n = achsen.length
-  if (n < 3) return <p className="hinweis-leise">Für das Spinnennetz braucht es mindestens 3 Tests mit Seitenvergleich.</p>
-  const werte = achsen.flatMap((a) => (a.vorige === null || a.vorige === undefined ? [a.lsi] : [a.lsi, a.vorige]))
-  const mitte = Math.max(0, Math.min(MIN, Math.floor(Math.min(...werte) / 10) * 10 - 10))
+  if (n === 0) return <p className="hinweis-leise">Noch keine Tests mit Seitenvergleich erfasst.</p>
+  const mitte = skalaStart(achsen)
+  if (n < 3) return <SeitenBalken achsen={achsen} ziel={ziel} vorigeDatum={vorigeDatum} start={mitte} />
   const ring = (prozent: number) => linie(achsen.map((_, i) => punkt(i, n, prozent, mitte)))
 
   return (
@@ -88,22 +89,114 @@ export default function Spinnennetz({ achsen, ziel = 90, vorigeDatum = null }: {
           </text>
         ))}
       </svg>
-      <figcaption className="netz-legende">
+      <Legende achsen={achsen} ziel={ziel} vorigeDatum={vorigeDatum} />
+    </figure>
+  )
+}
+
+const hatVorige = (a: NetzAchse) => a.vorige !== null && a.vorige !== undefined
+
+/** Beginn der Skala: 50 %, tiefer (10er-Schritte), wenn ein Wert darunter liegt */
+function skalaStart(achsen: NetzAchse[]) {
+  const werte = achsen.flatMap((a) => (hatVorige(a) ? [a.lsi, a.vorige!] : [a.lsi]))
+  return Math.max(0, Math.min(MIN, Math.floor(Math.min(...werte) / 10) * 10 - 10))
+}
+
+function Legende({ achsen, ziel, vorigeDatum }: { achsen: NetzAchse[]; ziel: number; vorigeDatum: string | null }) {
+  return (
+    <figcaption className="netz-legende">
+      <span>
+        <i className="netz-legende-gesund" /> gesundes Bein = 100 %
+      </span>
+      <span>
+        <i className="netz-legende-betroffen" /> betroffenes Bein
+      </span>
+      <span>
+        <i className="netz-legende-ziel" /> Ziel {ziel} %
+      </span>
+      {vorigeDatum && achsen.some(hatVorige) && (
         <span>
-          <i className="netz-legende-gesund" /> gesundes Bein = 100 %
+          <i className="netz-legende-vorige" /> zuvor ({vorigeDatum})
         </span>
-        <span>
-          <i className="netz-legende-betroffen" /> betroffenes Bein
-        </span>
-        <span>
-          <i className="netz-legende-ziel" /> Ziel {ziel} %
-        </span>
-        {vorigeDatum && achsen.some((a) => a.vorige !== null && a.vorige !== undefined) && (
-          <span>
-            <i className="netz-legende-vorige" /> zuvor ({vorigeDatum})
-          </span>
-        )}
-      </figcaption>
+      )}
+    </figcaption>
+  )
+}
+
+/** Balken: eigene, schmalere Zeichenfläche, damit die Schrift in der halben Seitenbreite gut lesbar bleibt */
+const BALKEN = { breite: 360, links: 6, rechts: 354, kopf: 24, balken: 14 }
+
+/** Veränderung in Prozentpunkten mit echtem Minuszeichen: „+11,4“, „−3,0“ */
+const pp = (d: number) => `${d > 0 ? '+' : d < 0 ? '−' : '±'}${zahl(Math.abs(d))}`
+
+/**
+ * 1–2 Tests mit Seitenvergleich: waagrechte Balken, betroffenes Bein in % des gesunden (LSI).
+ * Skala wie im Spinnennetz (ab 50 %, tiefer wenn nötig, bis 120 %), Zielbereich ab dem Ziel leicht hinterlegt,
+ * gesundes Bein = 100 % gestrichelt. Vorige Testung: hohler Punkt, Strich bis heute und Veränderung in Prozentpunkten.
+ */
+function SeitenBalken({ achsen, ziel, vorigeDatum, start }: { achsen: NetzAchse[]; ziel: number; vorigeDatum: string | null; start: number }) {
+  const { breite, links, rechts, kopf, balken } = BALKEN
+  const x = (prozent: number) => links + ((Math.min(Math.max(prozent, start), MAX) - start) / (MAX - start)) * (rechts - links)
+  const mitVorige = achsen.some(hatVorige)
+  const zeile = mitVorige ? 62 : 46
+  const h = kopf + achsen.length * zeile
+  const oben = kopf - 6
+  const striche = Array.from({ length: Math.floor((MAX - start) / 10) + 1 }, (_, i) => start + i * 10)
+  // Beschriftung: Skalenbeginn, 70, Ziel, 100, 120 – bei sehr tiefer Skala nur jede 20er-Marke dazwischen
+  const beschriftet = new Set([start, ziel, 100, MAX, ...striche.filter((r) => r < ziel && (MAX - start <= 70 ? r % 10 === 0 : r % 20 === 0))])
+  const veraenderung = (a: NetzAchse) => (hatVorige(a) ? Math.round((a.lsi - a.vorige!) * 10) / 10 : null)
+  const label = achsen
+    .map((a) => {
+      const d = veraenderung(a)
+      return `${a.name} ${mitZeichen(a)}${d === null ? '' : `, zuvor ${zahl(a.vorige!)} %, ${pp(d)} Prozentpunkte`}`
+    })
+    .join('; ')
+  return (
+    <figure className="netz netz-balken">
+      <svg viewBox={`0 0 ${breite} ${h}`} role="img" aria-label={`Seitenvergleich: betroffenes Bein in Prozent des gesunden, Ziel ab ${ziel} %: ${label}`}>
+        {striche
+          .filter((r) => beschriftet.has(r))
+          .map((r) => (
+            <text key={r} x={x(r)} y={oben - 5} textAnchor={r === start ? 'start' : r === MAX ? 'end' : 'middle'} className="netz-balken-skala">
+              {r === MAX ? `${r} %` : r}
+            </text>
+          ))}
+        {achsen.map((a, i) => {
+          const top = kopf + i * zeile
+          const y = top + 22
+          const mitte = y + balken / 2
+          const d = veraenderung(a)
+          return (
+            <g key={i}>
+              <text x={links} y={top + 15} className="netz-balken-name">
+                {a.name}
+              </text>
+              <text x={rechts} y={top + 15} textAnchor="end" className={`netz-balken-wert netz-wert${ampelKlasse(a)}`}>
+                {mitZeichen(a)}
+              </text>
+              <rect x={links} y={y} width={rechts - links} height={balken} rx={2} className="netz-balken-spur" />
+              <rect x={x(ziel)} y={y} width={x(MAX) - x(ziel)} height={balken} className="netz-balken-zielbereich" />
+              {striche.slice(1, -1).map((r) => (
+                <line key={r} x1={x(r)} y1={y} x2={x(r)} y2={y + balken} className="netz-balken-strich" />
+              ))}
+              <rect x={links} y={y} width={Math.max(0, x(a.lsi) - links)} height={balken} rx={2} className="netz-flaeche netz-balken-fuellung" />
+              {d !== null && (
+                <>
+                  <line x1={x(a.vorige!)} y1={mitte} x2={x(a.lsi)} y2={mitte} className="netz-balken-weg" />
+                  <circle cx={x(a.vorige!)} cy={mitte} r={3} className="netz-vorige" />
+                  <text x={links} y={y + balken + 14} className="netz-balken-zuvor">
+                    zuvor {zahl(a.vorige!)} % · {pp(d)} Prozentpunkte
+                  </text>
+                </>
+              )}
+              <circle cx={x(a.lsi)} cy={mitte} r={a.ampel ? 4.5 : 3.5} className={`netz-punkt${ampelKlasse(a)}`} />
+            </g>
+          )
+        })}
+        <line x1={x(100)} y1={oben} x2={x(100)} y2={h} className="netz-gesund" />
+        <line x1={x(ziel)} y1={oben} x2={x(ziel)} y2={h} className="netz-ziel" />
+      </svg>
+      <Legende achsen={achsen} ziel={ziel} vorigeDatum={vorigeDatum} />
     </figure>
   )
 }

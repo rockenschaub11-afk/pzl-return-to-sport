@@ -1005,6 +1005,65 @@
 }
 
 /* Spinnennetz */
+/* Balken bei 1–2 Tests mit Seitenvergleich (erster Pat. 04.11.2026) */
+.netz-balken-zielbereich {
+  fill: color-mix(in srgb, var(--erfuellt) 22%, transparent);
+}
+
+.netz-balken-strich {
+  stroke: var(--flaeche);
+  stroke-width: 0.75;
+}
+
+.netz-balken-skala {
+  fill: var(--text-sehr-leise);
+  font-family: var(--schrift);
+  font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.netz-balken-name {
+  fill: var(--text);
+  font-family: var(--schrift);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.netz-balken-wert {
+  font-family: var(--schrift);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.netz-balken-spur {
+  fill: color-mix(in srgb, var(--linie) 30%, transparent);
+}
+
+.netz-flaeche.netz-balken-fuellung {
+  stroke-width: 1.5;
+  transform-origin: left center;
+  transform-box: fill-box;
+  animation-name: netz-balken-auf;
+}
+
+.netz-balken-weg {
+  stroke: var(--text-sehr-leise);
+  stroke-width: 1.5;
+}
+
+.netz-balken-zuvor {
+  fill: var(--text-leise);
+  font-family: var(--schrift);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes netz-balken-auf {
+  from {
+    transform: scaleX(0);
+  }
+}
+
 .netz {
   margin: 0;
 }

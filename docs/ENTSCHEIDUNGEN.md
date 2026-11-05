@@ -423,6 +423,10 @@ Achtung: Report hat Fehler (KOOS > 100, doppelte Seiten, Einheitenfehler) – nu
 - Arztbericht: eigener Abschnitt nach den Ergebnissen (Score je Seite, auffällige Segmente, Beobachtung, Quelle) und Score je Testung in der Verlaufstabelle. Kürzel-Seite: eigene Zeilen in „Testungen im Überblick“ (Score grau). Pat./Trainer-Bericht unverändert.
 - Bestehende Tests (SL-Squat-Tiefe, Kniebeuge-Asymmetrie, Calf Raise Wdh.) bleiben unverändert in ihren Blöcken.
 
+**Nachtrag 05.11.2026 (Pat./Trainer-Bericht bei wenigen Tests – nach dem ersten Pat.):**
+- Bei 45 Minuten kommt man oft nur bis zum HHD (Knie-Extension, Knie-Flexion). Bisher stand dann statt Grafik „mindestens 3 Tests“. Jetzt: bei 1–2 Tests mit Seitenvergleich waagrechte Balken, ab 3 Tests unverändert das Spinnennetz; ohne Test nur der Hinweis.
+- Balken zeigen dieselben LSI-Werte wie Tabelle und Netz (betroffen in % von gesund), gleiche Skala (ab 50 %, tiefer wenn nötig, bis 120 %), Ampelzeichen, gesundes Bein = 100 % gestrichelt, Ziel gepunktet, Zielbereich ab dem Ziel in der Spur hinterlegt. Vorige Testung: hohler Punkt, Strich bis heute und „zuvor … % · ± … Prozentpunkte“. Keine neuen Werte oder Grenzwerte.
+
 ## 10a. Design (Stand 23.10.2026, Design-Fragerunden D1–D19 und S1–S15)
 
 Ursprünglich „sportlich-verspielt“ (Schrägen, Tempo-Streifen, Leuchten); am selben Tag auf Philipps Wunsch ersetzt durch **Richtung B „Sportwissenschaft-Dashboard“**.
