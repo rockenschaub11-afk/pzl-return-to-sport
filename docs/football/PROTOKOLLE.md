@@ -1,6 +1,6 @@
 # Football Performance Profiling – Phase 1: Testbatterie und Protokolle
 
-Stand: 17.11.2026 – **Entwurf, Antworten von Philipp (17.11.2026) eingearbeitet**; offen sind noch F1 und F14. Grundlage: `docs/football/PHASE0.md` (verbindlich).
+Stand: 17.11.2026 – **Entwurf, Antworten von Philipp (17.11.2026) eingearbeitet**; offen ist noch F14 (Meloq-Beispieldateien). Grundlage: `docs/football/PHASE0.md` (verbindlich).
 Phase 1 ist reine Dokumentation – kein Code. Nächster Schritt nach Freigabe: Phase 3 (Kennzahlen und Interpretationsregeln).
 
 **Was dieses Dokument festlegt:** *wie* gemessen wird und *welche Rohwerte* erfasst werden.
@@ -250,6 +250,11 @@ Für beide Varianten:
 ## 5. Sprungtests mit Meloq EasyBase (Core)
 
 **Was offen ist (darf nicht vorweggenommen werden):** Welche **Methode der Sprunghöhe** Meloq verwendet (Flugzeit oder Impuls bzw. Abfluggeschwindigkeit), wie Meloq den **RSI** beim Drop Jump definiert und welche Rohdaten der Export liefert → **[offen]**, Klärung mit Philipps Beispieldateien (PHASE0). Hinweis: Im ACL-Modul (ENTSCHEIDUNGEN 6.1/6.2) ist aus App-Screenshots „Sprunghöhe aus Flugzeit“ notiert – für das Football-Modul wird das erst mit den Exportdateien bestätigt.
+
+**Stand 17.11.2026 – ein CMJ-Export liegt vor** (CSV, Meloq-App 1.2.4, vom 07.10.2026; bleibt außerhalb des Repos):
+- **Exportformat geklärt:** Die CSV enthält **keine Kennzahlen**, nur die **Kraftkurve**: Kopfzeile mit Datum, App-Version, Körpermasse (in g), Abtastrate **400 Hz**, Bein; danach je Zeile die vier Kraftsensoren und die Summe je Seite (links/rechts) **in kg**. Sprunghöhe, Flugzeit, RSI usw. stehen **nicht** in der CSV, sie werden nur in der App angezeigt (oder im PDF/Excel-Export – noch nicht gesehen). **[gesichert]** (Datei geprüft)
+- **Probeberechnung aus der Kurve:** Flugzeit ca. 445 ms (die App zeigte bei einem CMJ derselben Körpermasse 448 ms, ENTSCHEIDUNGEN 6.2) → Höhe nach Flugzeit ca. 24 cm; nach Impuls ca. 24 cm. **Bei diesem Sprung liegen beide Methoden so nahe beieinander, dass die Datei allein nicht zeigt, welche Methode die App verwendet.** **[offen]**
+- **Was zur Klärung noch fehlt:** (1) die in der App angezeigte **Sprunghöhe** zu **genau diesem** Sprung (Screenshot) – dann lässt sich die Methode eindeutig zuordnen; (2) ein **Drop-Jump-Export** mit App-Screenshot (Kontaktzeit, RSI) für die RSI-Definition; (3) ob der **Excel-Export** die Kennzahlen enthält.
 Warum das wichtig ist: Je nach Formel kann sich die berechnete Sprunghöhe **desselben** Sprungs um bis zu 15 cm unterscheiden (Eythorsdottir 2024, Systematische Übersicht) **[gesichert]**; Flugzeit- und Impulsmethode liefern systematisch verschiedene Werte (Moir 2008) **[gesichert]**. Deshalb: **Methode immer mitspeichern**, Werte verschiedener Methoden nie vergleichen.
 
 ### 5.1 Countermovement Jump (CMJ, beidbeinig)
@@ -394,7 +399,7 @@ Antworten von Philipp am 17.11.2026 eingetragen.
 
 | # | Frage | Antwort / Stand |
 |---|---|---|
-| F1 | **Liege:** höhenverstellbar? Breit genug für Rückenlage mit Gurt seitlich? Zweite Liege/Bank für den Sitztest? | **offen.** Empfehlung: eine höhenverstellbare Liege für alle Liegetests; Sitztests am Liegenende, Füße hängen frei; Liegenhöhe einmal festlegen und notieren |
+| F1 | **Liege:** höhenverstellbar? Breit genug für Rückenlage mit Gurt seitlich? Zweite Liege/Bank für den Sitztest? | **Entschieden:** Liege ist **höhenverstellbar** **[Philipp 17.11.]**. Alle Liegetests auf dieser Liege; Sitztests am Liegenende, Füße hängen frei. Liegenhöhe je Test beim ersten Profil festlegen, notieren und dann fix |
 | F2 | **Gurt-Anker** | **Entschieden:** Sprossenwand, Rack/Gestell und Liegenbeine/-rahmen vorhanden. Seitlich an Sprossenwand oder Rack, nach unten um die Liege, Knie-Extension ans hintere Liegenbein (1.3) |
 | F3 | **Soleus:** Platte oder DynaMo? | **Entschieden:** **Meloq-Platte**. Gurt-Anker nicht an der Platte (4.6) |
 | F4 | **Plattenhöhe / Box** | **Entschieden:** Boxhöhe und Plattenhöhe werden **bei jeder Testung eingetragen**, die App berechnet die effektive Fallhöhe (Ziel 30 cm) (5.2) |
@@ -407,7 +412,7 @@ Antworten von Philipp am 17.11.2026 eingetragen.
 | F11 | **Abstand zu Spiel/Training** | **Entschieden:** ≥ 48 h, immer dokumentieren |
 | F12 | **Familiarisierung** | **Entschieden:** nur Probeversuche, Erstprofil wird markiert |
 | F13 | **Schuhwerk** | **Entschieden:** eigene Trainings-/Hallenschuhe ohne Stollen, beim Re-Test dieselben |
-| F14 | **Meloq-Exportdateien** (CMJ, Drop Jump; CSV/Excel/Rohdaten) | **offen** – davon hängen Methode der Sprunghöhe, RSI-Definition und die Rohwert-Liste in Abschnitt 5 ab |
+| F14 | **Meloq-Exportdateien** (CMJ, Drop Jump; CSV/Excel/Rohdaten) | **Teilweise:** CMJ-CSV vom 07.10. ausgewertet (Format = reine Kraftkurve, 400 Hz, kg; keine Kennzahlen). **Offen:** App-Screenshot zur Sprunghöhe desselben Sprungs, Drop-Jump-Export mit Screenshot, Excel-Export (5) |
 | F15 | **DynaMo-Einheit** | **Entschieden:** bleibt **kg**; App rechnet mit 9,81 in N um (8) |
 | F16 | **Pilot** | **Entschieden:** **kein Pilot**. Dafür bei den ersten 3 Profilen Zeiten, Gelenkwinkel unter Last, Box-Position und Lagerung Adduktion notieren und hier nachtragen |
 | F17 | **Knie-Extension: anderer Winkel?** | **Geprüft** (4.1): **60° bleibt**, weil ein Wert vor einer Verletzung dann im ACL-Modul direkt nutzbar ist und 60° im Bereich hoher Kraft liegt. 90° wäre ebenfalls vertretbar und einfacher aufzubauen. **Entschieden: 60° bleibt** |
@@ -416,7 +421,6 @@ Antworten von Philipp am 17.11.2026 eingetragen.
 
 ## 11. Nächste Schritte
 
-1. Philipp beantwortet F1 (Liege).
-2. Meloq-Beispieldateien (F14) → Abschnitt 5 (Methode, RSI, Rohwerte) schließen.
-3. Erste 3 Profile → Zeitplan, Winkel unter Last, Box-Position, Lagerung Adduktion hier nachtragen.
-4. Danach Phase 3: Kennzahlen (N, N/kg, Nm, Nm/kg, ODS-Auswahl), Interpretationsregeln mit Quelle – getrennt von diesem Messprotokoll.
+1. Meloq-Beispieldateien (F14) → Abschnitt 5 (Methode, RSI, Rohwerte) schließen.
+2. Erste 3 Profile → Zeitplan, Winkel unter Last, Box-Position, Lagerung Adduktion hier nachtragen.
+3. Danach Phase 3: Kennzahlen (N, N/kg, Nm, Nm/kg, ODS-Auswahl), Interpretationsregeln mit Quelle – getrennt von diesem Messprotokoll.
